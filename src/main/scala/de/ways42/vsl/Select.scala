@@ -79,8 +79,9 @@ object Select {
 					println( tvsl001( xa))
 					println( tvsl001_2( xa))
 					println( tvsl001_3( xa))
-					println( tables.TVSL002.select( xa))
 					println( tables.TVSL001.select( xa))
+					
+					tables.TVSL002.selectVtgnr( "0003065903411").transact(xa).unsafeRunSync.foreach(println)
 
 	}
 
