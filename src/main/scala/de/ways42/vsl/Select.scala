@@ -17,16 +17,15 @@ object Select {
   
 	def main( args : Array[String]) : Unit = {
 
-			val xa = connection()
+			val xa : Transactor.Aux[IO, Unit] = connection()
 
-					println( tvsl001( xa))
-					println( tvsl001_2( xa))
-					println( tvsl001_3( xa))
-					println( tables.TVSL001.select( xa))
-					println( tables.TVSL001.selectNeu( xa))
+			tvsl001( xa)
+			tvsl001_2( xa)
 					
-					tables.TVSL002.selectVtgnr( "0003065903411").transact(xa).unsafeRunSync.foreach(println)
-					tables.TVSL001.selectAkt(   "0003065903411").transact(xa).unsafeRunSync.foreach(println)
+			tables.TVSL001.selectAll().stream.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).foreach(println)
+			tables.TVSL001.selectAkt(   "0003065903411").to[List].transact(xa).unsafeRunSync.foreach(println)
+					
+			tables.TVSL002.selectVtgnr( "0003065903411").transact(xa).unsafeRunSync.foreach(println)
 
 	}
 
@@ -62,12 +61,6 @@ object Select {
 					512                                // chunk size
 					)
 					proc.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).foreach(println)
-	}
-
-	def tvsl001_3(xa : Transactor.Aux[IO, Unit]) = {
-
-	  println( "Mit Klasse TVSL001")
-		sql"select * from VSMADM.TVSL001".query[tables.TVSL001.Table].stream.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).foreach(println)
 	}
 }
 
