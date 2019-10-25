@@ -26,7 +26,7 @@ object TVSL002 {
 		  LV_TARIF_CD     : Short, 
 		  LV_REFVS_NR     : Short, 
 		  LV_HVZV_CD      : Short, 
-		  LV_RUECK_KNZ    : Byte, 
+		  LV_RUECK_KNZ    : String, // Kennzeichen ist byte oder Char 
 		  LV_LEIST_PRZ    : Double, 
 		  LV_DIVVOR_CD    : Short, 
 		  LV_BTRFON_PRZ   : Double, 
