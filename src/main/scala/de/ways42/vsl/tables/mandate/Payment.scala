@@ -11,9 +11,8 @@ import fs2.Stream
 import java.sql.Timestamp
 import java.sql.Date
 
-object Payment {
 
-  case class Table (
+case class Payment (
 		MANDATOR                  : Long,
 		PAYMENT_ID                : Long,
 		MANDATE_ID                : Long,
@@ -30,6 +29,8 @@ object Payment {
 		PAYMENT_MODIFICATION      : Long,
 		PAYMENT_MODIFICATION_DATE : Option[Date]
 	)
+
+object Payment {
 	
   val attributes = Array[String] (
   		"MANDATOR",
@@ -51,12 +52,12 @@ object Payment {
     
   lazy val attrStr = attributes.mkString(",")
 	  
-  def selectById( payment_id : Long) : Query0[Table] = {
+  def selectById( payment_id : Long) : Query0[Payment] = {
     val s = Fragment.const( "select ")
     val a = Fragment.const( attrStr)
     val f = Fragment.const( " from Mandate.MM_Payment")
     val w = fr"where PAYMENT_ID = $payment_id"
-    (s ++ a ++ f ++ w).query[Table]
+    (s ++ a ++ f ++ w).query[Payment]
   }
 
 }

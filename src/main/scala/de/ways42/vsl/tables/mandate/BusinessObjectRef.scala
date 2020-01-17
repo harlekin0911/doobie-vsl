@@ -11,9 +11,7 @@ import fs2.Stream
 import java.sql.Timestamp
 import java.sql.Date
 
-object BusinessObjectRef {
-
-  case class Table (
+case class BusinessObjectRef (
 		MANDATOR : Long,
 		HISTNR : Long,
 		DOP : Timestamp,
@@ -30,6 +28,8 @@ object BusinessObjectRef {
 		TERMINATED_FLAG : Long
 	)
 	
+object BusinessObjectRef {
+
   val attributes = Array[String] (
 		"MANDATOR",
 		"HISTNR",
@@ -49,20 +49,20 @@ object BusinessObjectRef {
     
   lazy val attrStr = attributes.mkString(",")
 	  
-  def selectById( bor_id : Long, hnr : Long) : Query0[Table] = {
+  def selectById( bor_id : Long, hnr : Long) : Query0[BusinessObjectRef] = {
     val s = Fragment.const( "select ")
     val a = Fragment.const( attrStr)
     val f = Fragment.const( " from Mandate.MM_Business_Object_Reference")
     val w = fr"where BUSINESS_OBJ_REFERENCE_ID = $bor_id and HISTNR = $hnr"
-    (s ++ a ++ f ++ w).query[Table]
+    (s ++ a ++ f ++ w).query[BusinessObjectRef]
   }
 
-  def selectByMandateId( mandate_id : Long) : Query0[Table] = {
+  def selectByMandateId( mandate_id : Long) : Query0[BusinessObjectRef] = {
     val s = Fragment.const( "select ")
     val a = Fragment.const( attrStr)
     val f = Fragment.const( " from Mandate.MM_Business_Object_Reference")
     val w = fr"where MANDATE_ID = $mandate_id"
-    (s ++ a ++ f ++ w).query[Table]
+    (s ++ a ++ f ++ w).query[BusinessObjectRef]
   }
 
 }

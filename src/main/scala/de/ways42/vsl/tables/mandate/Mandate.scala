@@ -11,9 +11,9 @@ import fs2.Stream
 import java.sql.Timestamp
 import java.sql.Date
 
-object Mandate {
+
   
-  case class Table (
+case class Mandate (
       
     MANDATOR             : Long, 
     HISTNR               : Long, 
@@ -50,9 +50,12 @@ object Mandate {
     USERID               : String,
     TERMINATED_FLAG      : Long, 
     DEPOSIT_LOCATION     : Long      
-    )
+    ) 
+
+  object Mandate {
+    
   
-  val attributes = Array[String] (
+    val attributes = Array[String] (
 		  "MANDATOR", 
 		  "HISTNR", 
 		  "DOP", 
@@ -87,16 +90,16 @@ object Mandate {
 		  "CANCEL_SIGNED_DATE",
 		  "USERID",
 		  "TERMINATED_FLAG", 
-  "DEPOSIT_LOCATION" )
+      "DEPOSIT_LOCATION" )
   
   lazy val attrStr = attributes.mkString(",")
 
-  def selectAkt( mandate_id : Long) : Query0[Table] = {
+  def selectAkt( mandate_id : Long) : Query0[Mandate] = {
     val s = Fragment.const( "select ")
     val a = Fragment.const( attrStr)
     val f = Fragment.const( " from Mandate.MM_Mandate")
     val w = fr"where MANDATE_ID = $mandate_id"
-    (s ++ a ++ f ++ w).query[Table]
+    (s ++ a ++ f ++ w).query[Mandate]
 
   }
 
