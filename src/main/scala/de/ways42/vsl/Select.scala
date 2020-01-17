@@ -26,6 +26,8 @@ object Select {
 			tables.TVSL001.selectAkt(   "0003065903411").to[List].transact(xa).unsafeRunSync.foreach(println)
 					
 			tables.TVSL002.selectVtgnr( "0003065903411").transact(xa).unsafeRunSync.foreach(println)
+			
+			tables.mandate.Mandate.selectAkt(313038).to[List].transact(xa).unsafeRunSync.foreach(println)
 
 	}
 
@@ -61,6 +63,6 @@ object Select {
 					512                                // chunk size
 					)
 					proc.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).foreach(println)
-	}
+	}	
 }
 
