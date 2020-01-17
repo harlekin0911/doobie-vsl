@@ -28,6 +28,9 @@ object Select {
 			tables.TVSL002.selectVtgnr( "0003065903411").transact(xa).unsafeRunSync.foreach(println)
 			
 			tables.mandate.Mandate.selectAkt(313038).to[List].transact(xa).unsafeRunSync.foreach(println)
+			tables.mandate.Payment.selectById(2229).to[List].transact(xa).unsafeRunSync.foreach(println)
+			tables.mandate.BusinessObjectRef.selectById(2229, 1).to[List].transact(xa).unsafeRunSync.foreach(println)
+			tables.mandate.BusinessObjectRef.selectByMandateId(313038).to[List].transact(xa).unsafeRunSync.foreach(println)
 
 	}
 
