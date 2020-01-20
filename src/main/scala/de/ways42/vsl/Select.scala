@@ -31,6 +31,7 @@ object Select {
 			tables.mandate.Payment.selectById(2229).to[List].transact(xa).unsafeRunSync.foreach(println)
 			tables.mandate.BusinessObjectRef.selectById(2229, 1).to[List].transact(xa).unsafeRunSync.foreach(println)
 			tables.mandate.BusinessObjectRef.selectByMandateId(313038).to[List].transact(xa).unsafeRunSync.foreach(println)
+			tables.vsmadm.Trol001.selectById( "0050034703671", "", 89, 1).to[List].transact(xa).unsafeRunSync.foreach(println)
 
 	}
 
