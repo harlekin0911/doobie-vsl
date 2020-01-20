@@ -30,7 +30,10 @@ object Select {
 			
 			tables.vsmadm.Tzik012.selectAktById( "002110500524101", "1", 0).to[List].transact(xa).unsafeRunSync.foreach(println)
 			tables.vsmadm.Tzik012.selectAllById( "002110500524101", "1", 0).to[List].transact(xa).unsafeRunSync.foreach(println)
-			tables.vsmadm.Tzik012.selectNktoAktByNkartandUktoart( NonEmptyList("1", List("C")), NonEmptyList( 0, Nil)).to[List].transact(xa).unsafeRunSync.foreach(println)
+			val z12 = tables.vsmadm.Tzik012.selectNktoAktByNkartandUktoart( NonEmptyList("1", List("C")), NonEmptyList( 0, Nil)).to[List].transact(xa).unsafeRunSync
+			z12.foreach(println)
+			println( "Anzahl Nebenkonten " + z12.length)
+			println( "Nicht im LEV " + z12.filter ( _.Z_ZAHLART_CD != 1).length)
 
 			tables.mandate.Mandate.selectAkt(313038).to[List].transact(xa).unsafeRunSync.foreach(println)
 			tables.mandate.Payment.selectById(2229).to[List].transact(xa).unsafeRunSync.foreach(println)
