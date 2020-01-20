@@ -27,6 +27,9 @@ object Select {
 			tables.vsmadm.Tvsl002.selectVtgnr( "0003065903411").to[List].transact(xa).unsafeRunSync.foreach(println)
 
 			tables.vsmadm.Trol001.selectById( "0050034703671", "", 89, 1).to[List].transact(xa).unsafeRunSync.foreach(println)
+			
+			tables.vsmadm.Tzik012.selectAktById( "002110500524101", "1", 0).to[List].transact(xa).unsafeRunSync.foreach(println)
+			tables.vsmadm.Tzik012.selectAllById( "002110500524101", "1", 0).to[List].transact(xa).unsafeRunSync.foreach(println)
 
 			tables.mandate.Mandate.selectAkt(313038).to[List].transact(xa).unsafeRunSync.foreach(println)
 			tables.mandate.Payment.selectById(2229).to[List].transact(xa).unsafeRunSync.foreach(println)
