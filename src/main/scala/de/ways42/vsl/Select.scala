@@ -22,16 +22,16 @@ object Select {
 			tvsl001( xa)
 			tvsl001_2( xa)
 					
-			tables.TVSL001.selectAll().stream.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).foreach(println)
-			tables.TVSL001.selectAkt(   "0003065903411").to[List].transact(xa).unsafeRunSync.foreach(println)
-					
-			tables.TVSL002.selectVtgnr( "0003065903411").transact(xa).unsafeRunSync.foreach(println)
-			
+			tables.vsmadm.Tvsl001.selectAll().stream.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).foreach(println)
+			tables.vsmadm.Tvsl001.selectAkt(   "0003065903411").to[List].transact(xa).unsafeRunSync.foreach(println)		
+			tables.vsmadm.Tvsl002.selectVtgnr( "0003065903411").to[List].transact(xa).unsafeRunSync.foreach(println)
+
+			tables.vsmadm.Trol001.selectById( "0050034703671", "", 89, 1).to[List].transact(xa).unsafeRunSync.foreach(println)
+
 			tables.mandate.Mandate.selectAkt(313038).to[List].transact(xa).unsafeRunSync.foreach(println)
 			tables.mandate.Payment.selectById(2229).to[List].transact(xa).unsafeRunSync.foreach(println)
 			tables.mandate.BusinessObjectRef.selectById(2229, 1).to[List].transact(xa).unsafeRunSync.foreach(println)
 			tables.mandate.BusinessObjectRef.selectByMandateId(313038).to[List].transact(xa).unsafeRunSync.foreach(println)
-			tables.vsmadm.Trol001.selectById( "0050034703671", "", 89, 1).to[List].transact(xa).unsafeRunSync.foreach(println)
 
 	}
 
