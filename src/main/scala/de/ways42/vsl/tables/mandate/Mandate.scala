@@ -94,13 +94,29 @@ case class Mandate (
   
   lazy val attrStr = attributes.mkString(",")
 
-  def selectAkt( mandate_id : Long) : Query0[Mandate] = {
+  def selectAktById( mandate_id : Long) : Query0[Mandate] = {
     val s = Fragment.const( "select ")
     val a = Fragment.const( attrStr)
-    val f = Fragment.const( " from Mandate.MM_Mandate")
-    val w = fr"where MANDATE_ID = $mandate_id"
+    val f = Fragment.const( " from Mandate.MM_Mandate m1")
+    val w = fr"where MANDATE_ID = $mandate_id and histnr = (select max(histnr) from mandate.mm_mandate m2 where m1.mandate_id = m2.mandate_id)"
+    (s ++ a ++ f ++ w).query[Mandate]
+  }
+    
+  def selectAllById( mandate_id : Long) : Query0[Mandate] = {
+    val s = Fragment.const( "select ")
+    val a = Fragment.const( attrStr)
+    val f = Fragment.const( " from Mandate.MM_Mandate m1")
+    val w = fr"where MANDATE_ID = $mandate_id order by histnr desc"
+    (s ++ a ++ f ++ w).query[Mandate]
+  }
+
+    
+  def selectAktAll() : Query0[Mandate] = {
+    val s = Fragment.const( "select ")
+    val a = Fragment.const( attrStr)
+    val f = Fragment.const( "from Mandate.MM_Mandate m1")
+    val w = Fragment.const( "where  histnr = (select max(histnr) from mandate.mm_mandate m2 where m1.mandate_id = m2.mandate_id)")
     (s ++ a ++ f ++ w).query[Mandate]
 
   }
-
 }

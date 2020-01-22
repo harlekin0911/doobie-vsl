@@ -115,14 +115,38 @@ object Tvsl001 {
         "LV_SWISSRE_JZ", 
 		    "LV_SWISSRE_CD")   
 	
-def selectAkt( vtgnr : String) : Query0[Tvsl001] = {
+  def selectAktById( vtgnr : String) : Query0[Tvsl001] = {
     val s = Fragment.const( "select ")
     val a = Fragment.const( attributes.mkString(","))
-    val f = Fragment.const( " from VSMADM.TVSL001")
+    val f = Fragment.const( "from VSMADM.TVSL001")
     val w = fr"where LV_VTG_NR = $vtgnr and SYSTAT_CD = 1 and GV_DTM < 25000101 and GE_DTM >= 25000101"
     (s ++ a ++ f ++ w).query[Tvsl001]
-
   }
+		
+  def selectAktAll() : Query0[Tvsl001] = {
+    val s = Fragment.const( "select ")
+    val a = Fragment.const( attributes.mkString(","))
+    val f = Fragment.const( "from VSMADM.TVSL001")
+    val w = fr"where SYSTAT_CD = 1 and GV_DTM < 25000101 and GE_DTM >= 25000101"
+    (s ++ a ++ f ++ w).query[Tvsl001]
+  }
+
+  def selectAktBeitragspflichtig() : Query0[Tvsl001] = {
+    val s = Fragment.const( "select ")
+    val a = Fragment.const( attributes.mkString(","))
+    val f = Fragment.const( "from VSMADM.TVSL001")
+    val w = fr"where SYSTAT_CD = 1 and GV_DTM < 25000101 and GE_DTM >= 25000101 and lv_vertr_stat_cd = 0"
+    (s ++ a ++ f ++ w).query[Tvsl001]
+  }
+  
+  def selectAktAktive() : Query0[Tvsl001] = {
+    val s = Fragment.const( "select ")
+    val a = Fragment.const( attributes.mkString(","))
+    val f = Fragment.const( "from VSMADM.TVSL001")
+    val w = fr"where SYSTAT_CD = 1 and GV_DTM < 25000101 and GE_DTM >= 25000101 and lv_vertr_stat_cd < 60"
+    (s ++ a ++ f ++ w).query[Tvsl001]
+  }
+
   def selectAll() : Query0[Tvsl001] = {
     val s = Fragment.const( "select ")
     val a = Fragment.const( attributes.mkString(","))

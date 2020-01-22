@@ -33,7 +33,7 @@ case class Payment (
 object Payment {
 	
   val attributes = Array[String] (
-  		"MANDATOR",
+  	"MANDATOR",
 		"PAYMENT_ID",
 		"MANDATE_ID",
 		"BUSINESS_OBJ_REFERENCE_ID",
@@ -51,6 +51,21 @@ object Payment {
 	)
     
   lazy val attrStr = attributes.mkString(",")
+  
+  val orderByScheduledDueDate : Ordering[Payment]  = 
+    new Ordering[Payment] { 
+      def compare(x:Payment,y:Payment): Int = x.SCHEDULED_DUE_DATE match { 
+    		case Some(dx) => y.SCHEDULED_DUE_DATE match {
+    		  case Some(dy) => dx compareTo dy
+    		  case None     => 0
+    	  }
+    		case None => y.SCHEDULED_DUE_DATE match {
+    		  case Some(dy) => 1
+    		  case None     => 0
+    		}
+      }
+    }
+
 	  
   def selectById( payment_id : Long) : Query0[Payment] = {
     val s = Fragment.const( "select ")
@@ -58,6 +73,27 @@ object Payment {
     val f = Fragment.const( " from Mandate.MM_Payment")
     val w = fr"where PAYMENT_ID = $payment_id"
     (s ++ a ++ f ++ w).query[Payment]
+  }
+  
+  def selectAllByMandateId( mandate_id : Long) : Query0[Payment] = {
+    val s = Fragment.const( "select ")
+    val a = Fragment.const( attrStr)
+    val f = Fragment.const( " from Mandate.MM_Payment")
+    val w = fr"where mandate_id = $mandate_id"
+    (s ++ a ++ f ++ w).query[Payment]
+  }
+  
+  def selectLastPaymentByMandate(mandate_id:Long) = {
+    val s  = Fragment.const( "select " + attrStr +  " from MANDATE.MM_PAYMENT p1")
+    val w1 = Fragment(       "where mandate_id = ?", mandate_id) 
+    val w2 = Fragment.const(        "SCHEDULED_DUE_DATE = ( select max(SCHEDULED_DUE_DATE) from MANDATE.MM_PAYMENT p2 where p1.mandate_id = p2.mandate_id)")
+    (s ++ w1 ++ w2).query[Payment]
+  }
+
+  def selectLastPaymentAlle() = {
+    (Fragment.const( "select " + attrStr +  " from MANDATE.MM_PAYMENT p1") ++
+     Fragment.const( "where SCHEDULED_DUE_DATE = ( select max(SCHEDULED_DUE_DATE) from MANDATE.MM_PAYMENT p2 where p1.mandate_id = p2.mandate_id)")
+    ).query[Payment]
   }
 
 }
