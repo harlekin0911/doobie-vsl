@@ -94,36 +94,28 @@ case class Mandate (
   
   lazy val attrStr = attributes.mkString(",")
 
-  def selectAktById( mandate_id : Long) : Query0[Mandate] = {
-    val s = Fragment.const( "select")
-    val a = Fragment.const( attrStr)
-    val f = Fragment.const( "from Mandate.MM_Mandate m1")
-    val w = fr"where MANDATE_ID = $mandate_id and histnr = (select max(histnr) from mandate.mm_mandate m2 where m1.mandate_id = m2.mandate_id)"
-    (s ++ a ++ f ++ w).query[Mandate]
+  def selectAktById( mandate_id : Long) : ConnectionIO[Mandate] = {
+    (Fragment.const( "select " + attrStr + " from Mandate.MM_Mandate m1") ++ 
+     fr"where MANDATE_ID = $mandate_id and histnr = (select max(histnr) from mandate.mm_mandate m2 where m1.mandate_id = m2.mandate_id)"
+    ).query[Mandate].unique
   }
     
-  def selectAllById( mandate_id : Long) : Query0[Mandate] = {
-    val s = Fragment.const( "select")
-    val a = Fragment.const( attrStr)
-    val f = Fragment.const( "from Mandate.MM_Mandate m1")
-    val w = fr"where MANDATE_ID = $mandate_id order by histnr desc"
-    (s ++ a ++ f ++ w).query[Mandate]
+  def selectAllById( mandate_id : Long) : ConnectionIO[List[Mandate]] = {
+    (Fragment.const( "select " + attrStr + " from Mandate.MM_Mandate m1") ++
+     fr"where MANDATE_ID = $mandate_id order by histnr desc"
+    ).query[Mandate].to[List]
   }
 
     
-  def selectAktAll() : Query0[Mandate] = {
-    val s = Fragment.const( "select ")
-    val a = Fragment.const( attrStr)
-    val f = Fragment.const( "from Mandate.MM_Mandate m1")
-    val w = Fragment.const( "where  histnr = (select max(histnr) from mandate.mm_mandate m2 where m1.mandate_id = m2.mandate_id)")
-    (s ++ a ++ f ++ w).query[Mandate]
+  def selectAktAll() : ConnectionIO[List[Mandate]] = {
+    ( Fragment.const( "select " + attrStr + " from Mandate.MM_Mandate m1") ++
+      Fragment.const( "where  histnr = (select max(histnr) from mandate.mm_mandate m2 where m1.mandate_id = m2.mandate_id)")
+    ).query[Mandate].to[List]
   }
 
-  def selectAktAllNotTerminated() : Query0[Mandate] = {
-    val s  = Fragment.const( "select " + attrStr + " from Mandate.MM_Mandate m1")
-    val w  = Fragment.const( "where  histnr = (select max(histnr) from mandate.mm_mandate m2 where m1.mandate_id = m2.mandate_id) and m1.terminated_flag = 0")
-
-    (s ++ w).query[Mandate]
-
+  def selectAktAllNotTerminated() : ConnectionIO[List[Mandate]] = {
+    ( Fragment.const( "select " + attrStr + " from Mandate.MM_Mandate m1") ++
+      Fragment.const( "where  histnr = (select max(histnr) from mandate.mm_mandate m2 where m1.mandate_id = m2.mandate_id) and m1.terminated_flag = 0")
+    ).query[Mandate].to[List]
   }
 }

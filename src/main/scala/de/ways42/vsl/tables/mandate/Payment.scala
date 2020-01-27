@@ -67,33 +67,29 @@ object Payment {
     }
 
 	  
-  def selectById( payment_id : Long) : Query0[Payment] = {
-    val s = Fragment.const( "select ")
-    val a = Fragment.const( attrStr)
-    val f = Fragment.const( " from Mandate.MM_Payment")
-    val w = fr"where PAYMENT_ID = $payment_id"
-    (s ++ a ++ f ++ w).query[Payment]
+  def selectById( payment_id : Long) : ConnectionIO[Payment] = {
+    ( Fragment.const( "select " + attrStr + " from Mandate.MM_Payment") ++
+      fr"where PAYMENT_ID = $payment_id"
+    ).query[Payment].unique
   }
   
-  def selectAllByMandateId( mandate_id : Long) : Query0[Payment] = {
-    val s = Fragment.const( "select ")
-    val a = Fragment.const( attrStr)
-    val f = Fragment.const( " from Mandate.MM_Payment")
-    val w = fr"where mandate_id = $mandate_id"
-    (s ++ a ++ f ++ w).query[Payment]
+  def selectAllByMandateId( mandate_id : Long) : ConnectionIO[List[Payment]] = {
+    ( Fragment.const( "select " + attrStr + " from Mandate.MM_Payment") ++
+      fr"where mandate_id = $mandate_id"
+    ).query[Payment].to[List]
   }
   
-  def selectLastPaymentByMandate(mandate_id:Long) = {
-    val s  = Fragment.const( "select " + attrStr +  " from MANDATE.MM_PAYMENT p1")
-    val w1 = Fragment(       "where mandate_id = ?", mandate_id) 
-    val w2 = Fragment.const(        "SCHEDULED_DUE_DATE = ( select max(SCHEDULED_DUE_DATE) from MANDATE.MM_PAYMENT p2 where p1.mandate_id = p2.mandate_id)")
-    (s ++ w1 ++ w2).query[Payment]
+  def selectLastPaymentByMandate(mandate_id:Long) : ConnectionIO[Option[Payment]]= {
+    ( Fragment.const( "select " + attrStr +  " from MANDATE.MM_PAYMENT p1") ++
+      Fragment(       "where mandate_id = ?", mandate_id) ++
+      Fragment.const(       "SCHEDULED_DUE_DATE = ( select max(SCHEDULED_DUE_DATE) from MANDATE.MM_PAYMENT p2 where p1.mandate_id = p2.mandate_id)")
+    ).query[Payment].option
   }
 
   def selectLastPaymentAlle() = {
     (Fragment.const( "select " + attrStr +  " from MANDATE.MM_PAYMENT p1") ++
      Fragment.const( "where SCHEDULED_DUE_DATE = ( select max(SCHEDULED_DUE_DATE) from MANDATE.MM_PAYMENT p2 where p1.mandate_id = p2.mandate_id)")
-    ).query[Payment]
+    ).query[Payment].to[List]
   }
 
 }

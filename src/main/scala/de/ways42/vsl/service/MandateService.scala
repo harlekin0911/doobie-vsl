@@ -25,15 +25,15 @@ object MandateService {
 	 * Aktuelles Mandat mit allen zugehoerigen Payments laden
 	 */
 	def getMandateWithPayments( mandateId : Long, xa : Transactor.Aux[IO, Unit]) : ( Mandate, List[Payment]) = {
-	  Mandate.selectAllById( mandateId).unique.flatMap( 
-	      m => Payment.selectById(mandateId).to[List].map( 
+	  Mandate.selectAktById( mandateId).flatMap( 
+	      m => Payment.selectAllByMandateId(mandateId).map( 
 	          l => (m,l))).transact(xa).unsafeRunSync
 	}
 	
 	def getNichtTerminierteAbgelaufeneMandate( xa : Transactor.Aux[IO, Unit]) = {
 
-			val lm = Mandate.selectAktAllNotTerminated().to[List].transact(xa).unsafeRunSync
-			val lp = Payment.selectLastPaymentAlle().to[List].transact(xa).unsafeRunSync
+			val lm = Mandate.selectAktAllNotTerminated().transact(xa).unsafeRunSync
+			val lp = Payment.selectLastPaymentAlle().transact(xa).unsafeRunSync
 		
 			val mm =  lm.foldRight( Map.empty[Long,( Mandate, Option[Payment])])((m,z) => z.updated(m.MANDATE_ID, (m,None)))
 			val mmp = lp.foldRight( mm)((p,m) =>  m.get(p.MANDATE_ID)  match { 

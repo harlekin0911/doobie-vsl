@@ -55,17 +55,17 @@ class TestSelect extends AnyFunSuite {
   
   test ( "FLTest-Select-Mandate") {
   
-			Mandate.selectAktById(313038).to[List].transact(xa).unsafeRunSync.foreach(println)
-			Mandate.selectAllById(313038).to[List].transact(xa).unsafeRunSync.foreach(println)
-			println( "Alle Mandate: " +Mandate.selectAktAll().to[List].transact(xa).unsafeRunSync.length)
+			println( Mandate.selectAktById(313038).transact(xa).unsafeRunSync)
+			Mandate.selectAllById(313038).transact(xa).unsafeRunSync.foreach(println)
+			println( "Alle Mandate: " + Mandate.selectAktAll().transact(xa).unsafeRunSync.length)
 			
-			Payment.selectById(2229).to[List].transact(xa).unsafeRunSync.foreach(println)
+			println( Payment.selectById(2229).transact(xa).unsafeRunSync)
 			BusinessObjectRef.selectById(2229, 1).to[List].transact(xa).unsafeRunSync.foreach(println)
 			BusinessObjectRef.selectByMandateId(313038).to[List].transact(xa).unsafeRunSync.foreach(println)
 			
-			val lm = Mandate.selectAktAllNotTerminated().to[List].transact(xa).unsafeRunSync
+			val lm = Mandate.selectAktAllNotTerminated().transact(xa).unsafeRunSync
 			println( "Anzahl Mandate nicht terminiert: " + lm.length)
-			val lp = Payment.selectLastPaymentAlle().to[List].transact(xa).unsafeRunSync
+			val lp = Payment.selectLastPaymentAlle().transact(xa).unsafeRunSync
 			println( "Anzahl Payments: " + lp.length)
 		
 
