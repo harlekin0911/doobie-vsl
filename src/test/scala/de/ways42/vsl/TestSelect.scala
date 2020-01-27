@@ -13,16 +13,23 @@ import fs2.Stream
 
 import tables.mandate._
 import tables.vsmadm._
+import java.time.LocalDate
+import java.time.LocalDate
+import java.sql.Date
 
-object Select {
-  
-	def main( args : Array[String]) : Unit = {
+import org.scalatest.funsuite.AnyFunSuite //TestSuite
 
-			val xa : Transactor.Aux[IO, Unit] = connection()
+class TestSelect extends AnyFunSuite {
 
-			tvsl001( xa)
+	val xa : Transactor.Aux[IO, Unit] = connection()
+
+	test( "FLTEST-Select") {
+
+			tvsl001(   xa)
 			tvsl001_2( xa)
-					
+	}
+	
+	test( "FLTest-Select2-VSL") {
 			Tvsl001.selectAll().stream.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).foreach(println)
 			Tvsl001.selectAktById(   "0003065903411").to[List].transact(xa).unsafeRunSync.foreach(println)
 			println ( "Anzahl aktiver Vertraege: " + Tvsl001.selectAktAktive().to[List].transact(xa).unsafeRunSync.length)
@@ -30,15 +37,24 @@ object Select {
 			
 			Tvsl002.selectVtgnr( "0003065903411").to[List].transact(xa).unsafeRunSync.foreach(println)
 
+  }
+
+  test ( "FLTest-Select-Rolle") {
 			Trol001.selectById( "0050034703671", "", 89, 1).to[List].transact(xa).unsafeRunSync.foreach(println)
-			
+  }
+  
+  test ( "FLTest-Select-ZIK") {
+  
 			Tzik012.selectAktById( "002110500524101", "1", 0).to[List].transact(xa).unsafeRunSync.foreach(println)
 			Tzik012.selectAllById( "002110500524101", "1", 0).to[List].transact(xa).unsafeRunSync.foreach(println)
 			val z12 = Tzik012.selectNktoAktByNkartandUktoart( NonEmptyList("1", List("C")), NonEmptyList( 0, Nil)).to[List].transact(xa).unsafeRunSync
-			z12.foreach(println)
+			//z12.foreach(println)
 			println( "Anzahl Nebenkonten " + z12.length)
 			println( "Nicht im LEV " + z12.filter ( _.Z_ZAHLART_CD != 1).length)
-
+  }
+  
+  test ( "FLTest-Select-Mandate") {
+  
 			Mandate.selectAktById(313038).to[List].transact(xa).unsafeRunSync.foreach(println)
 			Mandate.selectAllById(313038).to[List].transact(xa).unsafeRunSync.foreach(println)
 			println( "Alle Mandate: " +Mandate.selectAktAll().to[List].transact(xa).unsafeRunSync.length)
@@ -47,12 +63,22 @@ object Select {
 			BusinessObjectRef.selectById(2229, 1).to[List].transact(xa).unsafeRunSync.foreach(println)
 			BusinessObjectRef.selectByMandateId(313038).to[List].transact(xa).unsafeRunSync.foreach(println)
 			
-			Mandate.selectAktAll().to[List].flatMap( 
-			  _.traverse( m => Payment.selectAllByMandateId( m.MANDATE_ID).to[List].map(x => (m, x match {
-			    case Nil => None
-			    case _   => Some( x.max(Payment.orderByScheduledDueDate))}
-			  )))).
-			  transact(xa).unsafeRunSync.foreach(println)
+			val lm = Mandate.selectAktAllNotTerminated().to[List].transact(xa).unsafeRunSync
+			println( "Anzahl Mandate nicht terminiert: " + lm.length)
+			val lp = Payment.selectLastPaymentAlle().to[List].transact(xa).unsafeRunSync
+			println( "Anzahl Payments: " + lp.length)
+		
+
+			val mm =  lm.foldRight( Map.empty[Long,( Mandate, Option[Payment])])((m,z) => z.updated(m.MANDATE_ID, (m,None)))
+			val mmp = lp.foldRight( mm)((p,m) =>  m.get(p.MANDATE_ID)  match { 
+			  case Some(k)   => m.updated(p.MANDATE_ID, (k._1, Some(p)))
+			  case _         => m
+			})
+			
+			
+			println ( "Anzahl ohne Payment: " + mmp.filter( _._2._2.isEmpty).size) 
+			println ( "Anzahl abgelaufene mit aktiven Status: " + mmp.filter( _._2._2.isEmpty).size) 
+			
 	}
 
 	

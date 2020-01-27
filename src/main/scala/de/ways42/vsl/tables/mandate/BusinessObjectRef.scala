@@ -48,21 +48,45 @@ object BusinessObjectRef {
 	)
     
   lazy val attrStr = attributes.mkString(",")
+  
+  lazy val maxHistNr = Fragment.const( "histnr = (select max(histnr) from mandate.mm_business_object_reference bor2 where bor1.business_obj_reference_id = bor2.business_obj_reference_id)")
+  
+  def maxInd( field:String) = Fragment.const( "ind = (select max(ind) from mandate.mm_business_object_reference bor2 where bor1." + field + " = bor2." + field + ")\"")
+                                        
 	  
   def selectById( bor_id : Long, hnr : Long) : Query0[BusinessObjectRef] = {
-    val s = Fragment.const( "select ")
-    val a = Fragment.const( attrStr)
-    val f = Fragment.const( " from Mandate.MM_Business_Object_Reference")
-    val w = fr"where BUSINESS_OBJ_REFERENCE_ID = $bor_id and HISTNR = $hnr"
-    (s ++ a ++ f ++ w).query[BusinessObjectRef]
+    (Fragment.const( "select " + attrStr + " from Mandate.MM_Business_Object_Reference ") ++
+     fr"where business_obj_reference_id = $bor_id and histnr = $hnr"
+    ).query[BusinessObjectRef]
+  }
+  
+  def selectAktById( bor_id : Long) : Query0[BusinessObjectRef] = {
+    (Fragment.const( "select " + attrStr + " from Mandate.mm_business_object_reference bor1 ") ++
+     Fragments.whereAnd( fr"business_obj_reference_id = $bor_id", maxHistNr)
+    ).query[BusinessObjectRef]
   }
 
   def selectByMandateId( mandate_id : Long) : Query0[BusinessObjectRef] = {
-    val s = Fragment.const( "select ")
-    val a = Fragment.const( attrStr)
-    val f = Fragment.const( " from Mandate.MM_Business_Object_Reference")
-    val w = fr"where MANDATE_ID = $mandate_id"
-    (s ++ a ++ f ++ w).query[BusinessObjectRef]
+    (Fragment.const( "select "+ attrStr + " from mandate.mm_business_object_reference ") ++
+     fr"where mandate_id = $mandate_id order by ind desc"
+    ).query[BusinessObjectRef]
+  }
+
+  def selectAktByMandateId( mandate_id : Long) : Query0[BusinessObjectRef] = {
+    (Fragment.const(       "select "+ attrStr + " from mandate.mm_business_object_reference bor1 ") ++
+     Fragments.whereAnd( fr"mandate_id = $mandate_id", maxInd( "mandate_id"))
+    ).query[BusinessObjectRef]
+  }
+  def selectByBusinessObjExtRef( businessObjExtRef : String) : Query0[BusinessObjectRef] = {
+    (Fragment.const( "select "+ attrStr + " from Mandate.MM_Business_Object_Reference ") ++
+     fr"where BUSINESS_OBJ_EXT_REF = $businessObjExtRef  order by ind desc"
+    ).query[BusinessObjectRef]
+  }
+
+  def selectAktByBusinessObjExtRef( businessObjExtRef : String) : Query0[BusinessObjectRef] = {
+    (Fragment.const( "select "+ attrStr + " from Mandate.MM_Business_Object_Reference bor1 ") ++
+     Fragments.whereAnd( fr"BUSINESS_OBJ_EXT_REF = $businessObjExtRef", maxInd( "business_obj_ext_ref"))
+    ).query[BusinessObjectRef]
   }
 
 }
