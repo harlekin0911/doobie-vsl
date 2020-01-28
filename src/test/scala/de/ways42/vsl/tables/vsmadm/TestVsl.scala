@@ -1,4 +1,4 @@
-package de.ways42.vsl
+package de.ways42.vsl.tables.vsmadm
 
 //import de.ways42.vsl.tables.Tables.TVSL001
 
@@ -11,25 +11,23 @@ import cats.effect._
 import cats.implicits._
 import fs2.Stream
 
-import tables.mandate._
-import tables.vsmadm._
 import java.time.LocalDate
 import java.time.LocalDate
 import java.sql.Date
 
 import org.scalatest.funsuite.AnyFunSuite //TestSuite
+import de.ways42.vsl.Connect
 
-class TestSelect extends AnyFunSuite {
+class TestVsl extends AnyFunSuite {
 
-	val xa : Transactor.Aux[IO, Unit] = connection()
+	val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
 
-	test( "FLTEST-Select") {
-
+	test( "Vsl") {
 			tvsl001(   xa)
 			tvsl001_2( xa)
 	}
 	
-	test( "FLTest-Select2-VSL") {
+	test( "Vsl-Vtgnr") {
 			Tvsl001.selectAll().stream.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).foreach(println)
 			Tvsl001.selectAktById(   "0003065903411").to[List].transact(xa).unsafeRunSync.foreach(println)
 			println ( "Anzahl aktiver Vertraege: " + Tvsl001.selectAktAktive().to[List].transact(xa).unsafeRunSync.length)
@@ -39,29 +37,11 @@ class TestSelect extends AnyFunSuite {
 
   }
 
-  test ( "FLTest-Select-Rolle") {
+  test ( "Vsl-Rolle") {
 			Trol001.selectById( "0050034703671", "", 89, 1).to[List].transact(xa).unsafeRunSync.foreach(println)
   }
   
   	
-	def connection() : Transactor.Aux[IO, Unit] = {
-
-			// We need a ContextShift[IO] before we can construct a Transactor[IO]. The passed ExecutionContext
-			// is where nonblocking operations will be executed. For testing here we're using a synchronous EC.
-			import scala.concurrent.ExecutionContext
-
-			implicit val cs = IO.contextShift( ExecutionContext.global)
-
-			// A transactor that gets connections from java.sql.DriverManager and executes blocking operations
-			// on an our synchronous EC. See the chapter on connection handling for more info.
-			Transactor.fromDriverManager[IO](
-					"com.ibm.db2.jcc.DB2Driver", // driver classname
-					"jdbc:db2://172.17.4.39:50001/vslt01", // connect URL (driver-specific)
-					"vsmadm",              // user
-					"together"                       // password
-					//Blocker.liftExecutionContext( ExecutionContext.global) // just for testing
-					)
-	}
 
 	def tvsl001(xa : Transactor.Aux[IO, Unit]) = {
 			//val q = Query.( "select * from VSMADM.TVSL001")

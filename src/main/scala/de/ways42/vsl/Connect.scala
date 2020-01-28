@@ -26,7 +26,9 @@ object Connect {
 				"com.ibm.db2.jcc.DB2Driver",           // driver classname
 				"jdbc:db2://172.17.4.39:50001/vslt01", // connect URL (driver-specific)
 				user, 
-				passwd)
+				passwd
+		    //Blocker.liftExecutionContext( ExecutionContext.global) // just for testing		
+				)
 				
 		xa
 	}
