@@ -35,6 +35,7 @@ object Connect {
 	
 	def usingOwnMonad() = {
 			import monix.eval.Task
+			 import monix.execution.Scheduler.Implicits.global 
 
 			val mxa = Transactor.fromDriverManager[Task]( 
 					"com.ibm.db2.jcc.DB2Driver", // driver classname
@@ -43,6 +44,6 @@ object Connect {
 					"together"                       // password
 					)
 
-			sql"select 42".query[Int].unique.transact(mxa)
+			sql"select 42".query[Int].unique.transact(mxa).executeAsync.runAsync( x => assert( x.contains( 42)))
 	}
 }
