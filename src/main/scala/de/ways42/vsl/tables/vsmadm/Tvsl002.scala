@@ -95,17 +95,13 @@ object Tvsl002 {
       )
 
   
-    lazy val attrStr = attributes.mkString(",")
+  lazy val attrStr = attributes.mkString(",")
 
    
-   def selectVtgnr( vtgnr : String) : Query0[Tvsl002] = {
- 
-        val s = Fragment.const( "select ")
-    val a = Fragment.const( attrStr)
-    val f = Fragment.const( " from VSMADM.TVSL002")
-    val w = fr"where  LV_VTG_NR = $vtgnr"
-    (s ++ a ++ f ++ w).query[Tvsl002]
-
-   }
+  def selectVtgnr( vtgnr : String) : ConnectionIO[List[Tvsl002]] = {
+    ( Fragment.const( "select " + attrStr + " from VSMADM.TVSL002") ++
+      fr"where  LV_VTG_NR = $vtgnr order by lv_vers_nr asc, va_dtm desc, df_zt desc"
+    ).query[Tvsl002].to[List]
+  }
 }
 

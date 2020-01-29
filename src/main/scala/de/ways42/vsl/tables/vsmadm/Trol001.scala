@@ -46,12 +46,20 @@ object Trol001 {
     
   lazy val attrStr = attributes.mkString(",")
 	  
-  def selectById( top : String, komp : String, roll : Int, rang : Int) : Query0[Trol001] = {
-    val s = Fragment.const( "select ")
-    val a = Fragment.const( attrStr)
-    val f = Fragment.const( " from vsmadm.trol001")
-    val w = fr"where isttop_nrx = $top and istkomp_nr = $komp and rollen_cd = $roll and rang_nr = $rang"
-    (s ++ a ++ f ++ w).query[Trol001]
+  def selectById( top : String, komp : String, roll : Int, rang : Int) : ConnectionIO[List[Trol001]] = {
+    ( Fragment.const( "select "+ attrStr + " from vsmadm.trol001") ++
+      fr"where isttop_nrx = $top and istkomp_nr = $komp and rollen_cd = $roll and rang_nr = $rang"
+    ).query[Trol001].to[List]
+  }
+  def selectAktById( top : String, komp : String, roll : Int, rang : Int) : ConnectionIO[Option[Trol001]] = {
+    ( Fragment.const( "select "+ attrStr + " from vsmadm.trol001 r1") ++
+      Fragments.whereAnd(           
+          fr"r1.isttop_nrx = $top and r1.istkomp_nr = $komp and r1.rollen_cd = $roll and r1.rang_nr = $rang",
+          Fragment.const( "va_dtm = (select max(va_dtm) from vsmadm.trol001 r2 " + 
+                                      "where r1.isttop_nrx = r2.isttop_nrx and r1.istkomp_nr = r2.istkomp_nr and r1.rollen_cd = r2.rollen_cd and r1.rang_nr = r2.rang_nr)"),
+          Fragment.const( "df_zt  = (select max(df_zt)  from vsmadm.trol001 r3 " + 
+                                      "where r1.isttop_nrx = r3.isttop_nrx and r1.istkomp_nr = r3.istkomp_nr and r1.rollen_cd = r3.rollen_cd and r1.rang_nr = r3.rang_nr and r1.va_dtm = r3.va_dtm)")
+    )).query[Trol001].option
   }
 
-  }
+}

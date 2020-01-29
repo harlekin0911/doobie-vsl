@@ -22,39 +22,41 @@ class TestVsl extends AnyFunSuite {
 
 	val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
 
-	test( "Vsl") {
-			tvsl001(   xa)
-			tvsl001_2( xa)
+	test( "Vsl-Select-Basic-1") {
+		val q = Query( "select * from VSMADM.TVSL001")
+		assert( sql"select * from VSMADM.TVSL001".query[(String,String, String)].stream.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).length == 5)
 	}
 	
-	test( "Vsl-Vtgnr") {
-			Tvsl001.selectAll().stream.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).foreach(println)
-			Tvsl001.selectAktById(   "0003065903411").to[List].transact(xa).unsafeRunSync.foreach(println)
-			println ( "Anzahl aktiver Vertraege: " + Tvsl001.selectAktAktive().to[List].transact(xa).unsafeRunSync.length)
-			println ( "Anzahl bpfl.   Vertraege: " + Tvsl001.selectAktBeitragspflichtig().to[List].transact(xa).unsafeRunSync.length)
+  test( "Vsl-Select-Basic-2") {
+
+	  val proc = HC.stream[(String, String, String, String, String, String)](
+			"select * from VSMADM.TVSL001",    // statement
+			().pure[PreparedStatementIO],      // prep (none)
+			512                                // chunk size
+			)
 			
-			Tvsl002.selectVtgnr( "0003065903411").to[List].transact(xa).unsafeRunSync.foreach(println)
+		assert( proc.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).length == 5)
 
   }
-
-  test ( "Vsl-Rolle") {
-			Trol001.selectById( "0050034703671", "", 89, 1).to[List].transact(xa).unsafeRunSync.foreach(println)
-  }
-  
-  	
-
-	def tvsl001(xa : Transactor.Aux[IO, Unit]) = {
-			//val q = Query.( "select * from VSMADM.TVSL001")
-			sql"select * from VSMADM.TVSL001".query[(String,String, String)].stream.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).foreach(println)
+	
+	test( "Vsl-Vtgnr") {
+			assert ( Tvsl001.selectAllMaxCount( 5).transact(xa).unsafeRunSync.take(5).length == 5)
+			assert ( Tvsl001.selectAktById(   "0003065903411").transact(xa).unsafeRunSync.get.LV_VTG_NR.trim() == "0003065903411")
+			val c : Long = Tvsl001.selectAktAllAktive().transact(xa).unsafeRunSync.length
+			assert ( c == 248017)
+			val d : Long = Tvsl001.selectAktAllBeitragspflichtig().transact(xa).unsafeRunSync.length
+			assert (  d == 173677)
 	}
+	test( "VSL-tvsl002") {
+			assert ( Tvsl002.selectVtgnr( "0003065903411").transact(xa).unsafeRunSync.length == 6)
+  }
 
-	def tvsl001_2( xa : Transactor.Aux[IO, Unit]) = {
-			val proc = HC.stream[(String, String, String, String, String, String)](
-					"select * from VSMADM.TVSL001",    // statement
-					().pure[PreparedStatementIO],      // prep (none)
-					512                                // chunk size
-					)
-					proc.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).foreach(println)
-	}	
+  test ( "Vsl-Rolle-selectById") {
+			assert( Trol001.selectById( "0050034703671", "", 89, 1).transact(xa).unsafeRunSync.length == 1 )
+  }
+	
+  test ( "Vsl-Rolle-selectAktById") {
+			assert( Trol001.selectAktById( "0050034703671", "", 89, 1).transact(xa).unsafeRunSync.get.ISTTOP_NRX.trim == "0050034703671" )
+  }  
 }
 

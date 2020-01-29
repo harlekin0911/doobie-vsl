@@ -21,6 +21,6 @@ class TestMandateService  extends AnyFunSuite  { // with GeneratorDrivenProperty
  	}
     
   test( "MS-NichtTerminierteAbgelaufeneMandateMitLetztemPayment") {
-	  assert(  ms.getNichtTerminierteAbgelaufeneMandateMitLetztemPayment().size == 12838)
+	  assert(  ms.getNichtTerminierteAbgelaufeneMandateMitLetztemPayment().size >= 12830)
   }
 }
