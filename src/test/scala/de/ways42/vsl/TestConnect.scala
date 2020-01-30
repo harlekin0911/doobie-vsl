@@ -72,6 +72,9 @@ class TestConnect  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks 
       
     }
   test( "Test-Connect-Own-Monad") {
-    println( Connect.usingOwnMonad())
+    val mxa = Connect.usingOwnMonad();
+    		
+    import monix.execution.Scheduler.Implicits.global
+    sql"select 42".query[Int].unique.transact(mxa).executeAsync.runAsync( x => assert( x.contains( 42)))
 	}
 }

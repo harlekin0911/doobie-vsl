@@ -6,6 +6,7 @@ import doobie.implicits._
 import cats._
 import cats.effect._
 import cats.implicits._
+import monix.eval.Task
 
 
 object Connect {
@@ -32,18 +33,16 @@ object Connect {
 				
 		xa
 	}
-	
-	def usingOwnMonad() = {
-			import monix.eval.Task
-			 import monix.execution.Scheduler.Implicits.global 
 
-			val mxa = Transactor.fromDriverManager[Task]( 
+
+	def usingOwnMonad() : doobie.util.transactor.Transactor.Aux[Task, Unit] = {
+			import monix.execution.Scheduler.Implicits.global 
+
+			Transactor.fromDriverManager[Task]( 
 					"com.ibm.db2.jcc.DB2Driver", // driver classname
 					"jdbc:db2://172.17.4.39:50001/vslt01", // connect URL (driver-specific)
 					"vsmadm",              // user
 					"together"                       // password
 					)
-
-			sql"select 42".query[Int].unique.transact(mxa).executeAsync.runAsync( x => assert( x.contains( 42)))
 	}
 }
