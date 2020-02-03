@@ -17,7 +17,7 @@ import java.time.LocalDate
 import java.sql.Date
 
 import org.scalatest.funsuite.AnyFunSuite //TestSuite
-import de.ways42.vsl.Connect
+import de.ways42.vsl.connection.Connect
 
 class TestMandate extends AnyFunSuite {
 

@@ -9,7 +9,7 @@ import doobie.implicits._
 import cats._
 import cats.effect._
 import cats.implicits._
-import de.ways42.vsl.Connect
+import de.ways42.vsl.connection.Connect
 
 
 class TestMandateService  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {

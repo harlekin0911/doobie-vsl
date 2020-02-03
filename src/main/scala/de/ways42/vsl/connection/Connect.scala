@@ -1,4 +1,4 @@
-package de.ways42.vsl
+package de.ways42.vsl.connection
 
 import doobie._
 import doobie.implicits._
