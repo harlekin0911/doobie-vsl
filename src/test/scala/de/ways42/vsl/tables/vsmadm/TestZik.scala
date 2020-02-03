@@ -32,8 +32,11 @@ class TestZik extends AnyFunSuite {
 
   test ( "Test-ZIK-selectNktoAktByNkartandUktoart") {
 	  val z12 = Tzik012.selectNktoAktByNkartandUktoart( NonEmptyList("1", List("C")), NonEmptyList( 0, Nil)).to[List].transact(xa).unsafeRunSync
-		assert( z12.length == 441340)
-		assert(  z12.filter ( _.Z_ZAHLART_CD != 1).length == 158386)			
+	  val l = z12.length
+		assert( l == 441340)
+	  
+	  val ll = z12.filter ( _.Z_ZAHLART_CD != 1).length
+		assert(  ll == 158386)			
   }	
 }
 

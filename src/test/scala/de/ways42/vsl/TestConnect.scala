@@ -9,6 +9,10 @@ import doobie.implicits._
 import cats._
 import cats.effect._
 import cats.implicits._
+import java.util.concurrent.TimeUnit
+import monix.execution.Callback
+
+
 
 
 class TestConnect  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
@@ -71,10 +75,4 @@ class TestConnect  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks 
 			io.unsafeRunSync // sneaky; program1 never looks at the connection
       
     }
-  test( "Test-Connect-Own-Monad") {
-    val mxa = Connect.usingOwnMonad();
-    		
-    import monix.execution.Scheduler.Implicits.global
-    sql"select 42".query[Int].unique.transact(mxa).executeAsync.runAsync( x => assert( x.contains( 42)))
-	}
 }
