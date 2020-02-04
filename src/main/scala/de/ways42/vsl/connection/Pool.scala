@@ -29,7 +29,7 @@ import doobie.hikari._
 					"vsmadm",              // user
 					"together",                       // password
               ce,                                     // await connection here
-              ce                                      // execute JDBC operations here
+              be                                      // execute JDBC operations here
             )
     } yield xa
 

@@ -66,7 +66,7 @@ class TestConnect  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks 
 
 			implicit val cs = IO.contextShift(ExecutionContext.global)
 
-			val interpreter = KleisliInterpreter[IO](ExecutionContext.global).ConnectionInterpreter
+			val interpreter = KleisliInterpreter[IO](Blocker.liftExecutionContext(ExecutionContext.global)).ConnectionInterpreter
 
 			val kleisli = 42.pure[ConnectionIO].foldMap(interpreter)
 

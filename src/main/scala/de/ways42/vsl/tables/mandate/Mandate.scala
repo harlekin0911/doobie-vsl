@@ -10,6 +10,8 @@ import cats.implicits._
 import fs2.Stream
 import java.sql.Timestamp
 import java.sql.Date
+import doobie.implicits.javasql._
+import doobie.implicits.javatime._
 
 
   

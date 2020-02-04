@@ -28,7 +28,7 @@ class TestMandate extends AnyFunSuite {
 			assert( Mandate.selectAktById(313038).transact(xa).unsafeRunSync.MANDATE_ID == 313038)
 	}
   test ( "Mandate-selectAllById") {
-			assert( Mandate.selectAllById(313038).transact(xa).unsafeRunSync.size == 1)
+			assert( Mandate.selectAllById(313038).transact(xa).unsafeRunSync.size == 2)
   }
   
   test ( "Mandate-selectAktAll") {

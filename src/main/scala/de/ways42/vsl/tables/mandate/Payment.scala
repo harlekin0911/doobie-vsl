@@ -10,7 +10,8 @@ import cats.implicits._
 import fs2.Stream
 import java.sql.Timestamp
 import java.sql.Date
-
+import doobie.implicits.javasql._
+import doobie.implicits.javatime._
 
 case class Payment (
 		MANDATOR                  : Long,
@@ -79,14 +80,20 @@ object Payment {
     ).query[Payment].to[List]
   }
   
+  //import doobie.util.param.Param
+  //import doobie.util.param.Param.Elem
   def selectLastPaymentByMandate(mandate_id:Long) : ConnectionIO[Option[Payment]]= {
+    //val p : Param[Long] = Param[Long]( mandate_id)
+    //val e : Elem = Elem(mandate_id)
+    //import doobie.util.pos.Pos
     ( Fragment.const( "select " + attrStr +  " from MANDATE.MM_PAYMENT p1") ++
-      Fragment(       "where mandate_id = ?", mandate_id) ++
+//      Fragment(       "where mandate_id = ?", p::Nil) ++
+            fr"where mandate_id = $mandate_id" ++
       Fragment.const(       "SCHEDULED_DUE_DATE = ( select max(SCHEDULED_DUE_DATE) from MANDATE.MM_PAYMENT p2 where p1.mandate_id = p2.mandate_id)")
     ).query[Payment].option
   }
 
-  def selectLastPaymentAlle() = {
+  def selectLastPaymentAlle() : ConnectionIO[List[Payment]] = {
     (Fragment.const( "select " + attrStr +  " from MANDATE.MM_PAYMENT p1") ++
      Fragment.const( "where SCHEDULED_DUE_DATE = ( select max(SCHEDULED_DUE_DATE) from MANDATE.MM_PAYMENT p2 where p1.mandate_id = p2.mandate_id)")
     ).query[Payment].to[List]

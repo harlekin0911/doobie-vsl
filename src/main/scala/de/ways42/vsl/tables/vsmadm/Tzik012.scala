@@ -58,14 +58,13 @@ object Tzik012 {
 
 	def selectAllById( nkto : String, nkart : String, uart : Int) : Query0[Tzik012] = {
 	  
-	  
 			val s = Fragment.const( "select")
 			val a = Fragment.const(  attrStr)
 			val f = Fragment.const( "from vsmadm.tzik012")
-	    val w = Fragment(       "where z_nkto_nr = ? and z_nktoart_cd = ? and z_uktoart_cd = ?", ( nkto, nkart, uart))
+	    //val w = Fragment(       "where z_nkto_nr = ? and z_nktoart_cd = ? and z_uktoart_cd = ?", nkto::nkart::uart::HNil)
 	    val o = Fragment.const( "order by va_dtm desc, df_zt desc, mod_cnt desc")
 	    //val w = Fragment.apply[Tuple3[String, String, Int]]( "where z_nkto_nr = ? and z_nktoart_cd = ? and z_uktoart_cd = ?", ( nkto, nkart, uart))
-			//val w = fr"where z_nkto_nr = $nkto and z_nktoart_cd = $nkart and z_uktoart_cd = $uart"
+		  val w = fr"where z_nkto_nr = $nkto and z_nktoart_cd = $nkart and z_uktoart_cd = $uart"
 					(s ++ a ++ f ++ w ++ o).query[Tzik012]
 	}
 

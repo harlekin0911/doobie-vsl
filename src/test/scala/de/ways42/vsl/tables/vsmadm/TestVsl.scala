@@ -43,16 +43,16 @@ class TestVsl extends AnyFunSuite {
 			assert ( Tvsl001.selectAllMaxCount( 5).transact(xa).unsafeRunSync.take(5).length == 5)
 			assert ( Tvsl001.selectAktById(   "0003065903411").transact(xa).unsafeRunSync.get.LV_VTG_NR.trim() == "0003065903411")
 			val c : Long = Tvsl001.selectAktAllAktive().transact(xa).unsafeRunSync.length
-			assert ( c == 248017)
+			assert ( c == 246545)
 			val d : Long = Tvsl001.selectAktAllBeitragspflichtig().transact(xa).unsafeRunSync.length
-			assert (  d == 173677)
+			assert (  d == 172486)
 	}
 	test( "VSL-tvsl002") {
 			assert ( Tvsl002.selectVtgnr( "0003065903411").transact(xa).unsafeRunSync.length == 6)
   }
 
   test ( "Vsl-Rolle-selectById") {
-			assert( Trol001.selectById( "0050034703671", "", 89, 1).transact(xa).unsafeRunSync.length == 1 )
+			assert( Trol001.selectById( "0050034703671", "", 89, 1).transact(xa).unsafeRunSync.length == 2 )
   }
 	
   test ( "Vsl-Rolle-selectAktById") {
