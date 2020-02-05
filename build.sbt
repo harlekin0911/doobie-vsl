@@ -1,4 +1,5 @@
 //scalaVersion := "2.12.7" // Scala 2.11/12
+//scalaVersion := "2.13.1" 
 scalaVersion := "2.12.10" 
 
 scalacOptions += "-Ypartial-unification" // 2.11.9+
