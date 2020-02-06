@@ -42,6 +42,10 @@ import doobie.hikari._
         n <- sql"select 42 from sysibm.sysdummy1".query[Int].unique.transact(xa)
         _ <- IO(println(n))
       } yield ExitCode.Success
+      
+      val a = sql"select distinct(lv_vtg_nr) from vsmadm.tvsl001 where lv_vtg_nr = 0003065903411".query[String].unique.transact(xa)
+      val b = a.flatMap( n => IO(println(n)).map( _=> ExitCode.Success))
+      b
 
     }
   }

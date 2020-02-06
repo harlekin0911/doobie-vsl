@@ -71,11 +71,13 @@ class TestConnectAsync  extends AnyFunSuite  { // with GeneratorDrivenPropertyCh
   
   import monix.execution.Callback
   
-  val cb = new Callback[Throwable, List[String]] {
+  class MyCB extends Callback[Throwable, List[String]]  {
     var b : List[List[String]] = Nil
     def onSuccess(value: List[String]): Unit = { b = value::b; println(value)}
     def onError(ex: Throwable): Unit = System.err.println(ex)
   }
+  
+  val cb : MyCB = new MyCB()
   
   test ( "Glaub-ichs") {
     import monix.execution.Scheduler.Implicits.global
