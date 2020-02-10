@@ -23,28 +23,28 @@ object HCPool2 {
   lazy val dataSource: DataSource = {
     val ds = new HikariDataSource
     val dbConf = SiteConfig.dbConf
-    val urlBuilder = new StringBuilder("jdbc:postgresql://")
+    val urlBuilder = new StringBuilder("jdbc:db2://")
     urlBuilder.append(dbConf.host)
       .append(":")
       .append(dbConf.port).append("/")
       .append(dbConf.name)
       .append(dbConf.urlOptions)
-      .append("&prepStmtCacheSize=250")
-      .append("&prepStmtCacheSqlLimit=2048")
+//      .append("&prepStmtCacheSize=250")
+//      .append("&prepStmtCacheSqlLimit=2048")
 
     ds.setJdbcUrl(            urlBuilder.toString)
     ds.setUsername(           dbConf.username)
     ds.setPassword(           dbConf.password)
-    ds.setConnectionTimeout(  dbConf.connectionTimeout)
-    ds.setIdleTimeout(        dbConf.idleTimeout)
+//    ds.setConnectionTimeout(  dbConf.connectionTimeout)
+//    ds.setIdleTimeout(        dbConf.idleTimeout)
     ds.setMaximumPoolSize(    dbConf.connectionCount)
     ds.setMaxLifetime(        dbConf.maxLifetime)
     ds.setPoolName(           dbConf.poolName)
     ds.setRegisterMbeans(     true)
-    ds.setValidationTimeout(  dbConf.validationTimeout)
+//    ds.setValidationTimeout(  dbConf.validationTimeout)
 //    ds.setMetricRegistry(     Metrics.metricRegistry)
 //    ds.setHealthCheckRegistry(Metrics.healthCheckRegistry)
-    ds.addHealthCheckProperty("expected99thPercentileMs", "100")
+//    ds.addHealthCheckProperty("expected99thPercentileMs", "100")
     sys.addShutdownHook(     ds.close())
     ds
   }
