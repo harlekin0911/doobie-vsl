@@ -21,59 +21,97 @@ class TestHCPool2  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks 
   
   val xap = HCPool2.xa
     
+  import monix.eval.Task
+	import monix.execution.Scheduler.Implicits.global
+	import scala.concurrent.duration.Duration
 
-	test( "Test-HCPool2-1") {
-
-    import monix.eval.Task
-	  import monix.execution.Scheduler.Implicits.global
-	  import scala.concurrent.duration.Duration
-
-	  val t = xap.use{ xa =>
+	val t = (s:String ) => xap.use { xa =>
 	    val q = sql"select 42 from sysibm.sysdummy1".query[Int].unique.transact( xa)
 	    //val q2 = q.runAsync( x => { assert( x.contains( 42)); println( "executed-1")})//.map( _=> ExitCode.Success))
 	    //val q3 = q.runSyncUnsafe(scala.concurrent.duration.Duration(100, TimeUnit.SECONDS))
-	    println( "executed-2")
-	    q.flatMap( n => {println(n);Task(n)})//.map( _=> ExitCode.Success))
-	  }
-//	    t.runSyncUnsafe(Duration(5000, TimeUnit.SECONDS))         // query
-//	  t.foreach(println(_))                                       // keine query
-	   
+	    println( "inner-executed-t")
+	    q.flatMap( n => {println(s + " flatmap: " + n);Task(n)})//.map( _=> ExitCode.Success))
+	  } 
+
+  // query
+    test( "Test-HCPool2-1") {
+    	t("Test-HCPool2-1").runSyncUnsafe(Duration(5000, TimeUnit.SECONDS))
+    	println( "finished: 1" )
+    }  
     
-//    t.runAsync( x => { assert( x.contains( 41)); println( "executed-1: " + x)}) // keine query
-	  
-//    val f = t.runToFuture                                       // query
-//	  Await.result( f, Duration(5000, TimeUnit.SECONDS))
-	  
-//    t.runToFuture.foreach( println(_))                         // keine query
-     
-//    val cancelable = t.runAsync { result =>                    // keine query
-//      result match {
-//        case Right(value) =>
-//          println(value)
-//        case Left(ex) =>
-//          System.out.println(s"ERROR: ${ex.getMessage}")
-//      }
-//    }
-	  
-//	  t.runSyncStep match {                                   // keine query
-//      case Left(future) =>
-//      // No luck, this Task really wants async execution
-//        future.foreach(r => println(s"Async: $r"))
-//      case Right(result) =>
-//        println(s"Got lucky: $result")
-//      }
-	    
-//    import scala.concurrent.duration._                           // query
-//	    Await.result( t.executeAsync.runToFuture, 5000.seconds)
-	    
-//	    import monix.execution.Scheduler                            // query mit await nicht mit foreach
-//	    import scala.concurrent.duration._
-//	    val s = Scheduler.io( "odel")
-//	    Await.result(t.executeOn(s).runToFuture, 5.days)
-    import scala.util.Success
-    t.runToFuture.onComplete({case Success(n) => println(n)})
+    // keine query
+    test( "Test-HCPool2-1-1") {
+    	t("Test-HCPool2-1-1").foreach{x =>println(x);println( "executed-test-1-1: " + x)}                                     
+    	println( "finished: 1-1" )
+    }
+    // keine query
+    test( "Test-HCPool2-2") {
+    	t("Test-HCPool2-2").runAsync( x => { assert( x.contains( 42)); println( "executed-test-2: " + x)}) 
+    	println( "finished: 2" )
+    }
+    
+    // query
+    test( "Test-HCPool2-3") {
+    	val f = t("Test-HCPool2-3").runToFuture                                       
+    	Await.result( f, Duration(5000, TimeUnit.SECONDS))
+    	println( "finished: 3" )
+    }
+    // keine query
+    test( "Test-HCPool2-4") {
+    	t("Test-HCPool2-4").runToFuture.foreach{ x => println(x);println( "executed-test-4: " + x)}                         
+    	println( "finished: 4" )
+    }
+    
+    // keine query
+    test( "Test-HCPool2-5") {
+    	val cancelable = t("Test-HCPool2-5").runAsync { result =>                   
+    	  result match {
+    	    case Right(value) =>
+    	      println(value)
+    	      println( "executed-test-5: " + value)
+    	    case Left(ex) =>
+    	      System.out.println(s"ERROR: ${ex.getMessage}")
+    	      println( "executed-test-5: " + ex)
+    	  }
+    	}
+    	println( "finished: 5" )
+
+    }
+    
+    // keine query
+    test( "Test-HCPool2-6") {
+	    t("Test-HCPool2-6").runSyncStep match {                                   
+        case Left(future) =>
+          // No luck, this Task really wants async execution
+          future.foreach(r => println(s"Async: $r"))
+        case Right(result) =>
+          println(s"Got lucky: $result")
+      }
+    	println( "finished: 6" )	    
+    }
+    // query
+    test( "Test-HCPool2-7") {
+      import scala.concurrent.duration._                           
+	    Await.result( t("Test-HCPool2-7").executeAsync.runToFuture, 5000.seconds)
+    	println( "finished: 7" )	    
+    }
+    // query mit await nicht mit foreach
+    test( "Test-HCPool2-8") {
+	    import monix.execution.Scheduler                            
+	    import scala.concurrent.duration._
+	    val s = Scheduler.io( "odel")
+	    Await.result(t("Test-HCPool2-8").executeOn(s).runToFuture, 5.days)
+    	println( "finished: 8" )
+    }
+    test( "Test-HCPool2-9") {
+      import scala.util.Success
+      t("Test-HCPool2-9").runToFuture.onComplete({case Success(n) => println(n); println( "executed-test-9: " + n)})
+    	println( "finished: 9" )
+    }
+    Thread.sleep(10000)
+    println("awake again")
   }
-/*  
+/* 
   test( "Test-HCPool2-parallel") {
 
     import monix.eval.Task
@@ -148,4 +186,4 @@ class TestHCPool2  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks 
     }
     * */
     
-  }
+  
