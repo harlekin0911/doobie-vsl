@@ -123,7 +123,10 @@ object NoTestHCPool3    {
     }
     def t10 =  {
       import scala.util.Success
-      t("t10").runToFuture.onComplete({case Success(n) => println(n.length); println( "executed-t10: " + n.length)})
+      import scala.util.Failure
+      t("t10").runToFuture.onComplete({
+        case Success(n)  => println( "executed-t10: " + n.length) 
+        case Failure(ex) => println( "executed-t10: " + ex)})
     	println( "finished: t10" )
     }
     
