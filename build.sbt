@@ -25,5 +25,8 @@ libraryDependencies ++= Seq(
 libraryDependencies += "com.codahale.metrics" % "metrics-healthchecks" % metricsVersion
 libraryDependencies += "com.typesafe" % "config" % "1.4.0"
 libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.30"
+libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.7.30"
 libraryDependencies += "com.codahale.metrics" % "metrics-core" % metricsVersion
 libraryDependencies += "com.codahale.metrics" % "metrics-jvm" % metricsVersion
+
+libraryDependencies += "org.codehaus.mojo" % "exec-maven-plugin" % "1.6.0" % Test
