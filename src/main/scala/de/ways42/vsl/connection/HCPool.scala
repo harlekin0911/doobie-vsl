@@ -29,6 +29,8 @@ object HCPool extends App {
 
   
   implicit val cs = IO.contextShift(ExecutionContext.global)
+  //implicit val cshp = ExecutionContext.fromExecutor(
+  
   // transactor with config
   val transactor: IO[HikariTransactor[IO]] =
 //    IO.pure(HikariTransactor.apply[IO](new HikariDataSource(config), ExecutionContexts.fixedThreadPool[IO](32), Blocker[IO]))

@@ -34,7 +34,7 @@ class TestConnectAsync  extends AnyFunSuite  { // with GeneratorDrivenPropertyCh
     val t2 = Fragment.const( "select lv_vtg_nr from tvsl001").query[String].to[List].transact(xa)//.executeAsync
     val t3 = t1::t2::Nil
     var hans : List[List[String]] = Nil
-    val r = Task.gather( t3 ).map( _.toList ).runSyncUnsafe(scala.concurrent.duration.Duration(100, TimeUnit.SECONDS)) //runAsync( x => { assert( x.isRight == true);  x match { case Right(l) => hans = l; println( hans)}})
+    val r = Task.gather( t3 ).map( _.toList ).runSyncUnsafe(scala.concurrent.duration.Duration(300, TimeUnit.SECONDS)) //runAsync( x => { assert( x.isRight == true);  x match { case Right(l) => hans = l; println( hans)}})
     println( "hans: " + hans)
     println( "r: " + r.head.size + "'" + r.tail.head.size)
 	}
@@ -52,7 +52,7 @@ class TestConnectAsync  extends AnyFunSuite  { // with GeneratorDrivenPropertyCh
     
     val d = (t1.transact(xa), t1.transact(xa)).parMapN(_ :: _).runAsync( x => { println("Bin da"); println( x.getOrElse(Nil).size)})
     Thread.sleep(5000)
-    val c = (t1.transact(xa), t1.transact(xa)).parMapN(_ :: _).runSyncUnsafe(scala.concurrent.duration.Duration(100, TimeUnit.SECONDS))
+    val c = (t1.transact(xa), t1.transact(xa)).parMapN(_ :: _).runSyncUnsafe(scala.concurrent.duration.Duration(300, TimeUnit.SECONDS))
     //System.sleep (50)
     
    

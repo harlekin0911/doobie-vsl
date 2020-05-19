@@ -36,7 +36,7 @@ class TestZik extends AnyFunSuite {
 		assert( l == 441345)
 	  
 	  val ll = z12.filter ( _.Z_ZAHLART_CD != 1).length
-		assert(  ll == 158656)			
+		assert(  ll == 158652)			
   }	
 }
 

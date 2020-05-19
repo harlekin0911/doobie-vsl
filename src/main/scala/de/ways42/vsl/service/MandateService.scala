@@ -12,6 +12,7 @@ import doobie.implicits._
 import cats._
 import cats.effect._
 import cats.implicits._
+import java.util.GregorianCalendar
 
 
 object MandateService {
@@ -23,7 +24,7 @@ object MandateService {
 class MandateService( val xa : Transactor.Aux[IO, Unit]) {
 
 	def istMandateAbgelaufen( d : Date, m : Mandate, p : Option[Payment]) : Boolean = {
-			p.flatMap( x => x.SCHEDULED_DUE_DATE).getOrElse( m.SIGNED_DATE.getOrElse( new Date(1900, 1, 1)))
+			p.flatMap( x => x.SCHEDULED_DUE_DATE).getOrElse( m.SIGNED_DATE.getOrElse( (new GregorianCalendar( 1900, 1, 1)).getTime()))
 			.compareTo( d) >= 0			 			  			  
 	}
 	
