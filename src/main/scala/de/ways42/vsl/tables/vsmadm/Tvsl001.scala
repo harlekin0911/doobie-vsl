@@ -8,7 +8,7 @@ import cats._
 import cats.data._
 import cats.effect._
 import cats.implicits._
-import fs2.Stream
+//import fs2.Stream
 
 case class Tvsl001(
 		GV_DTM           : Long, 
@@ -147,6 +147,6 @@ object Tvsl001 {
   }
 
   def selectAllMaxCount( c:Long) : ConnectionIO[List[Tvsl001]] = {
-    Fragment.const( "select " + attr + " from VSMADM.TVSL001 order by lv_vtg_nr desc, va_dtm desc, df_zt desc").query[Tvsl001].stream.take(c).compile.to[List]
+    Fragment.const( "select " + attr + " from VSMADM.TVSL001 order by lv_vtg_nr desc, va_dtm desc, df_zt desc").query[Tvsl001].stream.take(c).compile.toList
   }  
 }

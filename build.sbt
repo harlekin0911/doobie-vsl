@@ -6,7 +6,7 @@ scalacOptions += "-Ypartial-unification" // 2.11.9+
 scalacOptions ++= Seq("-deprecation", "-feature")
 
 //lazy val doobieVersion = "0.6.0"
-lazy val doobieVersion = "0.8.8"
+lazy val doobieVersion = "0.9.0"
 lazy val metricsVersion = "3.0.2"
 
 libraryDependencies ++= Seq(

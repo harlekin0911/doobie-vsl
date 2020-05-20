@@ -50,11 +50,10 @@ object HCPool2 {
   }
 
 //  lazy val xa = DataSourceTransactor[Task].apply(HCPool2.dataSource)
-  lazy val xa = for {
+  lazy val xa : Resource[Task, Transactor.Aux[Task, DataSource]] = for {
     ce <- ExecutionContexts.fixedThreadPool[Task](32) // our connect EC
     be <- Blocker[Task]    // our blocking EC
   } yield Transactor.fromDataSource[Task](dataSource, ce, be)
-}
 
 //def transactor(ds: DataSource)(
 //  implicit ev: ContextShift[IO]
@@ -63,4 +62,11 @@ object HCPool2 {
 //    ce <- ExecutionContexts.fixedThreadPool[IO](32) // our connect EC
 //    be <- Blocker[IO]    // our blocking EC
 //  } yield Transactor.fromDataSource[IO](ds, ce, be)
+
+  def main( args:Array[String]) : Unit = {
+    val c =  xa.use( xa => sql"select 41 from sysibm.sysdummy1".query[Int].unique.transact(xa))
+    import monix.execution.Scheduler.Implicits.global
+    println(c.runSyncUnsafe())
+  }
+}
 

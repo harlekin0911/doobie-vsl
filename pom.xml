@@ -21,7 +21,7 @@
     <scala.version>2.12.6</scala.version>
     <scala.compat.version>2.12</scala.compat.version>
     <spec2.version>4.2.0</spec2.version>
-    <doobie.Version>0.8.8</doobie.Version>
+    <doobie.Version>0.9.0</doobie.Version>
     <metrics.Version>3.0.2</metrics.Version>
   </properties>
 

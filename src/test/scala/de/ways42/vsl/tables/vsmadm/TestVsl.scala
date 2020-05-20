@@ -24,7 +24,7 @@ class TestVsl extends AnyFunSuite {
 
 	test( "Vsl-Select-Basic-1") {
 		val q = Query( "select * from VSMADM.TVSL001")
-		assert( sql"select * from VSMADM.TVSL001".query[(String,String, String)].stream.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).length == 5)
+		assert( sql"select * from VSMADM.TVSL001".query[(String,String, String)].stream.take(5).compile.toList.transact(xa).unsafeRunSync.take(5).length == 5)
 	}
 	
   test( "Vsl-Select-Basic-2") {
@@ -35,7 +35,7 @@ class TestVsl extends AnyFunSuite {
 			512                                // chunk size
 			)
 			
-		assert( proc.take(5).compile.to[List].transact(xa).unsafeRunSync.take(5).length == 5)
+		assert( proc.take(5).compile.toList.transact(xa).unsafeRunSync.take(5).length == 5)
 
   }
 	
