@@ -42,6 +42,7 @@ object HCPool2 {
     ds.setPoolName(           dbConf.poolName)
     ds.setRegisterMbeans(     true)
     ds.setValidationTimeout(  dbConf.validationTimeout)
+    ds.setDriverClassName("com.ibm.db2.jcc.DB2Driver")
 //    ds.setMetricRegistry(     Metrics.metricRegistry)
 //    ds.setHealthCheckRegistry(Metrics.healthCheckRegistry)
 //    ds.addHealthCheckProperty("expected99thPercentileMs", "100")
@@ -55,18 +56,24 @@ object HCPool2 {
     be <- Blocker[Task]    // our blocking EC
   } yield Transactor.fromDataSource[Task](dataSource, ce, be)
 
-//def transactor(ds: DataSource)(
-//  implicit ev: ContextShift[IO]
-//): Resource[IO, DataSourceTransactor[IO]] =
-//  for {
-//    ce <- ExecutionContexts.fixedThreadPool[IO](32) // our connect EC
-//    be <- Blocker[IO]    // our blocking EC
-//  } yield Transactor.fromDataSource[IO](ds, ce, be)
+  def transactor(ds: DataSource, size:Int)( implicit ev: ContextShift[Task]): Resource[Task, DataSourceTransactor[Task]] = for {
+    ce <- ExecutionContexts.fixedThreadPool[Task](size) // our connect EC
+    be <- Blocker[Task]    // our blocking EC
+  } yield Transactor.fromDataSource[Task](ds, ce, be)
+
+  /**
+   * The same with flatMap
+   */
+  def transactor2(ds: DataSource, size:Int)( implicit ev: ContextShift[Task]): Resource[Task, DataSourceTransactor[Task]] = 
+    ExecutionContexts.fixedThreadPool[Task](size).flatMap(ce => Blocker[Task].map( be =>  Transactor.fromDataSource[Task](ds, ce, be))) 
 
   def main( args:Array[String]) : Unit = {
-    val c =  xa.use( xa => sql"select 41 from sysibm.sysdummy1".query[Int].unique.transact(xa))
-    import monix.execution.Scheduler.Implicits.global
+    val c =  xa.use( xa => sql"select count(*) from vsmadm.tvsl001".query[Int].unique.transact(xa))
+    val d = transactor( dataSource, 3).use( x => sql"select count(*) from vsmadm.tvsl002".query[Int].unique.transact(x))
+    //import monix.execution.Scheduler.Implicits.global
+    implicit val sc = monix.execution.Scheduler.io( "Monix-Pool")
     println(c.runSyncUnsafe())
+    println(d.runSyncUnsafe())
   }
 }
 

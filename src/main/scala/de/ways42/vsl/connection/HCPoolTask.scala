@@ -21,6 +21,7 @@ import java.util.concurrent.Executors
 import monix.eval.Task
 import monix.execution.Scheduler
 import monix.execution.schedulers.SchedulerService
+import javax.sql.DataSource
 
 
 
@@ -60,6 +61,12 @@ object HCPoolTask  {
     val hc = HikariTransactor.apply[Task](ds, ec, Blocker.liftExecutionContext(ec))
     Task.pure(hc)
   }
+  
+  def transactor2(ds: HikariDataSource, size:Int)( implicit ev: ContextShift[Task]): Resource[Task, HikariTransactor[Task]] = for {
+    ec <- ExecutionContexts.fixedThreadPool[Task](size) // our connect EC
+    be <- Blocker[Task]    // our blocking EC
+  } yield   HikariTransactor.apply[Task](ds, ec, be)
+
 
   def main( args:Array[String]) : Unit = {
 
