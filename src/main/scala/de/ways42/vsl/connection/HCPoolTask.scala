@@ -32,16 +32,17 @@ import javax.sql.DataSource
  *  https://tpolecat.github.io/doobie/docs/14-Managing-Connections.html
  */
 object HCPoolTask  {
+  
 
-  def apply(driver:String, url:String, user:String, passwd:String, size:Int) : (Task[HikariTransactor[Task]],SchedulerService) = {
+  def apply(driver:String, url:String, user:String, passwd:String, size:Int) : (Task[HikariTransactor[Task]],SchedulerService, HikariDataSource) = {
 
       val c = hcConfig("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", size)
       val es : ExecutorService   = Executors.newFixedThreadPool(size)
       val ec : ExecutionContext  = ExecutionContext.fromExecutor(es) //ExecutionContext.global
       
-
+      val ds = hcdss( c)
       implicit val scheduler :  SchedulerService = Scheduler(es)
-      ( transactor( ec, c), scheduler)
+      ( transactor( ec, ds), scheduler, ds)
   }
 
   // hikari pooling config
@@ -55,9 +56,9 @@ object HCPoolTask  {
           config
   }
 
-  private  def transactor( ec : ExecutionContext, hcc:HikariConfig) : Task[HikariTransactor[Task]] = {
-    val ds = new HikariDataSource(hcc)
-    sys.addShutdownHook(ds.close())
+  private def hcdss( hcc:HikariConfig) : HikariDataSource = new HikariDataSource(hcc)
+  
+  private  def transactor( ec : ExecutionContext, ds:HikariDataSource) : Task[HikariTransactor[Task]] = {
     val hc = HikariTransactor.apply[Task](ds, ec, Blocker.liftExecutionContext(ec))
     Task.pure(hc)
   }
@@ -70,14 +71,18 @@ object HCPoolTask  {
 
   def main( args:Array[String]) : Unit = {
 
-    val t = apply("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 32)
-    implicit val s = t._2
-      val c = for {
-        xa <- t._1
-        result <- sql"select 41 from sysibm.sysdummy1".query[Int].unique.transact(xa) //ensuring xa.shutdown
-       // _ <- xa.shutdown
+    implicit val (xas,s,ds) = apply("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 2)
+    //implicit val s = t._2
+    val c :Task[List[Int]] = for {
+        xa <- xas
+        result <- Task.gather(List( sql"select count(*) from vsmadm.tvsl001".query[Int].unique.transact(xa), //ensuring xa.shutdown
+                        sql"select count(*) from vsmadm.tvsl002".query[Int].unique.transact(xa))) //ensuring xa.shutdown
       } yield result
-      println(c.runSyncUnsafe())
+      val d = c.runSyncUnsafe()
+      println( d)
+      d.mkString( " ")
+      ds.close()
+      s.shutdown()
   }
 }
 
