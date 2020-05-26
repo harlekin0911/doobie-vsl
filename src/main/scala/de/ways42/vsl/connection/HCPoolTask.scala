@@ -22,6 +22,7 @@ import monix.eval.Task
 import monix.execution.Scheduler
 import monix.execution.schedulers.SchedulerService
 import javax.sql.DataSource
+import doobie.util.transactor.Transactor
 
 
 
@@ -72,11 +73,16 @@ object HCPoolTask  {
   def main( args:Array[String]) : Unit = {
 
     implicit val (xas,s,ds) = apply("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 2)
+    
+    // Modify transaction behavior
+    //val ta = xas.flatMap( xa => Task(Transactor.strategy.set(xa, doobie.util.transactor.Strategy.default.copy())))
+    
     //implicit val s = t._2
     val c :Task[List[Int]] = for {
         xa <- xas
-        result <- Task.gather(List( sql"select count(*) from vsmadm.tvsl001".query[Int].unique.transact(xa), //ensuring xa.shutdown
-                        sql"select count(*) from vsmadm.tvsl002".query[Int].unique.transact(xa))) //ensuring xa.shutdown
+        result <- Task.gather(
+            List( sql"select count(*) from vsmadm.tvsl001".query[Int].unique.transact(xa), //ensuring xa.shutdown
+                sql"select count(*) from vsmadm.tvsl002".query[Int].unique.transact(xa))) //ensuring xa.shutdown
       } yield result
       val d = c.runSyncUnsafe()
       println( d)
