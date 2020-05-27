@@ -37,7 +37,7 @@ object HCPoolTask  {
 
   def apply(driver:String, url:String, user:String, passwd:String, size:Int) : (Task[HikariTransactor[Task]],SchedulerService, HikariDataSource) = {
 
-      val c = hcConfig("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", size)
+      val c = hcConfig(driver, url, user, passwd, size)
       val es : ExecutorService   = Executors.newFixedThreadPool(size)
       val ec : ExecutionContext  = ExecutionContext.fromExecutor(es) //ExecutionContext.global
       

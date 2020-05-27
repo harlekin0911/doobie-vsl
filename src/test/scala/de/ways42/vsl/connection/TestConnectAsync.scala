@@ -17,7 +17,7 @@ import monix.execution.Callback
 
 class TestConnectAsync  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
   
-  val xa = Connect.usingOwnMonad()
+  val xa = Connect.usingOwnMonad( "VSMADM", "together")
     
 
   test( "Test-ConnectAsync-1") {
@@ -40,7 +40,7 @@ class TestConnectAsync  extends AnyFunSuite  { // with GeneratorDrivenPropertyCh
 	}
   
   test( "TestConnectAsync-parallel-list") {
-    val mxa = Connect.usingOwnMonad();
+    val mxa = Connect.usingOwnMonad( "VSMADM", "together");
 
     import monix.eval.Task
     import monix.execution.Scheduler.Implicits.global
