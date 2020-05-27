@@ -12,12 +12,13 @@ import cats.implicits._
 import java.util.concurrent.TimeUnit
 import monix.execution.Callback
 import scala.concurrent.Await
+import de.ways42.vsl.connection.SiteConfig
 
 
 
 
 
-object NoTestHCPool3    { 
+object NoTestHcTaskResource    { 
   
   def main( args : Array[String]) : Unit = {
     
@@ -36,7 +37,7 @@ object NoTestHCPool3    {
 
   }
   
-  val xap = HCPool2.xa
+  val xap = HcTransactor.getResource( HcConfig.getDataSource(SiteConfig.dbConf), 5)
     
   import monix.eval.Task
 	import monix.execution.Scheduler.Implicits.global

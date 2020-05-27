@@ -12,14 +12,17 @@ import cats.implicits._
 import java.util.concurrent.TimeUnit
 import monix.execution.Callback
 import scala.concurrent.Await
+import de.ways42.vsl.connection.SiteConfig
+import scala.util.Failure
 
 
 
 
 
-class TestHCPool2  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
+
+class TestHcTaskResource  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
   
-  val xap = HCPool2.xa
+  val xap = HcTransactor.getResource( HcConfig.getDataSource(SiteConfig.dbConf), 5)
     
   import monix.eval.Task
 	import monix.execution.Scheduler.Implicits.global
@@ -105,7 +108,9 @@ class TestHCPool2  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks 
     }
     test( "Test-HCPool2-9") {
       import scala.util.Success
-      t("Test-HCPool2-9").runToFuture.onComplete({case Success(n) => println(n); println( "executed-test-9: " + n)})
+      t("Test-HCPool2-9").runToFuture.onComplete({
+        case Success(n) => println(n); println( "executed-test-9: " + n); 
+        case Failure(e) => println(e); println( "executed-test-9: " + e)})
     	println( "finished: 9" )
     }
     Thread.sleep(10000)

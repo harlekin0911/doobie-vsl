@@ -39,13 +39,15 @@ class TestVsl extends AnyFunSuite {
 
   }
 	
-	test( "Vsl-Vtgnr") {
+	test( "Vsl-Vtgnr-AKT-aktive") {
 			assert ( Tvsl001.selectAllMaxCount( 5).transact(xa).unsafeRunSync.take(5).length == 5)
 			assert ( Tvsl001.selectAktById(   "0003065903411").transact(xa).unsafeRunSync.get.LV_VTG_NR.trim() == "0003065903411")
 			val c : Long = Tvsl001.selectAktAllAktive().transact(xa).unsafeRunSync.length
-			assert ( c == 246524)
+			assert ( c == 246523)
+	}
+	test( "Vsl-Vtgnr-AKT-beitragspflichtige") {
 			val d : Long = Tvsl001.selectAktAllBeitragspflichtig().transact(xa).unsafeRunSync.length
-			assert (  d == 172466)
+			assert (  d == 172464)
 	}
 	test( "VSL-tvsl002") {
 			assert ( Tvsl002.selectVtgnr( "0003065903411").transact(xa).unsafeRunSync.length == 6)

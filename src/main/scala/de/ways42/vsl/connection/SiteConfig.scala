@@ -42,7 +42,8 @@ object SiteConfig {
     idleTimeout: Long,
     maxLifetime: Long,
     validationTimeout: Long,
-    poolName: String
+    poolName: String,
+    driver: String
   )
 
   def dbConf: DbConf =
@@ -58,6 +59,7 @@ object SiteConfig {
       conf.getLong("db.idleTimeout"),
       conf.getLong("db.maxLifetime"),
       conf.getLong("db.validationTimeout"),
-      conf.getString("db.poolName")
+      conf.getString("db.poolName"),
+      conf.getString("db.driver")
     )
 }

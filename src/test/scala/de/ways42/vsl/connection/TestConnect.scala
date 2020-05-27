@@ -33,7 +33,7 @@ class TestConnect  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks 
     test ( "Connect-3") {
 			val program2 = sql"select rand from  SYSIBM.SYSDUMMY1".query[Double].unique
 			val io2 = program2.transact(xa)
-			assert ( io2.unsafeRunSync match { case _ : Double => true; case _ => false })
+			assert ( io2.unsafeRunSync match { case _ : Double => true/*; case _ => false*/ })
       
     }
     

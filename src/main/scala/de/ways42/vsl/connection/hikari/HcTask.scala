@@ -29,42 +29,22 @@ import doobie.util.transactor.Transactor
 /**
  *  https://tpolecat.github.io/doobie/docs/14-Managing-Connections.html
  */
-object HCPoolTask  {
+object HcTask  {
   
 
   def apply(driver:String, url:String, user:String, passwd:String, size:Int) : (Task[HikariTransactor[Task]],SchedulerService, HikariDataSource) = {
 
-      val c = hcConfig(driver, url, user, passwd, size)
+      val c = HcConfig.hcConfig(driver, url, user, passwd, size)
       val es : ExecutorService   = Executors.newFixedThreadPool(size)
       val ec : ExecutionContext  = ExecutionContext.fromExecutor(es) //ExecutionContext.global
       
-      val ds = hcdss( c)
+      val ds = HcConfig.getDataSource( c)
       implicit val scheduler :  SchedulerService = Scheduler(es)
-      ( transactor( ec, ds), scheduler, ds)
+      ( HcTransactor.get( ec, ds), scheduler, ds)
   }
 
-  // hikari pooling config
-  private def hcConfig(driver:String, url:String, user:String, passwd:String, size:Int) : HikariConfig = {
-      val config = new HikariConfig()
-          config.setJdbcUrl(         url)
-          config.setUsername(        user)
-          config.setPassword(        passwd)
-          config.setMaximumPoolSize( size)
-          config.setDriverClassName( driver)
-          config
-  }
-
-  private def hcdss( hcc:HikariConfig) : HikariDataSource = new HikariDataSource(hcc)
   
-  private  def transactor( ec : ExecutionContext, ds:HikariDataSource) : Task[HikariTransactor[Task]] = {
-    val hc = HikariTransactor.apply[Task](ds, ec, Blocker.liftExecutionContext(ec))
-    Task.pure(hc)
-  }
   
-  def transactor2(ds: HikariDataSource, size:Int)( implicit ev: ContextShift[Task]): Resource[Task, HikariTransactor[Task]] = for {
-    ec <- ExecutionContexts.fixedThreadPool[Task](size) // our connect EC
-    be <- Blocker[Task]    // our blocking EC
-  } yield   HikariTransactor.apply[Task](ds, ec, be)
 
 
   def main( args:Array[String]) : Unit = {

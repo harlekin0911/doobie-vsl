@@ -15,7 +15,7 @@ import monix.execution.Callback
 
 
 
-class TestConnectAsync  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
+class TestConnectTask  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
   
   val xa = Connect.usingOwnMonad( "VSMADM", "together")
     
