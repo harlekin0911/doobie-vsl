@@ -1,4 +1,4 @@
-package de.ways42.vsl.connection
+package de.ways42.vsl.connection.hikari
 
 
 

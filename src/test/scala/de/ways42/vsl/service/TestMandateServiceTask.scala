@@ -10,7 +10,7 @@ import cats._
 import cats.effect._
 import cats.implicits._
 import de.ways42.vsl.connection.Connect
-import de.ways42.vsl.connection.HCPoolTask
+//import de.ways42.vsl.connection.hikari.HCPoolTask
 
 
 class TestMandateServiceTask  extends AnyFunSuite  { 

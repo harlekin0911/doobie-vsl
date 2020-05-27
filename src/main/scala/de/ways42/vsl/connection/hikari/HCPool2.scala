@@ -1,4 +1,4 @@
-package de.ways42.vsl.connection
+package de.ways42.vsl.connection.hikari
 
 import javax.sql.DataSource
 
@@ -16,6 +16,7 @@ import doobie.hikari._
 
 //import scalaz.concurrent.Task
 import monix.eval.Task
+import de.ways42.vsl.connection.SiteConfig
 
 object HCPool2 {
 

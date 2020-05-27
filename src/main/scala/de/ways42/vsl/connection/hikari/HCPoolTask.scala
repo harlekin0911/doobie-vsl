@@ -1,4 +1,4 @@
-package de.ways42.vsl.connection
+package de.ways42.vsl.connection.hikari
 
 
 import cats.effect.IO
@@ -23,9 +23,6 @@ import monix.execution.Scheduler
 import monix.execution.schedulers.SchedulerService
 import javax.sql.DataSource
 import doobie.util.transactor.Transactor
-
-
-
 
 
 

@@ -1,11 +1,12 @@
-package de.ways42.vsl.connection
+package de.ways42.vsl.connection.hikari
 
 
 import cats.effect._
 import cats.implicits._
 import doobie._
-import doobie.implicits._
 import doobie.hikari._
+import doobie.implicits._
+import doobie.util.query.Query
 
 //object Pool {
   
