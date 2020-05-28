@@ -1,28 +1,29 @@
 package de.ways42.vsl.connection.hikari.apps
 
-
-import cats.effect.IO
-import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
-import doobie.hikari.HikariTransactor
-//import doobie.hikari.hikaritransactor.HikariTransactor
-import doobie.implicits._
-import doobie.util.query.Query
-
-import scala.concurrent.ExecutionContext
-import cats._
-import cats.effect._
-import cats.implicits._
-
-import cats.effect.ContextShift
-import doobie.util.ExecutionContexts
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import javax.sql.DataSource
+
+import scala.concurrent.ExecutionContext
+
+import doobie.hikari.HikariTransactor
+import doobie.implicits._
+import doobie.util.query.Query
+import doobie.util.transactor.Transactor
+import doobie.util.ExecutionContexts
+
+import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
+
+import cats._
+import cats.effect.IO
+import cats.effect._
+import cats.implicits._
+import cats.effect.ContextShift
 
 import monix.eval.Task
 import monix.execution.Scheduler
 import monix.execution.schedulers.SchedulerService
-import javax.sql.DataSource
-import doobie.util.transactor.Transactor
+
 import de.ways42.vsl.connection.hikari.HcTransactor
 import de.ways42.vsl.connection.hikari.HcConfig
 

@@ -2,22 +2,19 @@ package de.ways42.vsl.connection.hikari
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import javax.sql.DataSource
 
 import scala.concurrent.ExecutionContext
-
-import doobie._
-import doobie.util.transactor
-import doobie.hikari._
-
-import cats.effect._
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 
-import monix.execution.schedulers.SchedulerService
-import monix.execution.Scheduler
+import cats.effect.Blocker
+import cats.effect.ContextShift
+import cats.effect.IO
+import doobie.hikari.HikariTransactor
 import monix.eval.Task
+import monix.execution.Scheduler
+import monix.execution.schedulers.SchedulerService
 
 object HcTransactor {
   
@@ -41,8 +38,8 @@ object HcTransactor {
       
     val ds = HcConfig.getDataSource( c)
     val scheduler :  SchedulerService = Scheduler(es)
-    //SchedulerService.
-    ( HcTransactor( ec, ds), scheduler, ds)
+
+    ( HcTransactor( ec, ds)( Task.contextShift(scheduler)), scheduler, ds)
   }
 
 }
