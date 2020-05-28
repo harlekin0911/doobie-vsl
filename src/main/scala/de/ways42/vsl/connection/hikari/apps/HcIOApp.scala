@@ -1,4 +1,4 @@
-package de.ways42.vsl.connection.hikari
+package de.ways42.vsl.connection.hikari.apps
 
 
 import cats.effect._
@@ -8,6 +8,7 @@ import doobie.hikari._
 import doobie.implicits._
 import doobie.util.query.Query
 import scala.concurrent.ExecutionContext
+import de.ways42.vsl.connection.hikari.HcResource
 
 //object Pool {
   
@@ -18,7 +19,8 @@ object HcIOApp extends IOApp {
   //implicit val cs = IO.contextShift(ExecutionContext.global)
 
   def run(args: List[String]): IO[ExitCode] =
-    HcTransactor.transactor.use { xa =>
+
+    HcResource( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50013/vslt03", "vsmadm", "together").use { xa =>
 
       // Construct and run your server here!
       for {

@@ -1,4 +1,4 @@
-package de.ways42.vsl.connection.hikari
+package de.ways42.vsl.connection.hikari.apps
 
 
 import cats.effect.IO
@@ -23,6 +23,8 @@ import monix.execution.Scheduler
 import monix.execution.schedulers.SchedulerService
 import javax.sql.DataSource
 import doobie.util.transactor.Transactor
+import de.ways42.vsl.connection.hikari.HcTransactor
+import de.ways42.vsl.connection.hikari.HcConfig
 
 
 
@@ -31,25 +33,9 @@ import doobie.util.transactor.Transactor
  */
 object HcTask  {
   
-
-  def apply(driver:String, url:String, user:String, passwd:String, size:Int) : (Task[HikariTransactor[Task]],SchedulerService, HikariDataSource) = {
-
-      val c = HcConfig.hcConfig(driver, url, user, passwd, size)
-      val es : ExecutorService   = Executors.newFixedThreadPool(size)
-      val ec : ExecutionContext  = ExecutionContext.fromExecutor(es) //ExecutionContext.global
-      
-      val ds = HcConfig.getDataSource( c)
-      implicit val scheduler :  SchedulerService = Scheduler(es)
-      ( HcTransactor.get( ec, ds), scheduler, ds)
-  }
-
-  
-  
-
-
   def main( args:Array[String]) : Unit = {
 
-    implicit val (xas,s,ds) = apply("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 2)
+    implicit val (xas,s,ds) = HcTransactor("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 2)
     
     // Modify transaction behavior
     //val ta = xas.flatMap( xa => Task(Transactor.strategy.set(xa, doobie.util.transactor.Strategy.default.copy())))

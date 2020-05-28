@@ -22,7 +22,7 @@ import scala.util.Failure
 
 class TestHcTaskResource  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
   
-  val xap = HcTransactor.getResource( HcConfig.getDataSource(SiteConfig.dbConf), 5)
+  val xap = HcResource( HcConfig.getDataSource(SiteConfig.dbConf), 5)
     
   import monix.eval.Task
 	import monix.execution.Scheduler.Implicits.global

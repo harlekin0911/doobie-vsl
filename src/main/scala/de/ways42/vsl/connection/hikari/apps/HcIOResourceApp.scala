@@ -1,4 +1,4 @@
-package de.ways42.vsl.connection.hikari
+package de.ways42.vsl.connection.hikari.apps
 
 
 import cats.effect.IO
@@ -16,6 +16,8 @@ import cats.effect.ContextShift
 import doobie.util.ExecutionContexts
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import de.ways42.vsl.connection.hikari.HcTransactor
+import de.ways42.vsl.connection.hikari.HcConfig
 
 object HcIOResourceApp extends App {
 
@@ -31,8 +33,8 @@ object HcIOResourceApp extends App {
   implicit val cs2 = IO.contextShift(BlockingFileIO)
   
   // transactor with config
-  val transactor:  IO[HikariTransactor[IO]] = HcTransactor.get( BlockingFileIO, hcc)
-  val transactorG: IO[HikariTransactor[IO]] = HcTransactor.get( ExecutionContext.global, hcc)
+  val transactor:  IO[HikariTransactor[IO]] = HcTransactor( BlockingFileIO, hcc)
+  val transactorG: IO[HikariTransactor[IO]] = HcTransactor( ExecutionContext.global, hcc)
 
   //def main( args:Array[String]) : Unit = {
     val c = for {
