@@ -52,13 +52,5 @@ class TestVsl extends AnyFunSuite {
 	test( "VSL-tvsl002") {
 			assert ( Tvsl002.selectVtgnr( "0003065903411").transact(xa).unsafeRunSync.length == 6)
   }
-
-  test ( "Vsl-Rolle-selectById") {
-			assert( Trol001.selectById( "0050034703671", "", 89, 1).transact(xa).unsafeRunSync.length == 2 )
-  }
-	
-  test ( "Vsl-Rolle-selectAktById") {
-			assert( Trol001.selectAktById( "0050034703671", "", 89, 1).transact(xa).unsafeRunSync.get.ISTTOP_NRX.trim == "0050034703671" )
-  }  
 }
 

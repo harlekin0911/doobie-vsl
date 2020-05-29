@@ -46,11 +46,18 @@ object Trol001 {
     
   lazy val attrStr = attributes.mkString(",")
 	  
+  /**
+   * Alle Mandatsrollen zu einem Vertrag holen
+   */
   def selectById( top : String, komp : String, roll : Int, rang : Int) : ConnectionIO[List[Trol001]] = {
     ( Fragment.const( "select "+ attrStr + " from vsmadm.trol001") ++
       fr"where isttop_nrx = $top and istkomp_nr = $komp and rollen_cd = $roll and rang_nr = $rang"
     ).query[Trol001].to[List]
   }
+  
+  /**
+   * Aktuelle Mandatsrolle zu einem Vertrag selektieren, falls vorhanden 
+   */
   def selectAktById( top : String, komp : String, roll : Int, rang : Int) : ConnectionIO[Option[Trol001]] = {
     ( Fragment.const( "select "+ attrStr + " from vsmadm.trol001 r1") ++
       Fragments.whereAnd(           
@@ -60,6 +67,16 @@ object Trol001 {
           Fragment.const( "df_zt  = (select max(df_zt)  from vsmadm.trol001 r3 " + 
                                       "where r1.isttop_nrx = r3.isttop_nrx and r1.istkomp_nr = r3.istkomp_nr and r1.rollen_cd = r3.rollen_cd and r1.rang_nr = r3.rang_nr and r1.va_dtm = r3.va_dtm)")
     )).query[Trol001].option
+  }
+  
+  /**
+   * Inset or updates the entry
+   */
+  def insert( r1:Trol001) : ConnectionIO[Int] = {
+    Update[Trol001]("insert into vsmadm.trol001 values( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?, ?)").run(r1) 
+//    insert into vsmadm.trol001 values( '0023014403811', '', 89, 1, 20200305, 113301, 20200305, '001250372', '001001000000000000000000', '0901' , 1, 'DEE00000499276;0')
+//    def insert1(name: String, age: Option[Short]): Update0 =
+//  sql"insert into person  values ($name, $age)".update
   }
 
 }
