@@ -10,6 +10,9 @@ import cats.implicits._
 import fs2.Stream
 import java.sql.Timestamp
 import java.sql.Date
+import java.util.GregorianCalendar
+import java.util.Calendar
+import de.ways42.vsl.service.TimeService
 
 case class Trol001 (
 
@@ -25,9 +28,16 @@ case class Trol001 (
 		MODGRD_CD    : String,
 		RSTAT_CD     : Int,
 		ROLLSPEZ_TXT : String
-)
+) {
+  def setTerminated() = {
+    val vadf = TimeService.vadf()
+    copy( VA_DTM = vadf._1, DF_ZT = vadf._2, GV_DTM = vadf._1, RSTAT_CD = 2)
+  }
+}
 
 object Trol001 {
+
+  val unit = Trol001( "", "" , 0, 0, 0, 0, 0 , "", "" ,"",0,"")
 
   val attributes = Array[String] (
 		"ISTTOP_NRX",
@@ -70,13 +80,19 @@ object Trol001 {
   }
   
   /**
-   * Inset or updates the entry
+   * Insert  the entry
    */
-  def insert( r1:Trol001) : ConnectionIO[Int] = {
+  def insert( r1:Trol001) : ConnectionIO[Int] = 
     Update[Trol001]("insert into vsmadm.trol001 values( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?, ?)").run(r1) 
-//    insert into vsmadm.trol001 values( '0023014403811', '', 89, 1, 20200305, 113301, 20200305, '001250372', '001001000000000000000000', '0901' , 1, 'DEE00000499276;0')
-//    def insert1(name: String, age: Option[Short]): Update0 =
-//  sql"insert into person  values ($name, $age)".update
-  }
+  
 
+  def terminateAkt( top : String, komp : String, roll : Int, rang : Int) : ConnectionIO[Option[Trol001]] = {
+    
+    selectAktById( top, komp, roll, rang).flatMap({
+      case Some(t1) => insert( t1.setTerminated()).flatMap( _ => selectAktById( top, komp, roll, rang))
+      case None     => Option[Trol001](Trol001.unit).pure[ConnectionIO]
+    })
+  }
+  
+  
 }
