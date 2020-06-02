@@ -31,10 +31,10 @@ class MandateService( val xa : Transactor.Aux[IO, Unit]) {
 	/**
 	 * Aktuelles Mandat mit allen zugehoerigen Payments laden
 	 */
-	def getMandateWithPayments( mandateId : Long) : (Mandate, List[Payment]) = {
-	  Mandate.selectAktById( mandateId).flatMap( 
-	      m => Payment.selectAllByMandateId(mandateId).map( 
-	          l => (m,l))).transact(xa).unsafeRunSync
+	def getMandateWithPayments( mandateId : Long) : ConnectionIO[(Option[Mandate], List[Payment])] = {
+	  Mandate.selectAktById( mandateId).flatMap({
+	    case Some(m) => Payment.selectAllByMandateId(mandateId).map( l => (Some(m),l))
+	    case None  => ( Option.empty[Mandate], List.empty[Payment]).pure[ConnectionIO]})
 	}
 	
 	def getNichtTerminierteAbgelaufeneMandateMitLetztemPayment() : Map[Long, (Mandate, Option[Payment])] = {

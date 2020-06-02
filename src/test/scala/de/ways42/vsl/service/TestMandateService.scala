@@ -14,10 +14,11 @@ import de.ways42.vsl.connection.Connect
 
 class TestMandateService  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
   
-  lazy val ms = MandateService( Connect( "VSMADM", "together"))
+  val xa = Connect( "VSMADM", "together")
+  lazy val ms = MandateService(xa )
   
   test( "MS-getMandateWithPayments") {
-    assert( ms.getMandateWithPayments( 22317)._2.size == 1)
+    assert( ms.getMandateWithPayments( 22317).transact(xa).unsafeRunSync()._2.size == 1)
  	}
     
   test( "MS-NichtTerminierteAbgelaufeneMandateMitLetztemPayment") {

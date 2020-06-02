@@ -4,18 +4,23 @@ import java.util.GregorianCalendar
 import java.util.Calendar
 
 object TimeService {
-  
-  def vadf() : (Int,Int) = {
-    val d  = new GregorianCalendar()
-    val y = d.get(Calendar.YEAR) - 1900
-    val m = d.get(Calendar.MONTH)
-    val t = d.get(Calendar.DAY_OF_MONTH)
-    
-    val h  = d.get(Calendar.HOUR_OF_DAY)
-    val mm = d.get(Calendar.MINUTE)
-    val s  = d.get(Calendar.SECOND)
-    
-    ( y*1000 + m*100 + t, h*1000 + mm*100 + s)
 
+  def vadf( gc : GregorianCalendar) : (Int,Int) = {
+    val y = gc.get(Calendar.YEAR) - 1900
+    val m = gc.get(Calendar.MONTH)
+    val d = gc.get(Calendar.DAY_OF_MONTH)
+    
+    val h  = gc.get(Calendar.HOUR_OF_DAY)
+    val mm = gc.get(Calendar.MINUTE)
+    val s  = gc.get(Calendar.SECOND)
+    
+    ( y*1000 + m*100 + d, h*1000 + mm*100 + s)
   }
+
+  def vadf() : (Int,Int) = vadf( new GregorianCalendar())
+  
+  def getTimestamp( gc : GregorianCalendar) : java.sql.Timestamp = new java.sql.Timestamp( gc.getTimeInMillis);
+    
+  def getTimestamp() : java.sql.Timestamp = new java.sql.Timestamp( (new GregorianCalendar()).getTimeInMillis);
+  
 }

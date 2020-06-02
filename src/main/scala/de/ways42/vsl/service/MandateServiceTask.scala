@@ -31,13 +31,11 @@ class MandateServiceTask( val xa : Transactor.Aux[Task, Unit]) {
 	}
 	
 	/**
-	 * Aktuelles Mandat mit allen zugehoerigen Payments laden
+	 * Aktuelles Mandat mit allen zugehoerigen Payments laden, falls vorhanden
 	 */
-	def getMandateWithPayments( mandateId : Long) : Task[(Mandate, List[Payment])] = {
-	  Mandate.selectAktById( mandateId).flatMap( 
-	      m => Payment.selectAllByMandateId(mandateId).map( 
-	          l => (m,l))).transact(xa)
-	}
+	def getMandateWithPayments( mandateId : Long) : ConnectionIO[(Option[Mandate], List[Payment])] = Mandate.selectAktById( mandateId).flatMap({
+	    case Some(m) => Payment.selectAllByMandateId(mandateId).map( l => (Some(m),l))
+	    case None    => ( Option.empty[Mandate], List.empty[Payment]).pure[ConnectionIO]})
 	
 	/**
 	 * Mappe mit leeren Payment aufbauen

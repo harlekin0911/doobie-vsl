@@ -16,13 +16,13 @@ import de.ways42.vsl.connection.Connect
 class TestMandateServiceTask  extends AnyFunSuite  { 
   
   import monix.execution.Scheduler.Implicits.global
-  
-  lazy val ms = MandateServiceTask( Connect.usingOwnMonad( "VSMADM", "together"))
+  val xa = Connect.usingOwnMonad( "VSMADM", "together")
+  lazy val ms = MandateServiceTask( xa)
   
   //val (a,b,c) = HCPoolTask("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 3)
   
   test( "MS-getMandateWithPayments") {
-    assert( ms.getMandateWithPayments( 22317).runSyncUnsafe()._2.size == 1)
+    assert( ms.getMandateWithPayments( 22317).transact(xa).runSyncUnsafe()._2.size == 1)
  	}
     
   test( "MS-NichtTerminierteAbgelaufeneMandateMitLetztemPayment") {

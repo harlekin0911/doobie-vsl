@@ -12,6 +12,7 @@ import java.sql.Timestamp
 import java.sql.Date
 import doobie.implicits.javasql._
 import doobie.implicits.javatime._
+import de.ways42.vsl.service.TimeService
 
 
   
@@ -52,7 +53,14 @@ case class Mandate (
     USERID               : String,
     TERMINATED_FLAG      : Long, 
     DEPOSIT_LOCATION     : Long      
-    ) 
+    ) {
+  
+  def setTerminated() = {
+    val dop = TimeService.getTimestamp()
+    copy( HISTNR = HISTNR + 1, DOP = dop,  TERMINATED_FLAG = 1)
+  }
+
+}
 
   object Mandate {
     
@@ -95,11 +103,20 @@ case class Mandate (
       "DEPOSIT_LOCATION" )
   
   lazy val attrStr = attributes.mkString(",")
+  
+    /**
+   * Insert  the entry
+   */
+  def insert( r1:Mandate) : ConnectionIO[Int] = 
+    Update[Mandate]("insert into Mandate.MM_Mandate values( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").run(r1) 
 
-  def selectAktById( mandate_id : Long) : ConnectionIO[Mandate] = {
+  def delete( mandate_id:Long) : ConnectionIO[Int] = 
+    Update[Long]("delete from Mandate.MM_Mandate where mandate_id = ?").run(mandate_id) 
+
+  def selectAktById( mandate_id : Long) : ConnectionIO[Option[Mandate]] = {
     (Fragment.const( "select " + attrStr + " from Mandate.MM_Mandate m1") ++ 
      fr"where MANDATE_ID = $mandate_id and histnr = (select max(histnr) from mandate.mm_mandate m2 where m1.mandate_id = m2.mandate_id)"
-    ).query[Mandate].unique
+    ).query[Mandate].option
   }
     
   def selectAllById( mandate_id : Long) : ConnectionIO[List[Mandate]] = {
@@ -119,5 +136,16 @@ case class Mandate (
     ( Fragment.const( "select " + attrStr + " from Mandate.MM_Mandate m1") ++
       Fragment.const( "where  histnr = (select max(histnr) from mandate.mm_mandate m2 where m1.mandate_id = m2.mandate_id) and m1.terminated_flag = 0")
     ).query[Mandate].to[List]
+  }
+  
+  /**
+   * Nur das Mandate terminieren, nicht die Verbindung zum BusinessObjectRef
+   */
+  def terminateAkt( mandate_id : Long) : ConnectionIO[Option[Mandate]] = {
+        selectAktById( mandate_id).flatMap({
+      case Some(t1) => insert( t1.setTerminated()).flatMap( _ => selectAktById( mandate_id))
+      case None     => Option.empty[Mandate].pure[ConnectionIO]
+    })
+
   }
 }

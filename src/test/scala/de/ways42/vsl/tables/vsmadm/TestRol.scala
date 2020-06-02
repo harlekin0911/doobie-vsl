@@ -38,5 +38,8 @@ class TestRol extends AnyFunSuite {
     val t = Trol001.terminateAkt( "0000000000001", "", 89, 1)
     assert( t.transact(xa).unsafeRunSync.get.RSTAT_CD == 2)
   }
+  test ( "Vsl-Rolle-selectAktById") {
+			assert( Trol001.delete( "0000000000001", "", 89, 1).transact(xa).unsafeRunSync == 1 )
+  }  
 }
 
