@@ -44,11 +44,20 @@ object HcTransactor2 {
     val ds = HcConfig.getDataSource( c)
     val scheduler :  SchedulerService = Scheduler(es)
     
-    implicit val cs = Task.contextShift(scheduler)
-    implicit val as : Async[Task] = ???
+    implicit val cs : cats.effect.ContextShift[monix.eval.Task] = Task.contextShift(scheduler)
+    
+    // IOInstances enthaelt den implicit Async
+    import cats.effect.IOInstances
+    //implicit val as : Async[Task] = ???
+
+    // ◾not enough arguments for method apply: 
+    // * (implicit evidence$1: cats.effect.Async[monix.eval.Task], 
+    //    implicit evidence$2: cats.effect.ContextShift[monix.eval.Task]) doobie.hikari.HikariTransactor[monix.eval.Task] 
+    // in object HcTransactor2. Unspecified value parameters evidence$1, evidence$2.
+    // ◾diverging implicit expansion for type cats.effect.Async[monix.eval.Task] starting with method ReaderWriterStateTAsync in object Async
 
 
-    ( Task.pure(HcTransactor2[Task]( ec, ds)), scheduler, ds)
+    ( Task.pure(HcTransactor2[monix.eval.Task]( ec, ds)), scheduler, ds)
   }
   
   def register[A] : Callback[Throwable, A] => Unit  = ???
