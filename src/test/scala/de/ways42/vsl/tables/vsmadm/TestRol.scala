@@ -29,8 +29,13 @@ class TestRol extends AnyFunSuite {
   test ( "Vsl-Rolle-selectAktById") {
 			assert( Trol001.selectAktById( "0050034703671", "", 89, 1).transact(xa).unsafeRunSync.get.ISTTOP_NRX.trim == "0050034703671" )
   }  
+}
+
+class TestRolInsert extends AnyFunSuite {
   
-  test( "Insert-Rolle") {
+	val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
+
+	test( "Insert-Rolle") {
     val t = Trol001( "0000000000001", "", 89, 1, 20200307, 113301, 20200305, "001250372", "001001000000000000000000", "0901" , 2, "DEE00000499276;0")
     assert( Trol001.insert(t).transact(xa).unsafeRunSync == 1)
   }
@@ -38,8 +43,14 @@ class TestRol extends AnyFunSuite {
     val t = Trol001.terminateAkt( "0000000000001", "", 89, 1)
     assert( t.transact(xa).unsafeRunSync.get.RSTAT_CD == 2)
   }
-  test ( "Vsl-Rolle-selectAktById") {
-			assert( Trol001.delete( "0000000000001", "", 89, 1).transact(xa).unsafeRunSync == 1 )
+}
+
+class TestRolDelete extends AnyFunSuite {
+	
+  val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
+
+	test ( "Delete-Rolle") {
+			assert( Trol001.delete( "0000000000001", "", 89, 1).transact(xa).unsafeRunSync == 2 )
   }  
 }
 

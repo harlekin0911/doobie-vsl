@@ -40,7 +40,7 @@ class TestMandate extends AnyFunSuite {
 			assert( BusinessObjectRef.selectByMandateId(313038).transact(xa).unsafeRunSync.head.BUSINESS_OBJ_REFERENCE_ID == 313038)
   }
 }
-class TestMandate2 extends AnyFunSuite {
+class TestMandateInsert extends AnyFunSuite {
   
   val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
   
@@ -88,6 +88,10 @@ class TestMandate2 extends AnyFunSuite {
     val m = Mandate.terminateAkt( 1)
     assert( m.transact(xa).unsafeRunSync.get.TERMINATED_FLAG == 1)
   }
+}
+
+class TestMandateDelete extends AnyFunSuite {
+  val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
   test( "Delete") {
     assert( Mandate.delete(1).transact(xa).unsafeRunSync == 2)
   }

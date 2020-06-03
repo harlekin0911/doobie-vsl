@@ -89,7 +89,7 @@ object Trol001 {
    * Insert  the entry
    */
   def delete( isttop_nrx:String, istkomp_nr:String, rollen_cd:Int, rang_nr:Int) : ConnectionIO[Int] = 
-    Update[Trol001]("delete from vsmadm.trol001 where isttop_nrx = ? and istkomp_nr = ? and rollen_cd = ? and rang_nr = ?").run(
+    Update[(String,String,Int,Int)]("delete from vsmadm.trol001 where isttop_nrx = ? and istkomp_nr = ? and rollen_cd = ? and rang_nr = ?").run(
         isttop_nrx, istkomp_nr, rollen_cd, rang_nr) 
 
   def terminateAkt( top : String, komp : String, roll : Int, rang : Int) : ConnectionIO[Option[Trol001]] = {
