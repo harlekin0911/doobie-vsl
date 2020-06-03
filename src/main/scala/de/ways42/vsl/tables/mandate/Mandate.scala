@@ -57,7 +57,7 @@ case class Mandate (
   
   def setTerminated() = {
     val dop = TimeService.getTimestamp()
-    copy( HISTNR = HISTNR + 1, DOP = dop,  TERMINATED_FLAG = 1)
+    copy( HISTNR = HISTNR + 1, DOP = dop,  IND = new Date(dop.getTime()), TERMINATED_FLAG = 1)
   }
 
 }

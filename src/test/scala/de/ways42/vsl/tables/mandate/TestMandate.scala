@@ -45,7 +45,6 @@ class TestMandateInsert extends AnyFunSuite {
   val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
   
 	test( "Insert-Mandate") {
-    //val m = Mandate( "0000000000001", "", 89, 1, 20200307, 113301, 20200305, "001250372", "001001000000000000000000", "0901" , 2, "DEE00000499276;0")
     val m = Mandate( 
         18,	
         1,	
