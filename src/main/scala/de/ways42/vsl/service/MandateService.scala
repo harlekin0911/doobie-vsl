@@ -37,24 +37,35 @@ class MandateService( val xa : Transactor.Aux[IO, Unit]) {
 	    case None  => ( Option.empty[Mandate], List.empty[Payment]).pure[ConnectionIO]})
 	}
 	
-	def getNichtTerminierteAbgelaufeneMandateMitLetztemPayment() : Map[Long, (Mandate, Option[Payment])] = {
-
-			val mm = Mandate.selectAktAllNotTerminated().transact(xa).unsafeRunSync.foldRight( 
-			    Map.empty[Long,( Mandate, Option[Payment])])((m,z) => z.updated(m.MANDATE_ID, (m,None)))
-			    
-			val mp = Payment.selectLastPaymentAlle().transact(xa).unsafeRunSync.foldRight( mm)(
-			    (p,m) =>  m.get(p.MANDATE_ID)  match { 
+	def aggregateMandateWithEmptyPayment( ml:List[Mandate]) : Map[Long, (Mandate, Option[Payment])] = 
+	  ml.foldRight( Map.empty[Long,( Mandate, Option[Payment])])((m,z) => z.updated(m.MANDATE_ID, (m,None)))
+	  
+	def aggregateMandateWithPayment( mm : Map[Long, (Mandate, Option[Payment])], pl : List[Payment])  : Map[Long, (Mandate, Option[Payment])] = 
+	    pl.foldRight(mm)( (p,m) =>  m.get(p.MANDATE_ID)  match { 
 			  case Some(k)   => m.updated(p.MANDATE_ID, (k._1, Some(p)))
 			  case _         => m
 			})
-					
-			val r = mp.filter( _._2._2.isEmpty)
-
-			println ( "Anzahl ohne Payment: " + mp.filter( _._2._2.isEmpty).size) 
-			println ( "Anzahl abgelaufene mit aktiven Status: " + r.size) 
 			
-			r
-	}
+	def mandateHasNoPayment( mm : Map[Long, (Mandate, Option[Payment])]) : Map[Long, (Mandate, Option[Payment])] =
+	  mm.filter( _._2._2.isEmpty)
+	
+	/**
+	 * Mandate mit ihrem letzten Payment anreichern falls vorhanden 
+	 */
+	def getNichtTerminierteAbgelaufeneMandateMitLetztemPayment()  : ConnectionIO[Map[Long, (Mandate, Option[Payment])]] = {
+
+	  for {
+	    lm <- Mandate.selectAktAllNotTerminated()
+	    mm <- aggregateMandateWithEmptyPayment(lm).pure[ConnectionIO]
+	    lp <- Payment.selectLastPaymentAlle()
+	    mp  <- mandateHasNoPayment( aggregateMandateWithPayment( mm, lp)).pure[ConnectionIO]
+	  } yield mp
+
+	  // Mandate.selectAktAllNotTerminated().flatMap( 
+	  //   lm => aggregateMandateWithEmptyPayment(lm).pure[ConnectionIO].flatMap(
+	  //	   mm => Payment.selectLastPaymentAlle().flatMap( 
+	  //	     lp => mandateHasNoPayment( aggregateMandateWithPayment( mm, lp)).pure[ConnectionIO])))
+	  }
 
 	def getMandateWithPaymentsSlow() = {
 			Mandate.selectAktAll().flatMap( 
@@ -62,6 +73,6 @@ class MandateService( val xa : Transactor.Aux[IO, Unit]) {
 					case Nil => None
 					case _   => Some( x.max(Payment.orderByScheduledDueDate))
 					})))
-					).transact(xa).unsafeRunSync.foreach(println)
+					)
 	}
 }
