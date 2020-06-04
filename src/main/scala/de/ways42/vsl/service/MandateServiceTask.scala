@@ -25,31 +25,31 @@ object MandateServiceTask {
   
 class MandateServiceTask( val xa : Transactor.Aux[Task, Unit]) {
 
-	def istMandateAbgelaufen( d : Date, m : Mandate, p : Option[Payment]) : Boolean = {
-			p.flatMap( x => x.SCHEDULED_DUE_DATE).getOrElse( m.SIGNED_DATE.getOrElse( (new GregorianCalendar( 1900, 1, 1)).getTime()))
-			.compareTo( d) >= 0			 			  			  
-	}
-	
-	/**
-	 * Aktuelles Mandat mit allen zugehoerigen Payments laden, falls vorhanden
-	 */
-	def getMandateWithPayments( mandateId : Long) : ConnectionIO[(Option[Mandate], List[Payment])] = Mandate.selectAktById( mandateId).flatMap({
-	    case Some(m) => Payment.selectAllByMandateId(mandateId).map( l => (Some(m),l))
-	    case None    => ( Option.empty[Mandate], List.empty[Payment]).pure[ConnectionIO]})
-	
-	/**
-	 * Mappe mit leeren Payment aufbauen
-	 */
-	def mapIdMandatePayment( lm:List[Mandate]) :  Map[Long, (Mandate, Option[Payment])] = 
-	  lm.foldRight( Map.empty[Long,( Mandate, Option[Payment])])((m,z) => z.updated(m.MANDATE_ID, (m,None)))
-	
-	/**
-	 * Paments in die Mappe fuellen
-	 */
-	def fillPayment( mm:Map[Long, (Mandate, Option[Payment])], lp: List[Payment]) = lp.foldRight( mm)((p,m) =>  m.get(p.MANDATE_ID)  match { 
-	  case Some(k)   => m.updated(p.MANDATE_ID, (k._1, Some(p)))
-	  case _         => m
-	})
+//	def istMandateAbgelaufen( d : Date, m : Mandate, p : Option[Payment]) : Boolean = {
+//			p.flatMap( x => x.SCHEDULED_DUE_DATE).getOrElse( m.SIGNED_DATE.getOrElse( (new GregorianCalendar( 1900, 1, 1)).getTime()))
+//			.compareTo( d) >= 0			 			  			  
+//	}
+//	
+//	/**
+//	 * Aktuelles Mandat mit allen zugehoerigen Payments laden, falls vorhanden
+//	 */
+//	def getMandateWithPayments( mandateId : Long) : ConnectionIO[(Option[Mandate], List[Payment])] = Mandate.selectAktById( mandateId).flatMap({
+//	    case Some(m) => Payment.selectAllByMandateId(mandateId).map( l => (Some(m),l))
+//	    case None    => ( Option.empty[Mandate], List.empty[Payment]).pure[ConnectionIO]})
+//	
+//	/**
+//	 * Mappe mit leeren Payment aufbauen
+//	 */
+//	def mapIdMandatePayment( lm:List[Mandate]) :  Map[Long, (Mandate, Option[Payment])] = 
+//	  lm.foldRight( Map.empty[Long,( Mandate, Option[Payment])])((m,z) => z.updated(m.MANDATE_ID, (m,None)))
+//	
+//	/**
+//	 * Paments in die Mappe fuellen
+//	 */
+//	def fillPayment( mm:Map[Long, (Mandate, Option[Payment])], lp: List[Payment]) = lp.foldRight( mm)((p,m) =>  m.get(p.MANDATE_ID)  match { 
+//	  case Some(k)   => m.updated(p.MANDATE_ID, (k._1, Some(p)))
+//	  case _         => m
+//	})
 	
 	def getNichtTerminierteAbgelaufeneMandateMitLetztemPayment()( implicit ev : Scheduler) : Task[Map[Long, (Mandate, Option[Payment])]] = {
 	  
@@ -58,17 +58,14 @@ class MandateServiceTask( val xa : Transactor.Aux[Task, Unit]) {
 	  
 	  for {
 	    ll <- Task.parZip2(m,p)
-	    mm <- Task( mapIdMandatePayment(ll._1))
-	    mp <- Task( fillPayment( mm, ll._2).filter( _._2._2.isEmpty))
+	    mm <- Task( MandateService.mapIdMandatePayment(ll._1))
+	    mp <- Task( MandateService.fillPayment( mm, ll._2).filter( _._2._2.isEmpty))
 	  } yield  mp	  
 	}
 
 	def getMandateWithPaymentsSlow() : Task[Unit] = {
 			Mandate.selectAktAll().flatMap( 
-					_.traverse( m => Payment.selectAllByMandateId( m.MANDATE_ID).map( x => (m, x match {
-					case Nil => None
-					case _   => Some( x.max(Payment.orderByScheduledDueDate))
-					})))
+					_.traverse( m => Payment.selectAllByMandateId( m.MANDATE_ID).map( x => (m, PaymentService.getLatestPayment(x))))
 					).transact(xa).map(println)
 	}
 }

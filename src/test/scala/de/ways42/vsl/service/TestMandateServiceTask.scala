@@ -22,7 +22,7 @@ class TestMandateServiceTask  extends AnyFunSuite  {
   //val (a,b,c) = HCPoolTask("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 3)
   
   test( "MS-getMandateWithPayments") {
-    assert( ms.getMandateWithPayments( 22317).transact(xa).runSyncUnsafe()._2.size == 1)
+    assert( MandateService.getMandateWithPayments( 22317).transact(xa).runSyncUnsafe()._2.size == 1)
  	}
     
   test( "MS-NichtTerminierteAbgelaufeneMandateMitLetztemPayment") {

@@ -15,7 +15,7 @@ import de.ways42.vsl.connection.Connect
 class TestMandateService  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
   
   val xa = Connect( "VSMADM", "together")
-  lazy val ms = MandateService(xa )
+  lazy val ms = MandateService //(xa )
   
   test( "MS-getMandateWithPayments") {
     assert( ms.getMandateWithPayments( 22317).transact(xa).unsafeRunSync()._2.size == 1)
