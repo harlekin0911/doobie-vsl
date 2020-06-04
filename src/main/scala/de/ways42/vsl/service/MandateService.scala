@@ -41,8 +41,8 @@ object MandateService {
 	/**
 	 * Mappe mit leeren Payment aufbauen
 	 */
-	def mapIdMandatePayment( lm:List[Mandate]) :  Map[Long, (Mandate, Option[Payment])] = 
-	  lm.foldRight( Map.empty[Long,( Mandate, Option[Payment])])((m,z) => z.updated(m.MANDATE_ID, (m,None)))
+//	def mapIdMandatePayment( lm:List[Mandate]) :  Map[Long, (Mandate, Option[Payment])] = 
+//	  lm.foldRight( Map.empty[Long,( Mandate, Option[Payment])])((m,z) => z.updated(m.MANDATE_ID, (m,None)))
 
 	def aggregateMandateWithEmptyPayment( ml:List[Mandate]) : Map[Long, (Mandate, Option[Payment])] = 
 	  ml.foldRight( Map.empty[Long,( Mandate, Option[Payment])])((m,z) => z.updated(m.MANDATE_ID, (m,None)))
@@ -50,10 +50,10 @@ object MandateService {
 	/**
 	 * Paments in die Mappe fuellen
 	 */
-	def fillPayment( mm:Map[Long, (Mandate, Option[Payment])], lp: List[Payment]) = lp.foldRight( mm)((p,m) =>  m.get(p.MANDATE_ID)  match { 
-	  case Some(k)   => m.updated(p.MANDATE_ID, (k._1, Some(p)))
-	  case _         => m
-	})
+//	def fillPayment( mm:Map[Long, (Mandate, Option[Payment])], lp: List[Payment]) = lp.foldRight( mm)((p,m) =>  m.get(p.MANDATE_ID)  match { 
+//	  case Some(k)   => m.updated(p.MANDATE_ID, (k._1, Some(p)))
+//	  case _         => m
+//	})
 
 	def aggregateMandateWithPayment( mm : Map[Long, (Mandate, Option[Payment])], pl : List[Payment])  : Map[Long, (Mandate, Option[Payment])] = 
 	    pl.foldRight(mm)( (p,m) =>  m.get(p.MANDATE_ID)  match { 

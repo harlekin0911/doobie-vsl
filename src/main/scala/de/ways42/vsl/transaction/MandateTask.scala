@@ -27,32 +27,14 @@ object MandateTask {
   
 class MandateTask( val xa : Transactor.Aux[Task, Unit]) {
 
-//	def istMandateAbgelaufen( d : Date, m : Mandate, p : Option[Payment]) : Boolean = {
-//			p.flatMap( x => x.SCHEDULED_DUE_DATE).getOrElse( m.SIGNED_DATE.getOrElse( (new GregorianCalendar( 1900, 1, 1)).getTime()))
-//			.compareTo( d) >= 0			 			  			  
-//	}
-//	
-//	/**
-//	 * Aktuelles Mandat mit allen zugehoerigen Payments laden, falls vorhanden
-//	 */
-//	def getMandateWithPayments( mandateId : Long) : ConnectionIO[(Option[Mandate], List[Payment])] = Mandate.selectAktById( mandateId).flatMap({
-//	    case Some(m) => Payment.selectAllByMandateId(mandateId).map( l => (Some(m),l))
-//	    case None    => ( Option.empty[Mandate], List.empty[Payment]).pure[ConnectionIO]})
-//	
-//	/**
-//	 * Mappe mit leeren Payment aufbauen
-//	 */
-//	def mapIdMandatePayment( lm:List[Mandate]) :  Map[Long, (Mandate, Option[Payment])] = 
-//	  lm.foldRight( Map.empty[Long,( Mandate, Option[Payment])])((m,z) => z.updated(m.MANDATE_ID, (m,None)))
-//	
-//	/**
-//	 * Paments in die Mappe fuellen
-//	 */
-//	def fillPayment( mm:Map[Long, (Mandate, Option[Payment])], lp: List[Payment]) = lp.foldRight( mm)((p,m) =>  m.get(p.MANDATE_ID)  match { 
-//	  case Some(k)   => m.updated(p.MANDATE_ID, (k._1, Some(p)))
-//	  case _         => m
-//	})
-	
+  
+  /**
+   * Mandate mit den zugehoerigen Payments parallel laden
+   */
+  def getMandateWithPayments( mandateId : Long) : Task[(Option[Mandate], List[Payment])] = Task.parZip2(
+	    Mandate.selectAktById( mandateId).transact(xa),
+	    Payment.selectAllByMandateId(mandateId).transact(xa))
+  	
 	def getNichtTerminierteAbgelaufeneMandateMitLetztemPayment()( implicit ev : Scheduler) : Task[Map[Long, (Mandate, Option[Payment])]] = {
 	  
 	  val m : Task[List[Mandate]] =  Mandate.selectAktAllNotTerminated().transact(xa)
@@ -60,8 +42,8 @@ class MandateTask( val xa : Transactor.Aux[Task, Unit]) {
 	  
 	  for {
 	    ll <- Task.parZip2(m,p)
-	    mm <- Task( MandateService.mapIdMandatePayment(ll._1))
-	    mp <- Task( MandateService.fillPayment( mm, ll._2).filter( _._2._2.isEmpty))
+	    mm <- Task( MandateService.aggregateMandateWithEmptyPayment(ll._1))
+	    mp <- Task( MandateService.aggregateMandateWithPayment( mm, ll._2).filter( _._2._2.isEmpty))
 	  } yield  mp	  
 	}
 
