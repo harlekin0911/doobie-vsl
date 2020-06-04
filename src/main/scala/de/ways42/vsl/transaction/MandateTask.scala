@@ -35,7 +35,7 @@ class MandateTask( val xa : Transactor.Aux[Task, Unit]) {
 	    Mandate.selectAktById( mandateId).transact(xa),
 	    Payment.selectAllByMandateId(mandateId).transact(xa))
   	
-	def getNichtTerminierteAbgelaufeneMandateMitLetztemPayment()( implicit ev : Scheduler) : Task[Map[Long, (Mandate, Option[Payment])]] = {
+	def getNichtTerminierteMandateMitLetztemPayment()( implicit ev : Scheduler) : Task[Map[Long, (Mandate, Option[Payment])]] = {
 	  
 	  val m : Task[List[Mandate]] =  Mandate.selectAktAllNotTerminated().transact(xa)
 	  val p : Task[List[Payment]] =  Payment.selectLastPaymentAlle().transact(xa)

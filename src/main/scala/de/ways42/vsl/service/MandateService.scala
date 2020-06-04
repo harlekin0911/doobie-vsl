@@ -64,7 +64,7 @@ object MandateService {
 	/**
 	 * Mandate mit ihrem letzten Payment anreichern falls vorhanden 
 	 */
-	def getNichtTerminierteAbgelaufeneMandateMitLetztemPayment()  : ConnectionIO[Map[Long, (Mandate, Option[Payment])]] = {
+	def getNichtTerminierteMandateMitLetztemPayment()  : ConnectionIO[Map[Long, (Mandate, Option[Payment])]] = {
 
 	  for {
 	    lm <- Mandate.selectAktAllNotTerminated()

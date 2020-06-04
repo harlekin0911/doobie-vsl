@@ -22,7 +22,7 @@ class TestMandateService  extends AnyFunSuite  { // with GeneratorDrivenProperty
  	}
     
   test( "MS-NichtTerminierteAbgelaufeneMandateMitLetztemPayment") {
-    val m = ms.getNichtTerminierteAbgelaufeneMandateMitLetztemPayment().transact(xa).unsafeRunSync()
+    val m = ms.getNichtTerminierteMandateMitLetztemPayment().transact(xa).unsafeRunSync()
     println ( "Anzahl abgelaufene mit aktiven Status: " + m.size) 
 	  assert(  m.size >= 12830)
   }

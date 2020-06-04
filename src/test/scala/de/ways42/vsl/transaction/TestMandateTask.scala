@@ -23,8 +23,8 @@ class TestMandateTask  extends AnyFunSuite  {
     assert( MandateService.getMandateWithPayments( 22317).transact(xa).runSyncUnsafe()._2.size == 1)
  	}
     
-  test( "MS-NichtTerminierteAbgelaufeneMandateMitLetztemPayment") {
-    val r = ms.getNichtTerminierteAbgelaufeneMandateMitLetztemPayment().runSyncUnsafe()
+  test( "MS-NichtTerminierteMandateMitLetztemPayment") {
+    val r = ms.getNichtTerminierteMandateMitLetztemPayment().runSyncUnsafe()
 		println ( "Anzahl abgelaufene mit aktiven Status: " + r.size) 
 	  assert(  r.size >= 12830)
   }
