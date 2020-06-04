@@ -1,23 +1,21 @@
 package de.ways42.vsl.service
 
 
-import org.scalatest.funsuite.AnyFunSuite //TestSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-import doobie._
-import doobie.implicits._
-
-import cats._
-import cats.effect._
-import cats.implicits._
 import de.ways42.vsl.connection.Connect
+import de.ways42.vsl.transaction.MandateTask
+import doobie.implicits.toConnectionIOOps
+
 //import de.ways42.vsl.connection.hikari.HCPoolTask
 
 
-class TestMandateServiceTask  extends AnyFunSuite  { 
+class TestMandateTask  extends AnyFunSuite  { 
   
   import monix.execution.Scheduler.Implicits.global
+  //CompanionImpl.Implicits.global
   val xa = Connect.usingOwnMonad( "VSMADM", "together")
-  lazy val ms = MandateServiceTask( xa)
+  lazy val ms = MandateTask( xa)
   
   //val (a,b,c) = HCPoolTask("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 3)
   

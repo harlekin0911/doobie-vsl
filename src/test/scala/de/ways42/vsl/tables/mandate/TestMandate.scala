@@ -16,7 +16,7 @@ import java.sql.Timestamp
 import java.sql.Date
 
 
-class TestMandate extends AnyFunSuite {
+object TestMandate extends AnyFunSuite {
 
 	val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
 
@@ -39,6 +39,7 @@ class TestMandate extends AnyFunSuite {
 			assert( BusinessObjectRef.selectById(2229, 1).transact(xa).unsafeRunSync.get.BUSINESS_OBJ_REFERENCE_ID == 2229)
 			assert( BusinessObjectRef.selectByMandateId(313038).transact(xa).unsafeRunSync.head.BUSINESS_OBJ_REFERENCE_ID == 313038)
   }
+	
 }
 class TestMandateInsert extends AnyFunSuite {
   

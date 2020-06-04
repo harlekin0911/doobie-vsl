@@ -1,4 +1,4 @@
-package de.ways42.vsl.service
+package de.ways42.vsl.transaction
 
 import de.ways42.vsl.tables.mandate.Payment
 import de.ways42.vsl.tables.mandate.Mandate
@@ -15,15 +15,17 @@ import cats.implicits._
 import java.util.GregorianCalendar
 import monix.eval.Task
 import monix.execution.Scheduler
+import de.ways42.vsl.service.PaymentService
+import de.ways42.vsl.service.MandateService
 
 
-object MandateServiceTask {
+object MandateTask {
   
-  def apply( xa : Transactor.Aux[Task, Unit]) : MandateServiceTask = new MandateServiceTask( xa)
+  def apply( xa : Transactor.Aux[Task, Unit]) : MandateTask = new MandateTask( xa)
 
 }
   
-class MandateServiceTask( val xa : Transactor.Aux[Task, Unit]) {
+class MandateTask( val xa : Transactor.Aux[Task, Unit]) {
 
 //	def istMandateAbgelaufen( d : Date, m : Mandate, p : Option[Payment]) : Boolean = {
 //			p.flatMap( x => x.SCHEDULED_DUE_DATE).getOrElse( m.SIGNED_DATE.getOrElse( (new GregorianCalendar( 1900, 1, 1)).getTime()))

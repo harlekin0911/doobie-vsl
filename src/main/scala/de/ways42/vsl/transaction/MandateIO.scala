@@ -1,4 +1,4 @@
-package de.ways42.vsl.service
+package de.ways42.vsl.transaction
 
 import de.ways42.vsl.tables.mandate.Payment
 import de.ways42.vsl.tables.mandate.Mandate
@@ -15,10 +15,10 @@ import cats.implicits._
 import java.util.GregorianCalendar
 
 
-object MandateServiceIO {
+object MandateIO {
   
-  def apply( xa : Transactor.Aux[IO, Unit]) : MandateServiceIO = new MandateServiceIO( xa)
+  def apply( xa : Transactor.Aux[IO, Unit]) : MandateIO = new MandateIO( xa)
 
 }
   
-class MandateServiceIO( val xa : Transactor.Aux[IO, Unit]) 
+class MandateIO( val xa : Transactor.Aux[IO, Unit]) 

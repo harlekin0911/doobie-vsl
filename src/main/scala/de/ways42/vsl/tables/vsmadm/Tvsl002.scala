@@ -97,10 +97,24 @@ object Tvsl002 {
   
   lazy val attrStr = attributes.mkString(",")
 
+  /**
+   * Alle Versicherungen mit Historie zu einem Vertrag
+   */
    
   def selectVtgnr( vtgnr : String) : ConnectionIO[List[Tvsl002]] = {
     ( Fragment.const( "select " + attrStr + " from VSMADM.TVSL002") ++
       fr"where  LV_VTG_NR = $vtgnr order by lv_vers_nr asc, va_dtm desc, df_zt desc"
+    ).query[Tvsl002].to[List]
+  }
+  
+  /**
+   * Alle aktuellen Versicherungen mit Historie zu einem Vertrag
+   */
+  
+  def selectAktZuVertrag( vtgnr:String) :  ConnectionIO[List[Tvsl002]] = {
+    ( Fragment.const( "select " + attrStr + " from VSMADM.TVSL002") ++ Fragments.whereAnd( 
+      fr"LV_VTG_NR = $vtgnr",
+      fr"SYSTAT_CD = 1 and GV_DTM < 25000101 and GE_DTM >= 25000101 order by lv_vers_nr asc" ) 
     ).query[Tvsl002].to[List]
   }
 }
