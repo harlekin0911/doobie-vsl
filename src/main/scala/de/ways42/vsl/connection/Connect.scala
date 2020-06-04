@@ -12,7 +12,7 @@ import monix.eval.Task
 object Connect {
 
 
-	def apply( user : String, passwd : String) : doobie.util.transactor.Transactor.Aux[IO, Unit] = {
+	def apply( driver:String, url:String, user : String, passwd : String) : doobie.util.transactor.Transactor.Aux[IO, Unit] = {
 
 		import scala.concurrent.ExecutionContext
 
@@ -24,8 +24,8 @@ object Connect {
 		// on an unbounded pool of daemon threads. See the chapter on connection handling for more info.
 
 		val xa = Transactor.fromDriverManager[IO](
-				"com.ibm.db2.jcc.DB2Driver",           // driver classname
-				"jdbc:db2://172.17.4.39:50001/vslt01", // connect URL (driver-specific)
+				driver, //"com.ibm.db2.jcc.DB2Driver",           // driver classname
+				url, //"jdbc:db2://172.17.4.39:50001/vslt01", // connect URL (driver-specific)
 				user, 
 				passwd
 		    //Blocker.liftExecutionContext( ExecutionContext.global) // just for testing		
@@ -35,12 +35,12 @@ object Connect {
 	}
 
 
-	def usingOwnMonad( user : String, passwd : String) : doobie.util.transactor.Transactor.Aux[Task, Unit] = {
+	def usingOwnMonad( driver:String, url:String, user : String, passwd : String) : doobie.util.transactor.Transactor.Aux[Task, Unit] = {
 			import monix.execution.Scheduler.Implicits.global 
 
 			Transactor.fromDriverManager[Task]( 
-					"com.ibm.db2.jcc.DB2Driver", // driver classname
-					"jdbc:db2://172.17.4.39:50001/vslt01", // connect URL (driver-specific)
+					driver, //"com.ibm.db2.jcc.DB2Driver", // driver classname
+					url, //"jdbc:db2://172.17.4.39:50001/vslt01", // connect URL (driver-specific)
 //					"jdbc:db2://172.17.4.39:50013/vslt03", // connect URL (driver-specific)
 					user,
 					passwd 

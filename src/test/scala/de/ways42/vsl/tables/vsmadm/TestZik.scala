@@ -20,7 +20,7 @@ import de.ways42.vsl.connection.Connect
 
 class TestZik extends AnyFunSuite {
 
-	val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
+	val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
 
 	test ( "Test-ZIK-selectAktById") {
 	  assert( Tzik012.selectAktById( "002110500524101", "1", 0).option.transact(xa).unsafeRunSync.get.Z_NKTO_NR  == "002110500524101")

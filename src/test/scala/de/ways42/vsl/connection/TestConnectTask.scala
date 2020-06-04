@@ -17,7 +17,7 @@ import monix.execution.Callback
 
 class TestConnectTask  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
   
-  val xa = Connect.usingOwnMonad( "VSMADM", "together")
+  val xa = Connect.usingOwnMonad( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
     
 
   test( "Test-ConnectAsync-1") {
@@ -40,7 +40,7 @@ class TestConnectTask  extends AnyFunSuite  { // with GeneratorDrivenPropertyChe
 	}
   
   test( "TestConnectAsync-parallel-list") {
-    val mxa = Connect.usingOwnMonad( "VSMADM", "together");
+    val mxa = Connect.usingOwnMonad( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together");
 
     import monix.eval.Task
     import monix.execution.Scheduler.Implicits.global

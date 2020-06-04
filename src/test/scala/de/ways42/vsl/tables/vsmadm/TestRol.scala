@@ -20,7 +20,7 @@ import de.ways42.vsl.connection.Connect
 
 class TestRol extends AnyFunSuite {
 
-	val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
+	val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
 
   test ( "Vsl-Rolle-selectById") {
 			assert( Trol001.selectById( "0050034703671", "", 89, 1).transact(xa).unsafeRunSync.length == 2 )
@@ -33,7 +33,7 @@ class TestRol extends AnyFunSuite {
 
 class TestRolInsert extends AnyFunSuite {
   
-	val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
+	val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
 
 	test( "Insert-Rolle") {
     val t = Trol001( "0000000000001", "", 89, 1, 20200307, 113301, 20200305, "001250372", "001001000000000000000000", "0901" , 2, "DEE00000499276;0")
@@ -47,7 +47,7 @@ class TestRolInsert extends AnyFunSuite {
 
 class TestRolDelete extends AnyFunSuite {
 	
-  val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
+  val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
 
 	test ( "Delete-Rolle") {
 			assert( Trol001.delete( "0000000000001", "", 89, 1).transact(xa).unsafeRunSync == 2 )

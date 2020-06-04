@@ -17,7 +17,7 @@ import monix.execution.Callback
 
 class TestConnect  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
   
-    val xa = Connect( "VSMADM", "together")
+    val xa = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
 
     test ( "Connect-1") {
 			val program1 = 42.pure[ConnectionIO]

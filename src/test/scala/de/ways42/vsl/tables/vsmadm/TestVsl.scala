@@ -20,7 +20,7 @@ import de.ways42.vsl.connection.Connect
 
 class TestVsl extends AnyFunSuite {
 
-	val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
+	val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
 
 	test( "Vsl-Select-Basic-1") {
 		val q = Query( "select * from VSMADM.TVSL001")

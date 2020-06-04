@@ -137,6 +137,11 @@ case class Mandate (
       Fragment.const( "where  histnr = (select max(histnr) from mandate.mm_mandate m2 where m1.mandate_id = m2.mandate_id) and m1.terminated_flag = 0")
     ).query[Mandate].to[List]
   }
+  def selectAktAllTerminated() : ConnectionIO[List[Mandate]] = {
+    ( Fragment.const( "select " + attrStr + " from Mandate.MM_Mandate m1") ++
+      Fragment.const( "where  histnr = (select max(histnr) from mandate.mm_mandate m2 where m1.mandate_id = m2.mandate_id) and m1.terminated_flag = 1")
+    ).query[Mandate].to[List]
+  }
   
   /**
    * Nur das Mandate terminieren, nicht die Verbindung zum BusinessObjectRef

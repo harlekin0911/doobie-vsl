@@ -16,9 +16,9 @@ import java.sql.Timestamp
 import java.sql.Date
 
 
-object TestMandate extends AnyFunSuite {
+class TestMandate extends AnyFunSuite {
 
-	val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
+	val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
 
 	
   test ( "Mandate-selectAktById") {
@@ -29,21 +29,29 @@ object TestMandate extends AnyFunSuite {
   }
   
   test ( "Mandate-selectAktAll") {
-			assert( Mandate.selectAktAll().transact(xa).unsafeRunSync.length > 250000)
+	  val c = Mandate.selectAktAll().transact(xa).unsafeRunSync
+	  val s = c.size
+	  println( "Anzahl akt all " + s)
+		assert( s > 250000)
   }
-	test ( "Payment") {
-		assert ( Payment.selectById(2229).transact(xa).unsafeRunSync.BUSINESS_OBJ_REFERENCE_ID.get == 2229 )
-	}
-	
-	test ( "BusinessObjectRef") {
-			assert( BusinessObjectRef.selectById(2229, 1).transact(xa).unsafeRunSync.get.BUSINESS_OBJ_REFERENCE_ID == 2229)
-			assert( BusinessObjectRef.selectByMandateId(313038).transact(xa).unsafeRunSync.head.BUSINESS_OBJ_REFERENCE_ID == 313038)
+	test ( "selectAktAllNotTerminated") {
+	  val c =  Mandate.selectAktAllNotTerminated().transact(xa).unsafeRunSync
+	  val s = c.size
+	  println( "Anzahl akt all not terminate d" + s)
+		assert( s == 246332)
+  }
+	test ( "selectAktAllTerminated") {
+	  val c =  Mandate.selectAktAllTerminated().transact(xa).unsafeRunSync
+	  val s = c.size
+	  println( "Anzahl akt all terminated " + s)
+		assert( s == 65733)
   }
 	
 }
+
 class TestMandateInsert extends AnyFunSuite {
   
-  val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
+  val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
   
 	test( "Insert-Mandate") {
     val m = Mandate( 
@@ -91,7 +99,7 @@ class TestMandateInsert extends AnyFunSuite {
 }
 
 class TestMandateDelete extends AnyFunSuite {
-  val xa : Transactor.Aux[IO, Unit] = Connect( "VSMADM", "together")
+  val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
   test( "Delete") {
     assert( Mandate.delete(1).transact(xa).unsafeRunSync == 2)
   }

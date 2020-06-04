@@ -14,7 +14,7 @@ class TestMandateTask  extends AnyFunSuite  {
   
   import monix.execution.Scheduler.Implicits.global
   //CompanionImpl.Implicits.global
-  val xa = Connect.usingOwnMonad( "VSMADM", "together")
+  val xa = Connect.usingOwnMonad( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
   lazy val ms = MandateTask( xa)
   
   //val (a,b,c) = HCPoolTask("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 3)
@@ -25,7 +25,7 @@ class TestMandateTask  extends AnyFunSuite  {
     
   test( "MS-NichtTerminierteMandateMitLetztemPayment") {
     val r = ms.getNichtTerminierteMandateMitLetztemPayment().runSyncUnsafe()
-		println ( "Anzahl abgelaufene mit aktiven Status: " + r.size) 
+		println ( "Anzahl nicht terminierte: " + r.size) 
 	  assert(  r.size >= 12830)
   }
 }
