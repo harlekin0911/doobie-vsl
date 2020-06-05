@@ -15,15 +15,24 @@ import de.ways42.vsl.connection.Connect
 class TestMandateService  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
   
   val xa = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
-  lazy val ms = MandateService //(xa )
   
   test( "MS-getMandateWithPayments") {
-    assert( ms.getMandateWithPayments( 22317).transact(xa).unsafeRunSync()._2.size == 1)
+    assert( MandateService.getMandateWithPayments( 22317).transact(xa).unsafeRunSync()._2.size == 1)
  	}
     
-  test( "MS-NichtTerminierteAbgelaufeneMandateMitLetztemPayment") {
-    val m = ms.getNichtTerminierteMandateMitLetztemPayment().transact(xa).unsafeRunSync()
-    println ( "Anzahl abgelaufene mit aktiven Status: " + m.size) 
-	  assert(  m.size >= 12830)
+  test( "MS-NichtTerminierteMandatet") {
+    val m = MandateService.getNichtTerminierteMandateUndLetztesPayment().transact(xa).unsafeRunSync().size
+    println ( "Anzahl Mandate mit aktiven Status: " + m) 
+	  assert(  m == 246332)
+  }
+  test( "MS-NichtTerminierteMandateOhnemPayment") {
+    val m = MandateService.getNichtTerminierteMandateOhnePayment().transact(xa).unsafeRunSync().size
+    println ( "Anzahl Mandate mit aktiven Status ohne Payments: " + m) 
+	  assert(  m == 12912)
+  }
+  test( "MS-NichtTerminierteMandateMitPayment") {
+    val m = MandateService.getNichtTerminierteMandateMitPayment().transact(xa).unsafeRunSync().size
+    println ( "Anzahl Mandate mit aktiven Status und Payments: " + m) 
+	  assert(  m == 233420)
   }
 }

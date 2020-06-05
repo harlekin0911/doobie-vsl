@@ -56,30 +56,39 @@ object MandateService {
 	/**
 	 * Filter Mandate ohne Payments
 	 */
-	def mandateHasNoPayment( mm : Map[Long, (Mandate, Option[Payment])]) : Map[Long, (Mandate, Option[Payment])] =
-	  mm.filter( _._2._2.isEmpty)
+	def mandateHasNoPayment( mp : (Mandate, Option[Payment])) : Boolean = mp._2.isEmpty
 
 	
 	  
 	/**
 	 * Mandate mit ihrem letzten Payment anreichern falls vorhanden 
 	 */
-	def getNichtTerminierteMandateMitLetztemPayment()  : ConnectionIO[Map[Long, (Mandate, Option[Payment])]] = {
+	def getNichtTerminierteMandateUndLetztesPayment()  : ConnectionIO[Map[Long, (Mandate, Option[Payment])]] = {
 
 	  for {
 	    lm <- Mandate.selectAktAllNotTerminated()
 	    mm <- aggregateMandateWithEmptyPayment(lm).pure[ConnectionIO]
 	    lp <- Payment.selectLastPaymentAlle()
-	    mp  <- mandateHasNoPayment( aggregateMandateWithPayment( mm, lp)).pure[ConnectionIO]
+	    mp <-  aggregateMandateWithPayment( mm, lp).pure[ConnectionIO]
 	  } yield mp
 
 	  // Mandate.selectAktAllNotTerminated().flatMap( 
 	  //   lm => aggregateMandateWithEmptyPayment(lm).pure[ConnectionIO].flatMap(
 	  //	   mm => Payment.selectLastPaymentAlle().flatMap( 
 	  //	     lp => mandateHasNoPayment( aggregateMandateWithPayment( mm, lp)).pure[ConnectionIO])))
-	  }
-
+	}
 	
+  def getNichtTerminierteMandateMitPayment() : ConnectionIO[Map[Long, (Mandate, Option[Payment])]] = 
+    getNichtTerminierteMandateUndLetztesPayment.flatMap(  _.filter( e => ! mandateHasNoPayment( e._2)).pure[ConnectionIO] )
+	/**
+	 * Gueltige Mandate ohne Payment
+	 */
+	def getNichtTerminierteMandateOhnePayment()  : ConnectionIO[Map[Long, (Mandate, Option[Payment])]] = 
+	  getNichtTerminierteMandateUndLetztesPayment.flatMap(  _.filter( e => mandateHasNoPayment( e._2)).pure[ConnectionIO] )
+	  
+	/**
+	 * Mandate mit ihrem letzten Payment anreichern falls vorhanden 
+	 */
 
 	def getMandateWithPaymentsSlow() = Mandate.selectAktAll().flatMap( 
 				_.traverse( m => Payment.selectAllByMandateId( m.MANDATE_ID).map( x => (m, PaymentService.getLatestPayment(x)))))
