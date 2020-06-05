@@ -18,16 +18,27 @@ import monix.execution.Scheduler
 import de.ways42.vsl.tables.mandate.Payment
 import de.ways42.vsl.tables.mandate.Mandate
 import de.ways42.vsl.tables.mandate.BusinessObjectRef
+import java.util.Calendar
 
 object MandateService {
   
-
+  /**
+   * Datum der letzen Erneuerung der Gueltigkeit
+   */
+	def getLastValidationDate( m : Mandate, p : Option[Payment]) : Option[Date] = {
+	  p.flatMap( _.SCHEDULED_DUE_DATE match {
+	    case None => m.SIGNED_DATE
+	    case y    => y})
+	}
+	  
   /**
    * Mandate mit letztem Payment aelter als 3 Jahre ?
    */
-	def istMandateAbgelaufen( d : Date, m : Mandate, p : Option[Payment]) : Boolean = {
-			p.flatMap( x => x.SCHEDULED_DUE_DATE).getOrElse( m.SIGNED_DATE.getOrElse( (new GregorianCalendar( 1900, 1, 1)).getTime()))
-			.compareTo( d) >= 0			 			  			  
+	def istMandateAbgelaufen( m:Mandate, p:Option[Payment]) : Boolean = {
+	  val d = TimeService.getCurrentTimeYearsBefore( 3)
+		val v = getLastValidationDate(m,p).getOrElse( (new GregorianCalendar( 1900, 1, 1)).getTime())
+			
+		v.compareTo( d) >= 0			 			  			  
 	}
 	
 		/**
@@ -85,6 +96,12 @@ object MandateService {
 	 */
 	def getNichtTerminierteMandateOhnePayment()  : ConnectionIO[Map[Long, (Mandate, Option[Payment])]] = 
 	  getNichtTerminierteMandateUndLetztesPayment.flatMap(  _.filter( e => mandateHasNoPayment( e._2)).pure[ConnectionIO] )
+	  
+	/**
+	 * 
+	 */
+	def getNichtTerminierteAbgelaufeneMandate()  : ConnectionIO[Map[Long, (Mandate, Option[Payment])]] = 
+	  getNichtTerminierteMandateUndLetztesPayment.flatMap( _.filter( e => istMandateAbgelaufen( e._2._1, e._2._2)).pure[ConnectionIO])
 	  
 	/**
 	 * Mandate mit ihrem letzten Payment anreichern falls vorhanden 

@@ -35,4 +35,10 @@ class TestMandateService  extends AnyFunSuite  { // with GeneratorDrivenProperty
     println ( "Anzahl Mandate mit aktiven Status und Payments: " + m) 
 	  assert(  m == 233420)
   }
+  test( "MS-NichtTerminierteAbgelaufene") {
+    val m = MandateService.getNichtTerminierteAbgelaufeneMandate().transact(xa).unsafeRunSync().size
+    println ( "Anzahl abgelaufene nicht terminierte Mandate: " + m) 
+	  assert(  m == 189498)
+  }
+  
 }

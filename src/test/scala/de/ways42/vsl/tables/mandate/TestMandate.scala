@@ -98,7 +98,7 @@ class TestMandateInsert extends AnyFunSuite {
   }
 }
 
-class TestMandateDelete extends AnyFunSuite {
+class TestMandateRemove extends AnyFunSuite {
   val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
   test( "Delete") {
     assert( Mandate.delete(1).transact(xa).unsafeRunSync == 2)

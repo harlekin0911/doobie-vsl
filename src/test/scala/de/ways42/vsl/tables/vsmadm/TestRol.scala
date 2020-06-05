@@ -45,7 +45,7 @@ class TestRolInsert extends AnyFunSuite {
   }
 }
 
-class TestRolDelete extends AnyFunSuite {
+class TestRolRemove extends AnyFunSuite {
 	
   val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
 

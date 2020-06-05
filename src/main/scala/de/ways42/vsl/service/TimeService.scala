@@ -23,4 +23,12 @@ object TimeService {
     
   def getTimestamp() : java.sql.Timestamp = new java.sql.Timestamp( (new GregorianCalendar()).getTimeInMillis);
   
+  def getCurrentDate() : java.util.Date = (new GregorianCalendar()).getTime()
+  
+  def getCurrentTimeYearsBefore( y:Int) : java.util.Date = {
+    val c = new GregorianCalendar()
+    c.set( Calendar.YEAR, c.get(Calendar.YEAR) - y)
+    c.getTime()
+  }
+  
 }

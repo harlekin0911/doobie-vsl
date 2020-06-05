@@ -29,24 +29,66 @@ class MandateTask( val xa : Transactor.Aux[Task, Unit]) {
 
   
   /**
-   * Mandate mit den zugehoerigen Payments parallel laden
+   * Ein Mandat mit den zugehoerigen Payments parallel laden
    */
   def getMandateWithPayments( mandateId : Long) : Task[(Option[Mandate], List[Payment])] = Task.parZip2(
 	    Mandate.selectAktById( mandateId).transact(xa),
 	    Payment.selectAllByMandateId(mandateId).transact(xa))
   	
-	def getNichtTerminierteMandateMitLetztemPayment()( implicit ev : Scheduler) : Task[Map[Long, (Mandate, Option[Payment])]] = {
-	  
-	  val m : Task[List[Mandate]] =  Mandate.selectAktAllNotTerminated().transact(xa)
-	  val p : Task[List[Payment]] =  Payment.selectLastPaymentAlle().transact(xa)
-	  
+	/**
+	 * Alle Mandate mit ihrem letzten Payment falls vorhanden parallel laden 
+	 */
+  def getAllMandatesWithPayments() : Task[(List[Mandate], List[Payment])] = Task.parZip2(
+	    Mandate.selectAktAllNotTerminated().transact(xa),
+	    Payment.selectLastPaymentAlle().transact(xa))
+
+	/**
+	 * Alle nicht terminierten Mandate mit ihrem letzten Payment parallel laden und eine Mappe bilden 
+	 */
+	def getNichtTerminierteMandateUndLetztesPayment() : Task[Map[Long, (Mandate, Option[Payment])]] = {	  	  
+	  val ll = getAllMandatesWithPayments()
 	  for {
-	    ll <- Task.parZip2(m,p)
-	    mm <- Task( MandateService.aggregateMandateWithEmptyPayment(ll._1))
-	    mp <- Task( MandateService.aggregateMandateWithPayment( mm, ll._2).filter( _._2._2.isEmpty))
+	    mp <- getMapMandateWithLatestPayment( ll)
 	  } yield  mp	  
 	}
 
+  /**
+   * Aggregiert aus der Liste der Mandate und der Liste der Payments eine Mappe zur Mandats-ID
+   */
+  def buildMapMandateWithLatestPayment( lm:List[Mandate], lp:List[Payment]) : Task[Map[Long, (Mandate, Option[Payment])]] = for {
+	  mm <- Task( MandateService.aggregateMandateWithEmptyPayment(lm))
+	  mp <- Task( MandateService.aggregateMandateWithPayment(mm,lp))
+	} yield  mp	  
+
+	/**
+	 * Kombiniert das Laden der Mandate und Payments mit der Assosation in einer Mappe
+	 */
+	def getMapMandateWithLatestPayment( t: Task[(List[Mandate], List[Payment])]) : Task[Map[Long, (Mandate, Option[Payment])]] = 
+	  for {
+	    ll <- t
+	    mp <- buildMapMandateWithLatestPayment( ll._1, ll._2)
+	  } yield  mp	  
+
+  /**
+   * Nicht terminierte Mandate mit Payment
+   */
+	def getNichtTerminierteMandateMitPayment( t: Task[(List[Mandate], List[Payment])]) : Task[Map[Long, (Mandate, Option[Payment])]] = 
+      getMapMandateWithLatestPayment(t).flatMap(  _.filter( e => ! MandateService.mandateHasNoPayment( e._2)).pure[Task] )
+	/**
+	 * Nicht terminierte  Mandate ohne Payment
+	 */
+	def getNichtTerminierteMandateOhnePayment( t: Task[(List[Mandate], List[Payment])])  : Task[Map[Long, (Mandate, Option[Payment])]] = 
+	  getMapMandateWithLatestPayment(t).flatMap(  _.filter( e => MandateService.mandateHasNoPayment( e._2)).pure[Task] )
+	  
+	/**
+	 * Nicht terminierte Abgelaufene Mandate
+	 */
+	def getNichtTerminierteAbgelaufeneMandate( t: Task[(List[Mandate], List[Payment])])  : Task[Map[Long, (Mandate, Option[Payment])]] = 
+	  getMapMandateWithLatestPayment(t).flatMap( _.filter( e => MandateService.istMandateAbgelaufen( e._2._1, e._2._2)).pure[Task])
+
+  /**
+   * Sequntiell dei Datenbank gefragen
+   */
 	def getMandateWithPaymentsSlow() : Task[Unit] = {
 			Mandate.selectAktAll().flatMap( 
 					_.traverse( m => Payment.selectAllByMandateId( m.MANDATE_ID).map( x => (m, PaymentService.getLatestPayment(x))))
