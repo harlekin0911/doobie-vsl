@@ -19,7 +19,15 @@ class TestMandateTask  extends AnyFunSuite  {
   
   lazy val ms = MandateTask( xa)
   
-  val mmp = ms.getAllMandatesWithPayments()
+  val lmp = ms.getAllMandatesWithPayments()
+  val mmp = ms.getMapMandateWithLatestPayment( lmp)
+     
+  val t = for {
+      a <- ms.getNichtTerminierteMandateOhnePayment(mmp)
+      b <- ms.getNichtTerminierteMandateMitPayment(mmp)
+      c <- ms.getNichtTerminierteAbgelaufeneMandate(mmp)
+    } yield (a.size,b.size,c.size)
+
 
   
   //val (a,b,c) = HCPoolTask("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 3)
@@ -34,25 +42,19 @@ class TestMandateTask  extends AnyFunSuite  {
 	  assert(  r.size >= 12830)
   }
     
-  test( "MS-NichtTerminierteMandatet") {
-    val m = ms.getNichtTerminierteMandateMitPayment(mmp).runSyncUnsafe().size
-    println ( "Anzahl Mandate mit aktiven Status: " + m) 
-	  assert(  m == 246332)
-  }
-  test( "MS-NichtTerminierteMandateOhnemPayment") {
-    val m = ms.getNichtTerminierteMandateOhnePayment(mmp).runSyncUnsafe().size
-    println ( "Anzahl Mandate mit aktiven Status ohne Payments: " + m) 
-	  assert(  m == 12912)
-  }
-  test( "MS-NichtTerminierteMandateMitPayment") {
-    val m = ms.getNichtTerminierteMandateMitPayment(mmp).runSyncUnsafe().size
-    println ( "Anzahl Mandate mit aktiven Status und Payments: " + m) 
-	  assert(  m == 233420)
-  }
-  test( "MS-NichtTerminierteAbgelaufene") {
-    val m = ms.getNichtTerminierteAbgelaufeneMandate(mmp).runSyncUnsafe().size
-    println ( "Anzahl abgelaufene nicht terminierte Mandate: " + m) 
-	  assert(  m == 189498)
-  }
 
+  test( "MS-Complete") {
+    
+    val e = t.runSyncUnsafe()
+    
+	  println ( "Anzahl Mandate mit aktiven Status ohne Payments: " + e._1) 
+	  assert(  e._1 == 12912)
+    
+    println ( "Anzahl Mandate mit aktiven Status und Payments: " + e._2) 
+	  assert(  e._2 == 233420)
+  
+    println ( "Anzahl abgelaufene nicht terminierte Mandate: " + e._3) 
+	  assert(  e._3 == 189484)
+
+  }
 }

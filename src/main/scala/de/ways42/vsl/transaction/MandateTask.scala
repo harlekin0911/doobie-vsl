@@ -72,19 +72,19 @@ class MandateTask( val xa : Transactor.Aux[Task, Unit]) {
   /**
    * Nicht terminierte Mandate mit Payment
    */
-	def getNichtTerminierteMandateMitPayment( t: Task[(List[Mandate], List[Payment])]) : Task[Map[Long, (Mandate, Option[Payment])]] = 
-      getMapMandateWithLatestPayment(t).flatMap(  _.filter( e => ! MandateService.mandateHasNoPayment( e._2)).pure[Task] )
+	def getNichtTerminierteMandateMitPayment( t: Task[Map[Long, (Mandate, Option[Payment])]]) : Task[Map[Long, (Mandate, Option[Payment])]] = 
+      t.flatMap(  MandateService.getEntryWithPayment(_).pure[Task] )
 	/**
 	 * Nicht terminierte  Mandate ohne Payment
 	 */
-	def getNichtTerminierteMandateOhnePayment( t: Task[(List[Mandate], List[Payment])])  : Task[Map[Long, (Mandate, Option[Payment])]] = 
-	  getMapMandateWithLatestPayment(t).flatMap(  _.filter( e => MandateService.mandateHasNoPayment( e._2)).pure[Task] )
+	def getNichtTerminierteMandateOhnePayment( t: Task[Map[Long, (Mandate, Option[Payment])]])  : Task[Map[Long, (Mandate, Option[Payment])]] = 
+	  t.flatMap(  MandateService.getEntryOhnePayment(_).pure[Task] )
 	  
 	/**
 	 * Nicht terminierte Abgelaufene Mandate
 	 */
-	def getNichtTerminierteAbgelaufeneMandate( t: Task[(List[Mandate], List[Payment])])  : Task[Map[Long, (Mandate, Option[Payment])]] = 
-	  getMapMandateWithLatestPayment(t).flatMap( _.filter( e => MandateService.istMandateAbgelaufen( e._2._1, e._2._2)).pure[Task])
+	def getNichtTerminierteAbgelaufeneMandate( t: Task[Map[Long, (Mandate, Option[Payment])]])  : Task[Map[Long, (Mandate, Option[Payment])]] = 
+	  t.flatMap( MandateService.getEntryNotTerminatedAbgelaufen(_).pure[Task])
 
   /**
    * Sequntiell dei Datenbank gefragen

@@ -89,19 +89,23 @@ object MandateService {
 	  //	     lp => mandateHasNoPayment( aggregateMandateWithPayment( mm, lp)).pure[ConnectionIO])))
 	}
 	
+  def getEntryWithPayment( m:Map[Long, (Mandate, Option[Payment])]) =  m.filter( e => ! mandateHasNoPayment( e._2)) 
+  def getEntryOhnePayment( m:Map[Long, (Mandate, Option[Payment])]) =  m.filter( e =>   mandateHasNoPayment( e._2)) 
+  def getEntryNotTerminatedAbgelaufen( m:Map[Long, (Mandate, Option[Payment])]) =  m.filter( e => istMandateAbgelaufen( e._2._1, e._2._2)) 
+    
   def getNichtTerminierteMandateMitPayment() : ConnectionIO[Map[Long, (Mandate, Option[Payment])]] = 
-    getNichtTerminierteMandateUndLetztesPayment.flatMap(  _.filter( e => ! mandateHasNoPayment( e._2)).pure[ConnectionIO] )
+    getNichtTerminierteMandateUndLetztesPayment.flatMap(  getEntryWithPayment(_).pure[ConnectionIO] )
 	/**
 	 * Gueltige Mandate ohne Payment
 	 */
 	def getNichtTerminierteMandateOhnePayment()  : ConnectionIO[Map[Long, (Mandate, Option[Payment])]] = 
-	  getNichtTerminierteMandateUndLetztesPayment.flatMap(  _.filter( e => mandateHasNoPayment( e._2)).pure[ConnectionIO] )
+	  getNichtTerminierteMandateUndLetztesPayment.flatMap(  getEntryOhnePayment(_).pure[ConnectionIO] )
 	  
 	/**
 	 * 
 	 */
 	def getNichtTerminierteAbgelaufeneMandate()  : ConnectionIO[Map[Long, (Mandate, Option[Payment])]] = 
-	  getNichtTerminierteMandateUndLetztesPayment.flatMap( _.filter( e => istMandateAbgelaufen( e._2._1, e._2._2)).pure[ConnectionIO])
+	  getNichtTerminierteMandateUndLetztesPayment.flatMap( getEntryNotTerminatedAbgelaufen(_).pure[ConnectionIO])
 	  
 	/**
 	 * Mandate mit ihrem letzten Payment anreichern falls vorhanden 
