@@ -15,6 +15,7 @@ class TestMandateTask  extends AnyFunSuite  {
   //CompanionImpl.Implicits.global
   import monix.execution.Scheduler.Implicits.global
   
+  //val (a,b,c) = HCPoolTask("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 3)
   val xa = Connect.usingOwnMonad( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
   
   lazy val ms = MandateTask( xa)
@@ -23,14 +24,15 @@ class TestMandateTask  extends AnyFunSuite  {
   val mmp = ms.getMapMandateWithLatestPayment( lmp)
      
   val t = for {
+      _ <-  monix.eval.Task.unit;  m = 1;  h  = 2
       a <- ms.getNichtTerminierteMandateOhnePayment(mmp)
       b <- ms.getNichtTerminierteMandateMitPayment(mmp)
       c <- ms.getNichtTerminierteAbgelaufeneMandate(mmp)
-    } yield (a.size,b.size,c.size)
+      d <- ms.getNichtTerminierteAbgelaufeneMandateOhnePayment(mmp)
+      e <- ms.getNichtTerminierteAbgelaufeneMandateWithPayment(mmp)
+    } yield (a.size,b.size,c.size, d.size, e.size)
 
-
-  
-  //val (a,b,c) = HCPoolTask("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 3)
+  val e = t.runSyncUnsafe()
   
   test( "MS-getMandateWithPayments") {
     assert( MandateService.getMandateWithPayments( 22317).transact(xa).runSyncUnsafe()._2.size == 1)
@@ -44,17 +46,26 @@ class TestMandateTask  extends AnyFunSuite  {
     
 
   test( "MS-Complete") {
+  }
     
-    val e = t.runSyncUnsafe()
-    
-	  println ( "Anzahl Mandate mit aktiven Status ohne Payments: " + e._1) 
+  test( "MS-Aktive-Ohne Payment") {
+	  println ( "Anzahl Mandate mit aktiven Status ohne Payments: "           + e._1) 
 	  assert(  e._1 == 12912)
-    
-    println ( "Anzahl Mandate mit aktiven Status und Payments: " + e._2) 
-	  assert(  e._2 == 233420)
-  
-    println ( "Anzahl abgelaufene nicht terminierte Mandate: " + e._3) 
-	  assert(  e._3 == 189484)
-
+  }
+  test( "MS-Aktive-Mit-Payments") {
+    println ( "Anzahl Mandate mit aktiven Status und Payments: "            + e._2) 
+    assert(  e._2 == 233420)
+  }
+  test( "MS-Nicht-Terminierte-Abgelaufene") {
+    println ( "Anzahl abgelaufene nicht terminierte Mandate: "              + e._3) 
+	  assert(  e._3 == 56848)
+  }
+  test( "MS-Nicht-Terminierte-Abgelaufene-Ohne-Payment") {
+    println ( "Anzahl abgelaufene nicht terminierte Mandate ohne Payment: " + e._4) 
+	  assert(  e._4 == 12912)
+  }
+  test( "MS-Nicht-Terminierte-Abgelaufene-Mit-Payment") {
+	  println ( "Anzahl abgelaufene nicht terminierte Mandate mit Payment: "  + e._5) 
+	  assert(  e._5 == 43936)
   }
 }

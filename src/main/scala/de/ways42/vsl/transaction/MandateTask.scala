@@ -80,6 +80,11 @@ class MandateTask( val xa : Transactor.Aux[Task, Unit]) {
 	def getNichtTerminierteMandateOhnePayment( t: Task[Map[Long, (Mandate, Option[Payment])]])  : Task[Map[Long, (Mandate, Option[Payment])]] = 
 	  t.flatMap(  MandateService.getEntryOhnePayment(_).pure[Task] )
 	  
+	def getNichtTerminierteAbgelaufeneMandateOhnePayment( t: Task[Map[Long, (Mandate, Option[Payment])]])  : Task[Map[Long, (Mandate, Option[Payment])]] = 
+	  t.flatMap(  MandateService.getEntryAbgelaufenOhnePayment(_).pure[Task] )
+	
+	def getNichtTerminierteAbgelaufeneMandateWithPayment( t: Task[Map[Long, (Mandate, Option[Payment])]])  : Task[Map[Long, (Mandate, Option[Payment])]] = 
+	  t.flatMap(  MandateService.getEntryAbgelaufenWithPayment(_).pure[Task] )
 	/**
 	 * Nicht terminierte Abgelaufene Mandate
 	 */
