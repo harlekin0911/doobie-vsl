@@ -10,6 +10,8 @@ import cats._
 import cats.effect._
 import cats.implicits._
 import de.ways42.vsl.connection.Connect
+import de.ways42.vsl.tables.mandate.Payment
+import de.ways42.vsl.tables.mandate.Mandate
 
 
 class TestMandateService  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
@@ -53,4 +55,39 @@ class TestMandateService  extends AnyFunSuite  { // with GeneratorDrivenProperty
 	  assert(  c == 12912)
   }
   
+}
+class TestMandateService2  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
+  
+  val xa = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
+  
+  val m = MandateService.getNichtTerminierteMandateUndLetztesPayment().map( (m:Map[Long, (Mandate,Option[Payment])]) => MandateService.seperate(m)).transact(xa).unsafeRunSync()
+
+  
+ 
+  test( "MS-NichtTerminierteMandateOhnemPayment") {
+    val c =   m.get(MandateService.NtNoPayment).map( _.size).getOrElse(0)
+    println ( "Anzahl Mandate mit aktiven Status ohne Payments: " + c) 
+	  assert(  c == 12912)
+  }
+  test( "MS-NichtTerminierteMandateMitPayment") {
+    val c =  m.get(MandateService.NtPayment).map( _.size).getOrElse(0)
+    println ( "Anzahl Mandate mit aktiven Status und Payments: " + c) 
+	  assert(  c == 233420)
+  }
+  test( "MS-NichtTerminierteAbgelaufene") {
+    val c =  m.get(MandateService.NtOod).map( _.size).getOrElse(0)
+    println ( "Anzahl abgelaufene nicht terminierte Mandate: " + c) 
+	  assert(  c == 56848)
+  }
+  test( "MS-NichtTerminierteAbgelaufeneMitPayment") {
+    val c =  m.get(MandateService.NtOodPayment).map( _.size).getOrElse(0)
+    println ( "Anzahl abgelaufene nicht terminierte Mandate: " + c) 
+	  assert(  c == 43936)
+  }
+  test( "MS-NichtTerminierteAbgelaufeneOhnePayment") {
+    val c =  m.get(MandateService.NtOodNoPayment).map( _.size).getOrElse(0)
+    println ( "Anzahl abgelaufene nicht terminierte Mandate: " + c) 
+	  assert(  c == 12912)
+  }
+
 }
