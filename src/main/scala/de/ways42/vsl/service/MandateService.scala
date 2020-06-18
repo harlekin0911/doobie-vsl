@@ -17,6 +17,7 @@ import monix.execution.Scheduler
 
 import de.ways42.vsl.tables.mandate.Payment
 import de.ways42.vsl.tables.mandate.Mandate
+import de.ways42.vsl.tables.mandate.MandatePayment
 import de.ways42.vsl.tables.mandate.BusinessObjectRef
 import java.util.Calendar
 
@@ -30,45 +31,45 @@ object MandateService {
   final case object NtOodPayment   extends Qual
   final case object NtOodNoPayment extends Qual
   
-  def catfn( f: ((Mandate, Option[Payment])) => Boolean, a:Qual) = ( acc: Map[Qual,  Map[Long, (Mandate, Option[Payment])]],e:(Mandate, Option[Payment])) => 
+  def catfn( f: (MandatePayment) => Boolean, a:Qual) = ( acc: Map[Qual,  Map[Long, MandatePayment]],e:MandatePayment) => 
     if (f(e._1, e._2)) 
-      acc.updated( a, acc.getOrElse(a, Map.empty[Long, (Mandate, Option[Payment])]).updated( e._1.MANDATE_ID, e))
+      acc.updated( a, acc.getOrElse(a, Map.empty[Long, MandatePayment]).updated( e._1.MANDATE_ID, e))
     else acc
     
-  val sepL: List[ (Map[Qual,  Map[Long, (Mandate, Option[Payment])]],(Mandate, Option[Payment])) => Map[Qual,  Map[Long, (Mandate, Option[Payment])]]] = 
-    catfn(        mandateHasNoPayment,                               NtNoPayment)::
-    catfn( e => ! mandateHasNoPayment(e),                             NtPayment)::
+  val sepL: List[ (Map[Qual,  Map[Long, MandatePayment]],MandatePayment) => Map[Qual,  Map[Long, MandatePayment]]] = 
+    catfn(                                   mandateHasNoPayment,    NtNoPayment)::
+    catfn( e =>                            ! mandateHasNoPayment(e), NtPayment)::
     catfn(      istMandateAbgelaufen,                                NtOod)::
     catfn( e => istMandateAbgelaufen(e) && ! mandateHasNoPayment(e), NtOodPayment)::
     catfn( e => istMandateAbgelaufen(e) &&   mandateHasNoPayment(e), NtOodNoPayment)::
     Nil
 
-  def seperate(m: Map[Long, (Mandate, Option[Payment])]) : Map[Qual,  Map[Long, (Mandate, Option[Payment])]] = {
-    m.foldLeft(Map.empty[Qual,  Map[Long, (Mandate, Option[Payment])]])( (acc,e) => 
+  def seperate(m: Map[Long, MandatePayment]) : Map[Qual,  Map[Long, MandatePayment]] = {
+    m.foldLeft(Map.empty[Qual,  Map[Long, MandatePayment]])( (acc,e) => 
       sepL.foldLeft( acc)( (acc2,f) => f(acc2, e._2)))
   }
   
-//  def foldDisjunkt(  m:Map[Long, (Mandate, Option[Payment])]) :  Map[Int,  Map[Long, (Mandate, Option[Payment])]] = ???
+//  def foldDisjunkt(  m:Map[Long, MandatePayment]) :  Map[Int,  Map[Long, MandatePayment]] = ???
 
-  def getEntryWithPayment( m:Map[Long, (Mandate, Option[Payment])]) =  
+  def getEntryWithPayment( m:Map[Long, MandatePayment]) =  
     m.filter( e => ! mandateHasNoPayment( e._2)) 
     
-  def getEntryOhnePayment( m:Map[Long, (Mandate, Option[Payment])]) =  
+  def getEntryOhnePayment( m:Map[Long, MandatePayment]) =  
     m.filter( e =>   mandateHasNoPayment( e._2)) 
     
-  def getEntryAbgelaufenWithPayment( m:Map[Long, (Mandate, Option[Payment])]) =  
+  def getEntryAbgelaufenWithPayment( m:Map[Long, MandatePayment]) =  
     m.filter( e => ! mandateHasNoPayment( e._2) && istMandateAbgelaufen( e._2)) 
     
-  def getEntryAbgelaufenOhnePayment( m:Map[Long, (Mandate, Option[Payment])]) =  
+  def getEntryAbgelaufenOhnePayment( m:Map[Long, MandatePayment]) =  
     m.filter( e =>   mandateHasNoPayment( e._2) && istMandateAbgelaufen( e._2)) 
     
-  def getEntryNotTerminatedAbgelaufen( m:Map[Long, (Mandate, Option[Payment])]) =  
+  def getEntryNotTerminatedAbgelaufen( m:Map[Long, MandatePayment]) =  
     m.filter( e => istMandateAbgelaufen( e._2)) 
 
 	/**
 	 * Filter Mandate ohne Payments
 	 */
-	def mandateHasNoPayment( mp : (Mandate, Option[Payment])) : Boolean = mp._2.isEmpty
+	def mandateHasNoPayment( mp : MandatePayment) : Boolean = mp._2.isEmpty
     
   /**
    * Datum der letzen Erneuerung der Gueltigkeit
@@ -82,7 +83,7 @@ object MandateService {
   /**
    * Mandate mit letztem Payment aelter als 3 Jahre ?
    */
-	def istMandateAbgelaufen( e:(Mandate, Option[Payment])) : Boolean = {
+	def istMandateAbgelaufen( e:MandatePayment) : Boolean = {
 	  val d = TimeService.getCurrentTimeYearsBefore( 3)
 		val v = getLastValidationDate(e._1,e._2).getOrElse( (new GregorianCalendar( 1900, 1, 1)).getTime())
 			
@@ -100,13 +101,13 @@ object MandateService {
 	/**
 	 * Mappe mit leeren Payment aufbauen
 	 */
-	def aggregateMandateWithEmptyPayment( ml:List[Mandate]) : Map[Long, (Mandate, Option[Payment])] = 
+	def aggregateMandateWithEmptyPayment( ml:List[Mandate]) : Map[Long, MandatePayment] = 
 	  ml.foldRight( Map.empty[Long,( Mandate, Option[Payment])])((m,z) => z.updated(m.MANDATE_ID, (m,None)))
 	  
 	/**
 	 * Paments in die Mappe fuellen
 	 */
-	def aggregateMandateWithPayment( mm : Map[Long, (Mandate, Option[Payment])], pl : List[Payment])  : Map[Long, (Mandate, Option[Payment])] = 
+	def aggregateMandateWithPayment( mm : Map[Long, MandatePayment], pl : List[Payment])  : Map[Long, MandatePayment] = 
 	    pl.foldRight(mm)( (p,m) =>  m.get(p.MANDATE_ID)  match { 
 			  case Some(k)   => m.updated(p.MANDATE_ID, (k._1, Some(p)))
 			  case _         => m
@@ -115,13 +116,13 @@ object MandateService {
   /**
    * Aggregiert aus der Liste der Mandate und der Liste der Payments eine Mappe zur Mandats-ID
    */
-  def buildMapMandateWithLatestPayment( lm:List[Mandate], lp:List[Payment]) : Map[Long, (Mandate, Option[Payment])] = 
+  def buildMapMandateWithLatestPayment( lm:List[Mandate], lp:List[Payment]) : Map[Long, MandatePayment] = 
 	 MandateService.aggregateMandateWithPayment(
 	     MandateService.aggregateMandateWithEmptyPayment(lm),lp)	  
 	/**
 	 * Mandate mit ihrem letzten Payment anreichern falls vorhanden 
 	 */
-	def getNichtTerminierteMandateUndLetztesPayment()  : ConnectionIO[Map[Long, (Mandate, Option[Payment])]] = {
+	def getNichtTerminierteMandateUndLetztesPayment()  : ConnectionIO[Map[Long, MandatePayment]] = {
 
 	  for {
 	    lm <- Mandate.selectAktAllNotTerminated()
