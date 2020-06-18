@@ -112,7 +112,12 @@ object MandateService {
 			  case _         => m
 			})
 				
-	  
+  /**
+   * Aggregiert aus der Liste der Mandate und der Liste der Payments eine Mappe zur Mandats-ID
+   */
+  def buildMapMandateWithLatestPayment( lm:List[Mandate], lp:List[Payment]) : Map[Long, (Mandate, Option[Payment])] = 
+	 MandateService.aggregateMandateWithPayment(
+	     MandateService.aggregateMandateWithEmptyPayment(lm),lp)	  
 	/**
 	 * Mandate mit ihrem letzten Payment anreichern falls vorhanden 
 	 */

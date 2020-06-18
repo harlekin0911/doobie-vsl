@@ -117,5 +117,29 @@ object Tvsl002 {
       fr"SYSTAT_CD = 1 and GV_DTM < 25000101 and GE_DTM >= 25000101 order by lv_vers_nr asc" ) 
     ).query[Tvsl002].to[List]
   }
+  /**
+   * Alle aufrechten Versicherungen laden
+   */
+  def selectAktAll() :  ConnectionIO[List[Tvsl002]] = {
+    ( Fragment.const( "select " + attrStr + " from VSMADM.TVSL002") ++ 
+      fr"where SYSTAT_CD = 1 and GV_DTM < 25000101 and GE_DTM >= 25000101 order by lv_vers_nr asc" 
+    ).query[Tvsl002].to[List]
+  }
+  /**
+   * Alle aufrechten, aktiven Versicherungen laden
+   */
+  def selectAktAktiveAll() :  ConnectionIO[List[Tvsl002]] = {
+    ( Fragment.const( "select " + attrStr + " from VSMADM.TVSL002") ++ 
+      fr"where SYSTAT_CD = 1 and lv_vers_stat_cd < 60 and GV_DTM < 25000101 and GE_DTM >= 25000101 order by lv_vers_nr asc" 
+    ).query[Tvsl002].to[List]
+  }
+  /**
+   * Alle aufrechten, beitragspflichtigen Versicherungen laden
+   */
+  def selectAktBpflAll() :  ConnectionIO[List[Tvsl002]] = {
+    ( Fragment.const( "select " + attrStr + " from VSMADM.TVSL002") ++ 
+      fr"where SYSTAT_CD = 1 and lv_vers_stat_cd = 60 and GV_DTM < 25000101 and GE_DTM >= 25000101 order by lv_vers_nr asc" 
+    ).query[Tvsl002].to[List]
+  }
 }
 
