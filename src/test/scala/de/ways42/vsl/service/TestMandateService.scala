@@ -13,7 +13,7 @@ import de.ways42.vsl.connection.Connect
 import de.ways42.vsl.tables.mandate.Payment
 import de.ways42.vsl.tables.mandate.Mandate
 import de.ways42.vsl.tables.mandate.MandateDom
-import de.ways42.vsl.tables.mandate.MandateDomOps._
+import de.ways42.vsl.tables.mandate.MandateDom._
 
 
 class TestMandateService  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
@@ -62,32 +62,32 @@ class TestMandateService2  extends AnyFunSuite  { // with GeneratorDrivenPropert
   
   val xa = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
   
-  val m = MandateService.getNichtTerminierteMandateUndLetztesPayment().map( (m:Map[Long, MandateDom]) => MandateDom.seperate(m)).transact(xa).unsafeRunSync()
+  val m = MandateService.getNichtTerminierteMandateUndLetztesPayment().map( (m:Map[Long, MandateDom]) => MandateDom.Qual.seperate(m)).transact(xa).unsafeRunSync()
 
   
  
   test( "MS-NichtTerminierteMandateOhnemPayment") {
-    val c =   m.get(MandateDom.NtNoPayment).map( _.size).getOrElse(0)
+    val c =   m.get(MandateDom.Qual.NtNoPayment).map( _.size).getOrElse(0)
     println ( "Anzahl Mandate mit aktiven Status ohne Payments: " + c) 
 	  assert(  c == 12912)
   }
   test( "MS-NichtTerminierteMandateMitPayment") {
-    val c =  m.get(MandateDom.NtPayment).map( _.size).getOrElse(0)
+    val c =  m.get(MandateDom.Qual.NtPayment).map( _.size).getOrElse(0)
     println ( "Anzahl Mandate mit aktiven Status und Payments: " + c) 
 	  assert(  c == 233420)
   }
   test( "MS-NichtTerminierteAbgelaufene") {
-    val c =  m.get(MandateDom.NtOod).map( _.size).getOrElse(0)
+    val c =  m.get(MandateDom.Qual.NtOod).map( _.size).getOrElse(0)
     println ( "Anzahl abgelaufene nicht terminierte Mandate: " + c) 
 	  assert(  c == 56848)
   }
   test( "MS-NichtTerminierteAbgelaufeneMitPayment") {
-    val c =  m.get(MandateDom.NtOodPayment).map( _.size).getOrElse(0)
+    val c =  m.get(MandateDom.Qual.NtOodPayment).map( _.size).getOrElse(0)
     println ( "Anzahl abgelaufene nicht terminierte Mandate: " + c) 
 	  assert(  c == 43936)
   }
   test( "MS-NichtTerminierteAbgelaufeneOhnePayment") {
-    val c =  m.get(MandateDom.NtOodNoPayment).map( _.size).getOrElse(0)
+    val c =  m.get(MandateDom.Qual.NtOodNoPayment).map( _.size).getOrElse(0)
     println ( "Anzahl abgelaufene nicht terminierte Mandate: " + c) 
 	  assert(  c == 12912)
   }

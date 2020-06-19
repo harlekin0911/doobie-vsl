@@ -3,7 +3,7 @@ package de.ways42.vsl.transaction
 import de.ways42.vsl.tables.mandate.Payment
 import de.ways42.vsl.tables.mandate.Mandate
 import de.ways42.vsl.tables.mandate.MandateDom
-import de.ways42.vsl.tables.mandate.MandateDomOps._
+import de.ways42.vsl.tables.mandate.MandateDom._
 import java.sql.Date
 import de.ways42.vsl.tables.mandate.BusinessObjectRef
 import doobie.util.transactor.Transactor

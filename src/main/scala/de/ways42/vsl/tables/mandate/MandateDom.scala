@@ -6,32 +6,34 @@ import java.util.GregorianCalendar
 import de.ways42.vsl.service.TimeService
 
 object MandateDom {
-  import MandateDomOps._
-  sealed trait Qual  
-  final case object NtNoPayment    extends Qual
-  final case object NtPayment      extends Qual
-  final case object NtOod          extends Qual
-  final case object NtOodPayment   extends Qual
-  final case object NtOodNoPayment extends Qual
   
-  def catfn( f: (MandateDom) => Boolean, a:Qual) = ( acc: Map[Qual,  Map[Long, MandateDom]],e:MandateDom) => 
-    if (f(e._1, e._2)) 
-      acc.updated( a, acc.getOrElse(a, Map.empty[Long, MandateDom]).updated( e._1.MANDATE_ID, e))
-    else acc
-    
-  val sepL: List[ (Map[Qual,  Map[Long, MandateDom]],MandateDom) => Map[Qual,  Map[Long, MandateDom]]] = 
-    catfn(                                   mandateHasNoPayment,    NtNoPayment)::
-    catfn( e =>                            ! mandateHasNoPayment(e), NtPayment)::
-    catfn(      istMandateAbgelaufen,                                NtOod)::
-    catfn( e => istMandateAbgelaufen(e) && ! mandateHasNoPayment(e), NtOodPayment)::
-    catfn( e => istMandateAbgelaufen(e) &&   mandateHasNoPayment(e), NtOodNoPayment)::
-    Nil
-
-  def seperate(m: Map[Long, MandateDom]) : Map[Qual,  Map[Long, MandateDom]] = {
-    m.foldLeft(Map.empty[Qual,  Map[Long, MandateDom]])( (acc,e) => 
-      sepL.foldLeft( acc)( (acc2,f) => f(acc2, e._2)))
+  sealed trait Qual  {
+    def catfn( f: (MandateDom) => Boolean, a:Qual) = ( acc: Map[Qual,  Map[Long, MandateDom]],e:MandateDom) => 
+      if (f(e._1, e._2)) 
+        acc.updated( a, acc.getOrElse(a, Map.empty[Long, MandateDom]).updated( e._1.MANDATE_ID, e))
+      else acc
   }
-  	
+  
+  object Qual extends Qual {  
+    final case object NtNoPayment    extends Qual
+    final case object NtPayment      extends Qual
+    final case object NtOod          extends Qual
+    final case object NtOodPayment   extends Qual
+    final case object NtOodNoPayment extends Qual
+  
+    val sepL: List[ (Map[Qual,  Map[Long, MandateDom]],MandateDom) => Map[Qual,  Map[Long, MandateDom]]] = 
+      catfn(                                   mandateHasNoPayment,    NtNoPayment)::
+      catfn( e =>                            ! mandateHasNoPayment(e), NtPayment)::
+      catfn(      istMandateAbgelaufen,                                NtOod)::
+      catfn( e => istMandateAbgelaufen(e) && ! mandateHasNoPayment(e), NtOodPayment)::
+      catfn( e => istMandateAbgelaufen(e) &&   mandateHasNoPayment(e), NtOodNoPayment)::
+      Nil
+    def seperate(m: Map[Long, MandateDom]) : Map[Qual,  Map[Long, MandateDom]] = {
+      m.foldLeft(Map.empty[Qual,  Map[Long, MandateDom]])( (acc,e) => 
+        Qual.sepL.foldLeft( acc)( (acc2,f) => f(acc2, e._2)))
+    }
+  }
+  
 	/**
 	 * Mappe mit leeren Payment aufbauen
 	 */
@@ -53,9 +55,6 @@ object MandateDom {
   def buildMapMandateWithLatestPayment( lm:List[Mandate], lp:List[Payment]) : Map[Long, MandateDom] = 
 	  aggregateMandateWithPayment( aggregateMandateWithEmptyPayment(lm),lp)	  
 
-}
-
-object MandateDomOps {
   
   import scala.language.implicitConversions
   implicit def mandateDom2MandateDomOps( md:MandateDom) = new MandateDomOps(md)
@@ -86,11 +85,11 @@ object MandateDomOps {
 
   
   class MandateDomOps( md:MandateDom) {
-    def mandateHasNoPayment : Boolean = MandateDomOps.mandateHasNoPayment(md)
-    def getLastValidationDate : Option[Date] = MandateDomOps.getLastValidationDate( md)
-    def abgelaufen : Boolean            = MandateDomOps.istMandateAbgelaufen(md)
-    def abgelaufenMitPayment : Boolean  = MandateDomOps.istMandateAbgelaufen(md) && ! MandateDomOps.mandateHasNoPayment(md)
-    def abgelaufenOhnePayment : Boolean = MandateDomOps.istMandateAbgelaufen(md) &&   MandateDomOps.mandateHasNoPayment(md)
+    def mandateHasNoPayment : Boolean = MandateDom.mandateHasNoPayment(md)
+    def getLastValidationDate : Option[Date] = MandateDom.getLastValidationDate( md)
+    def abgelaufen : Boolean            = MandateDom.istMandateAbgelaufen(md)
+    def abgelaufenMitPayment : Boolean  = MandateDom.istMandateAbgelaufen(md) && ! MandateDom.mandateHasNoPayment(md)
+    def abgelaufenOhnePayment : Boolean = MandateDom.istMandateAbgelaufen(md) &&   MandateDom.mandateHasNoPayment(md)
   }
   
 }
