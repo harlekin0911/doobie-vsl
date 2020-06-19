@@ -30,5 +30,4 @@ object VslService {
 			  case Some(k)   => m.updated(p.LV_VTG_NR, (k._1, k._2.updated(p.LV_VERS_NR, p)))
 			  case _         => m
 			})
-
 }

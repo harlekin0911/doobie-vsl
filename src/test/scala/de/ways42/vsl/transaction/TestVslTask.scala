@@ -6,6 +6,9 @@ import org.scalatest.funsuite.AnyFunSuite
 import de.ways42.vsl.connection.Connect
 import de.ways42.vsl.transaction.VslTask
 import doobie.implicits.toConnectionIOOps
+//import de.ways42.vsl.tables.vsmadm.VertrVersOps
+import de.ways42.vsl.tables.vsmadm.VertrVersOps._
+//import de.ways42.vsl.tables.vsmadm.VertrVers
 
 
 class TestVslTask  extends AnyFunSuite  { 
@@ -20,10 +23,26 @@ class TestVslTask  extends AnyFunSuite  {
   val lmp = vs.getAktiveVertraegeMitAktVersicherungen().runSyncUnsafe()
   
   test( "VS-AktiveVertraegeMitAktivenVersicherungen") {
-    val r = vs.getAktiveVertraegeMitAktVersicherungen().runSyncUnsafe().size
+    val r = lmp.size
 		println ( "Anzahl nicht terminierte: " + r) 
 	  assert(  r == 246523)
   }
+  
+  test("VS-Beitragspflichtige-Vericherungen") {
+    val r = lmp.filter( x => x._2.istBpfl).size
+		println ( "Anzahl beitragspflichtige: " + r) 
+	  assert(  r == 164412)
+  }
     
+  test("VS-BeitragspflichtigeNurVertrag-Vericherungen") {
+    val r = lmp.filter( x => x._2.istBpflNurVertrag).size
+		println ( "Anzahl beitragspflichtigeNurVertrag: " + r) 
+	  assert(  r == 14)
+  }
+  test("VS-BeitragspflichtigeNurVers-Vericherungen") {
+    val r = lmp.filter( x => x._2.istBpflNurVers).size
+		println ( "Anzahl beitragspflichtigeNurVers: " + r) 
+	  assert(  r == 8052)
+  }
 
 }
