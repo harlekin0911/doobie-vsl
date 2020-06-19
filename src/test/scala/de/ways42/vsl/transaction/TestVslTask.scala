@@ -6,9 +6,7 @@ import org.scalatest.funsuite.AnyFunSuite
 import de.ways42.vsl.connection.Connect
 import de.ways42.vsl.transaction.VslTask
 import doobie.implicits.toConnectionIOOps
-//import de.ways42.vsl.tables.vsmadm.VertrVersOps
-import de.ways42.vsl.tables.vsmadm.VertrVersOps._
-//import de.ways42.vsl.tables.vsmadm.VertrVers
+import de.ways42.vsl.tables.vsmadm.VslDom._
 
 
 class TestVslTask  extends AnyFunSuite  { 
