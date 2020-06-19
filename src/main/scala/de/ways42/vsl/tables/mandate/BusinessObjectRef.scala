@@ -53,9 +53,12 @@ object BusinessObjectRef {
   
   lazy val maxHistNr = Fragment.const( "histnr = (select max(histnr) from mandate.mm_business_object_reference bor2 where bor1.business_obj_reference_id = bor2.business_obj_reference_id)")
   
-  def maxInd( field:String) = Fragment.const( "ind = (select max(ind) from mandate.mm_business_object_reference bor2 where bor1." + field + " = bor2." + field + ")\"")
+  def maxInd( field:String) = Fragment.const( "ind = (select max(ind) from mandate.mm_business_object_reference bor2 where bor1." + field + " = bor2." + field + ")")
                                         
-	  
+	def selectAll() : ConnectionIO[List[BusinessObjectRef]] = {
+    Fragment.const( "select " + attrStr + " from Mandate.MM_Business_Object_Reference where business_obj_reference_id order by business_obj_reference_id asc").
+    query[BusinessObjectRef].to[List]
+  }
   def selectById( bor_id : Long, hnr : Long) : ConnectionIO[Option[BusinessObjectRef]] = {
     (Fragment.const( "select " + attrStr + " from Mandate.MM_Business_Object_Reference ") ++
      fr"where business_obj_reference_id = $bor_id and histnr = $hnr"
