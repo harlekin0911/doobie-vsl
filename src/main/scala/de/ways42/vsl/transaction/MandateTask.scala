@@ -2,8 +2,8 @@ package de.ways42.vsl.transaction
 
 import de.ways42.vsl.tables.mandate.Payment
 import de.ways42.vsl.tables.mandate.Mandate
-import de.ways42.vsl.tables.mandate.MandateDom
-import de.ways42.vsl.tables.mandate.MandateDom._
+import de.ways42.vsl.tables.mandate.MandateAktDom
+import de.ways42.vsl.tables.mandate.MandateAktDom._
 import java.sql.Date
 import de.ways42.vsl.tables.mandate.BusinessObjectRef
 import doobie.util.transactor.Transactor
@@ -47,7 +47,7 @@ class MandateTask( val xa : Transactor.Aux[Task, Unit]) {
 	/**
 	 * Alle nicht terminierten Mandate mit ihrem letzten Payment parallel laden und eine Mappe bilden 
 	 */
-	def getNichtTerminierteMandateUndLetztesPayment() : Task[Map[Long, MandateDom]] = {	  	  
+	def getNichtTerminierteMandateUndLetztesPayment() : Task[Map[Long, MandateAktDom]] = {	  	  
 	  val ll = getAllMandatesWithPayments()
 	  for {
 	    mp <- getMapMandateWithLatestPayment( ll)
@@ -57,15 +57,15 @@ class MandateTask( val xa : Transactor.Aux[Task, Unit]) {
   /**
    * Aggregiert aus der Liste der Mandate und der Liste der Payments eine Mappe zur Mandats-ID
    */
-  def buildMapMandateWithLatestPayment( lm:List[Mandate], lp:List[Payment]) : Task[Map[Long, MandateDom]] = for {
-	  mm <- Task( MandateDom.aggregateMandateWithEmptyPayment(lm))
-	  mp <- Task( MandateDom.aggregateMandateWithPayment(mm,lp))
+  def buildMapMandateWithLatestPayment( lm:List[Mandate], lp:List[Payment]) : Task[Map[Long, MandateAktDom]] = for {
+	  mm <- Task( MandateAktDom.aggregateMandateWithEmptyPayment(lm))
+	  mp <- Task( MandateAktDom.aggregateMandateWithPayment(mm,lp))
 	} yield  mp	  
 
 	/**
 	 * Kombiniert das Laden der Mandate und Payments mit der Assosation in einer Mappe
 	 */
-	def getMapMandateWithLatestPayment( t: Task[(List[Mandate], List[Payment])]) : Task[Map[Long, MandateDom]] = 
+	def getMapMandateWithLatestPayment( t: Task[(List[Mandate], List[Payment])]) : Task[Map[Long, MandateAktDom]] = 
 	  for {
 	    ll <- t
 	    mp <- buildMapMandateWithLatestPayment( ll._1, ll._2)
@@ -78,23 +78,23 @@ class MandateTask( val xa : Transactor.Aux[Task, Unit]) {
   /**
    * Nicht terminierte Mandate mit Payment
    */
-	def getNichtTerminierteMandateMitPayment( t: Task[Map[Long, MandateDom]]) : Task[Map[Long, MandateDom]] = 
+	def getNichtTerminierteMandateMitPayment( t: Task[Map[Long, MandateAktDom]]) : Task[Map[Long, MandateAktDom]] = 
       t.map(  _.filter( ! _._2.mandateHasNoPayment))
 	/**
 	 * Nicht terminierte  Mandate ohne Payment
 	 */
-	def getNichtTerminierteMandateOhnePayment( t: Task[Map[Long, MandateDom]])  : Task[Map[Long, MandateDom]] = 
+	def getNichtTerminierteMandateOhnePayment( t: Task[Map[Long, MandateAktDom]])  : Task[Map[Long, MandateAktDom]] = 
 	  t.map(  _.filter( _._2.mandateHasNoPayment) )
 	  
-	def getNichtTerminierteAbgelaufeneMandateOhnePayment( t: Task[Map[Long, MandateDom]])  : Task[Map[Long, MandateDom]] = 
+	def getNichtTerminierteAbgelaufeneMandateOhnePayment( t: Task[Map[Long, MandateAktDom]])  : Task[Map[Long, MandateAktDom]] = 
 	  t.map(   _.filter(_._2.abgelaufenOhnePayment) )
 	
-	def getNichtTerminierteAbgelaufeneMandateWithPayment( t: Task[Map[Long, MandateDom]])  : Task[Map[Long, MandateDom]] = 
+	def getNichtTerminierteAbgelaufeneMandateWithPayment( t: Task[Map[Long, MandateAktDom]])  : Task[Map[Long, MandateAktDom]] = 
 	  t.map(  _.filter( _._2.abgelaufenMitPayment)  )
 	/**
 	 * Nicht terminierte Abgelaufene Mandate
 	 */
-	def getNichtTerminierteAbgelaufeneMandate( t: Task[Map[Long, MandateDom]])  : Task[Map[Long, MandateDom]] = 
+	def getNichtTerminierteAbgelaufeneMandate( t: Task[Map[Long, MandateAktDom]])  : Task[Map[Long, MandateAktDom]] = 
 	  t.map( _.filter( _._2.abgelaufen))
 
   /**

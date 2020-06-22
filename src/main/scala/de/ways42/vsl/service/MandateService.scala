@@ -15,10 +15,10 @@ import doobie.util.transactor.Transactor
 import monix.eval.Task
 import monix.execution.Scheduler
 
-//import de.ways42.vsl.tables.mandate.MandateDomOps._
+//import de.ways42.vsl.tables.mandate.MandateAktDomOps._
 import de.ways42.vsl.tables.mandate.Payment
 import de.ways42.vsl.tables.mandate.Mandate
-import de.ways42.vsl.tables.mandate.MandateDom
+import de.ways42.vsl.tables.mandate.MandateAktDom
 import de.ways42.vsl.tables.mandate.BusinessObjectRef
 import java.util.Calendar
 
@@ -35,13 +35,13 @@ object MandateService {
 	/**
 	 * Mandate mit ihrem letzten Payment anreichern falls vorhanden 
 	 */
-	def getNichtTerminierteMandateUndLetztesPayment()  : ConnectionIO[Map[Long, MandateDom]] = {
+	def getNichtTerminierteMandateUndLetztesPayment()  : ConnectionIO[Map[Long, MandateAktDom]] = {
 
 	  for {
 	    lm <- Mandate.selectAktAllNotTerminated()
-	    mm <- MandateDom.aggregateMandateWithEmptyPayment(lm).pure[ConnectionIO]
+	    mm <- MandateAktDom.aggregateMandateWithEmptyPayment(lm).pure[ConnectionIO]
 	    lp <- Payment.selectLastPaymentAlle()
-	    mp <- MandateDom.aggregateMandateWithPayment( mm, lp).pure[ConnectionIO]
+	    mp <- MandateAktDom.aggregateMandateWithPayment( mm, lp).pure[ConnectionIO]
 	  } yield mp
 	}
 	    
