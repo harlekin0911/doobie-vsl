@@ -5,6 +5,11 @@ import java.util.GregorianCalendar
 
 import de.ways42.vsl.service.TimeService
 
+object MandateDom {
+  
+  def apply( m:Mandate, lp:List[Payment]) : MandateDom = (m, lp)
+}
+
 object MandateAktDom {
   
   sealed trait Qual  {
