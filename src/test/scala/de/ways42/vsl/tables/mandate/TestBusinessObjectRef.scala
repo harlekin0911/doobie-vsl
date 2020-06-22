@@ -28,14 +28,28 @@ class TestBusinessObjectRef extends AnyFunSuite {
 	test ( "selectByMandateIdAkt") {
 			assert( BusinessObjectRef.selectAktByMandateId(313038).transact(xa).unsafeRunSync.size == 1 )
   }	
-	test ( "selectAll") {
+	test ( "check-multiple-mandate_id-in-business-object-ref") {
 	  val lbor : List[BusinessObjectRef]= BusinessObjectRef.selectAll.transact(xa).unsafeRunSync()
-	  val m :Map[Long,List[BusinessObjectRef]] = lbor.groupBy(_.MANDATE_ID)
-	  val e = m.groupBy( {case (k,v) => v.size})
-	  e.foreach( x => println( "size=" + x._1 + " Anzahl= " + x._2.size ))
-	  e.get(3).map( _.foreach( x => println( "mandate_id=" + x._1)))
-	  val f = 2.to(3).map( e.get(_).map( _.filter( _._2.groupBy(_.BUSINESS_OBJ_REFERENCE_ID).size > 1)))   
-	  f.foreach( _.foreach( _.foreach(x => println( "diff borid mandate_id=" + x._1))))
-		assert( e.get(3).map(_.size).getOrElse(0) > 1 )
-  }	
+	  val e:Map[Long,List[BusinessObjectRef]] = lbor.groupBy(_.MANDATE_ID)
+	  val twoOrMore =e.filter( _._2.groupBy(_.BUSINESS_OBJ_REFERENCE_ID).size > 1)
+	  assert( twoOrMore.size == 0)
+//	  //e.foldLeft(0)((acc,t) => 
+//	  e.foreach( x => println( "size=" + x._1 + " Anzahl= " + x._2.size ))
+//	  //e.get(3).map( _.foreach( x => println( "mandate_id=" + x._1)))
+//	  val f = e.map( e.get(_).map( _.filter( _._2.groupBy(_.BUSINESS_OBJ_REFERENCE_ID).size > 1)))   
+//	  f.foreach( _.foreach( _.foreach(x => println( "diff borid mandate_id=" + x._1))))
+//		assert( e.get(3).map(_.size).getOrElse(0) > 1 )
+  }
+	test ( "Check-multiple-mandate-for-object-ext-ref") {
+	  val lbor : List[BusinessObjectRef]= BusinessObjectRef.selectAll.transact(xa).unsafeRunSync()
+	  val e:Map[String,List[BusinessObjectRef]] = lbor.groupBy(_.BUSINESS_OBJ_EXT_REF)
+	  val twoOrMore =e.filter( _._2.groupBy(_.MANDATE_ID).size > 1)
+	  assert( twoOrMore.size == 7404)  
+	}
+	test ( "Check-multiple-business-obj-ref-id-for-object-ext-ref") {
+	  val lbor : List[BusinessObjectRef]= BusinessObjectRef.selectAll.transact(xa).unsafeRunSync()
+	  val e:Map[String,List[BusinessObjectRef]] = lbor.groupBy(_.BUSINESS_OBJ_EXT_REF)
+	  val twoOrMore =e.filter( _._2.groupBy(_.BUSINESS_OBJ_REFERENCE_ID).size > 1)
+	  assert( twoOrMore.size == 7404)  
+	}
 }
