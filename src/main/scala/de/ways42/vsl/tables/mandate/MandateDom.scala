@@ -8,6 +8,17 @@ import de.ways42.vsl.service.TimeService
 object MandateDom {
   
   def apply( m:Mandate, lp:List[Payment]) : MandateDom = (m, lp)
+  
+  def buildValidated( m:Mandate, lp:List[Payment]) : Either[Throwable,MandateDom] = 
+    validate( m.MANDATE_ID, lp).map( p => (m, p))
+
+  def validate( mid:Long, lp:List[Payment]) : Either[Throwable, List[Payment]] = lp.filter( _.MANDATE_ID != mid) match {
+    case Nil => Right(lp)
+    case fp   =>
+      val ep = fp.fold( "Fehlerhafte Payments mit abweichender MandatsID: ")((f,p) => f + " " + p.toString())
+      Left( new Throwable( "Objekte mit falscher MandatsId, " + ep))
+  }
+
 }
 
 object MandateAktDom {
@@ -38,6 +49,7 @@ object MandateAktDom {
         Qual.sepL.foldLeft( acc)( (acc2,f) => f(acc2, e._2)))
     }
   }
+  
   
 	/**
 	 * Mappe mit leeren Payment aufbauen

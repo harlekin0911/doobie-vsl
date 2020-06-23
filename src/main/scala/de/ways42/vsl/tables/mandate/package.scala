@@ -1,5 +1,11 @@
 package de.ways42.vsl.tables
 
+
+/**
+ * Aufbau der Datenbank
+ * 
+ * BusinessObjectExtRefKey 1 <---> n BusinessObjectRef 1 <---> 1 Mandate 1 <---> n Payments 
+ */
 package object mandate {
   
   /**
@@ -15,12 +21,12 @@ package object mandate {
   /**
    * BusinessObjectReference and it's according actual Mandate
    */
-  type MandateExtDom    = (BusinessObjectRef, List[MandateDom])
+  type MandateExtDom    = (BusinessObjectRef, MandateDom)
 
   /**
    * BusinessObjectReference and it's according Mandate with all its payments
    */
-  type MandateExtAktDom = (BusinessObjectRef, List[MandateAktDom])
+  type MandateExtAktDom = (BusinessObjectRef, MandateAktDom)
   
   
   /**
