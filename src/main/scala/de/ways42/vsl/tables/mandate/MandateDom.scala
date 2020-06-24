@@ -4,19 +4,23 @@ import java.sql.Date
 import java.util.GregorianCalendar
 
 import de.ways42.vsl.service.TimeService
+import cats.data.Validated
+import cats.data.Validated.Invalid
+import cats.data.Validated.Valid
+
 
 object MandateDom {
   
   def apply( m:Mandate, lp:List[Payment]) : MandateDom = (m, lp)
   
-  def buildValidated( m:Mandate, lp:List[Payment]) : Either[Throwable,MandateDom] = 
-    validate( m.MANDATE_ID, lp).map( p => (m, p))
+  def buildValidated( m:Mandate, lp:List[Payment]) : Validated[String,MandateDom] = 
+    validate( m, lp)
 
-  def validate( mid:Long, lp:List[Payment]) : Either[Throwable, List[Payment]] = lp.filter( _.MANDATE_ID != mid) match {
-    case Nil => Right(lp)
-    case fp   =>
+  def validate( m:Mandate, lp:List[Payment]) : Validated[String, (Mandate,List[Payment])] = lp.filter( _.MANDATE_ID != m.MANDATE_ID) match {
+    case Nil => Valid((m,lp))
+    case fp   => 
       val ep = fp.fold( "Fehlerhafte Payments mit abweichender MandatsID: ")((f,p) => f + " " + p.toString())
-      Left( new Throwable( "Objekte mit falscher MandatsId, " + ep))
+      Invalid( "Objekte mit falscher MandatsId, " + ep)
   }
 
 }
