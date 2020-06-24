@@ -9,14 +9,17 @@ import cats.data._
 
 object MandateExtDom {
   
-  def buildMandateExtDom( ob:Option[BusinessObjectRef], m:Mandate, lp:List[Payment]) : Option[MandateExtDom] = 
-    ob.flatMap( x => Some(buildMandateExtDom( x, m, lp)))
+  def apply( ob:Option[BusinessObjectRef], m:Mandate, lp:List[Payment]) : Option[MandateExtDom] = 
+    ob.flatMap( x => Some(apply( x, m, lp)))
     
-  def buildMandateExtDom( b:BusinessObjectRef, m:Mandate, lp:List[Payment]) : MandateExtDom = (b, (m, lp))
+  def apply( b:BusinessObjectRef, m:Mandate, lp:List[Payment]) : MandateExtDom = (b, (m, lp))
   
   
-  def buildValidated( b:BusinessObjectRef, m:Mandate, lp:List[Payment]) : ValidatedNec[String,MandateExtDom] = 
-    validate( b, m, lp).map( _ => buildMandateExtDom(b, m, lp))
+  def applyV( b:BusinessObjectRef, m:Mandate, lp:List[Payment]) : MandateExtDom = 
+    validate( b, m, lp) match {
+    case Valid(o) => o
+    case Invalid(c) => throw new RuntimeException( c.foldLeft( "")( (acc,s) => acc + " " + s))
+  }
   
   
   def validate( b:BusinessObjectRef, m:Mandate, lp:List[Payment]) : ValidatedNec[String, MandateExtDom] = {
@@ -25,7 +28,7 @@ object MandateExtDom {
       if ( b.MANDATE_ID != m.MANDATE_ID)  Invalid("Fehlerhaftes BusinessObject mit abweichender Mandats_id:" + b.toString())
       else Valid((b,m))
     
-    def build(  d1:(BusinessObjectRef, Mandate),d2:(Mandate, List[Payment])) = buildMandateExtDom(d1._1, d1._2, d2._2) 
+    def build(  d1:(BusinessObjectRef, Mandate),d2:(Mandate, List[Payment])) = apply(d1._1, d1._2, d2._2) 
 
     ( valM( b,m).toValidatedNec, MandateDom.validate( m, lp).toValidatedNec).mapN( build(_,_))
   }
