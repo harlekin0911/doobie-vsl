@@ -32,5 +32,10 @@ package object mandate {
   /**
    * Liste aller Mandatsstrukturen zu einem Vertrag
    */
-  type MandateDomain = ( String, List[BusinessObjectRef])
+  type MandateDomain = ( String, Map[Long,MandateExtDom])
+
+  /**
+   * Liste aller Mandatsstrukturen zu einem Vertrag nur mit dem juengsten Payment
+   */
+  type MandateAktDomain = ( String, Map[Long,MandateExtAktDom])
 }

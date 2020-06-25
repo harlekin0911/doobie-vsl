@@ -22,7 +22,19 @@ object MandateDom {
       val ep = fp.fold( "Fehlerhafte Payments mit abweichender MandatsID: ")((f,p) => f + " " + p.toString())
       Invalid( "Objekte mit falscher MandatsId, " + ep)
   }
-
+  
+	/**
+	 * Mappe zur MandatsId und dem MandateDom aufbauen, also das Mandat mit all seinen Payments
+	 */
+	def aggregateMandateWithPayment( lm:List[Mandate], mp:Map[Long, List[Payment]]) : Map[Long, MandateDom] = 
+	  lm.foldRight( 
+	      Map.empty[Long,( Mandate, List[Payment])])(
+	          (m,z) => z.updated(m.MANDATE_ID, (m,mp.getOrElse(m.MANDATE_ID, List.empty))))
+	  
+	/**
+	 * Paments in die Mappe fuellen
+	 */
+	def aggregatePayments( pl : List[Payment])  : Map[Long, List[Payment]] = pl.groupBy( _.MANDATE_ID)
 }
 
 object MandateAktDom {

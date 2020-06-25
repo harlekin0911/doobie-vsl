@@ -13,6 +13,8 @@ object MandateExtDom {
     ob.flatMap( x => Some(apply( x, m, lp)))
     
   def apply( b:BusinessObjectRef, m:Mandate, lp:List[Payment]) : MandateExtDom = (b, (m, lp))
+
+  def apply( b:BusinessObjectRef, md: MandateDom) : MandateExtDom = (b, md)
   
   
   def applyV( b:BusinessObjectRef, m:Mandate, lp:List[Payment]) : MandateExtDom = 
@@ -32,6 +34,18 @@ object MandateExtDom {
 
     ( valM( b,m).toValidatedNec, MandateDom.validate( m, lp).toValidatedNec).mapN( build(_,_))
   }
+  
+  /**
+   * Mappe mit businessObjectRefId und dem MandateExtDom aufbauen,
+   * zwischen BusinessObjectReference und Mandate besteht eine 1 <--> 1 Beziehung
+   * 
+   * Referenzen zu nicht vorhandenen Mandaten werden ignoriert
+   */
+  def aggregateListMandateExtDom( lbor:List[BusinessObjectRef], mmd:Map[Long,MandateDom]) : Map[Long,MandateExtDom] = 
+    lbor.foldLeft( Map.empty[Long,MandateExtDom])( 
+        (acc,bor) => mmd.get(bor.MANDATE_ID) match {
+        case Some(d) => acc.updated(bor.BUSINESS_OBJ_REFERENCE_ID, apply(bor,d))
+        case None    => acc})
     
     
   import scala.language.implicitConversions

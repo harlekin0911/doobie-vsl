@@ -93,10 +93,19 @@ object Payment {
     ).query[Payment].option
   }
 
+  /**
+   * Jüngstes Payment zur MandatsId für alle Mandate laden, falls vorhanden
+   * BusinessObjectReferenceId ist nullable
+   */
   def selectLastPaymentAlle() : ConnectionIO[List[Payment]] = {
     (Fragment.const( "select " + attrStr +  " from MANDATE.MM_PAYMENT p1") ++
      Fragment.const( "where SCHEDULED_DUE_DATE = ( select max(SCHEDULED_DUE_DATE) from MANDATE.MM_PAYMENT p2 where p1.mandate_id = p2.mandate_id)")
     ).query[Payment].to[List]
   }
-
+  
+  /**
+   * Alle Payments laden
+   */
+  def selectPaymentAlle() : ConnectionIO[List[Payment]] = 
+    Fragment.const( "select " + attrStr +  " from MANDATE.MM_PAYMENT").query[Payment].to[List]
 }

@@ -59,6 +59,13 @@ object BusinessObjectRef {
     Fragment.const( "select " + attrStr + " from Mandate.MM_Business_Object_Reference where business_obj_reference_id order by business_obj_reference_id asc").
     query[BusinessObjectRef].to[List]
   }
+  def selectAktAll() : ConnectionIO[List[BusinessObjectRef]] = {
+    ( Fragment.const( "select " + attrStr + " from Mandate.MM_Business_Object_Reference b1") ++
+      Fragment.const( "where  histnr = (select max(histnr) from mandate.MM_Business_Object_Reference b2" + 
+                                        " where b1.business_obj_reference_id = b2.business_obj_reference_id)")
+    ).query[BusinessObjectRef].to[List]
+  }
+
   def selectById( bor_id : Long, hnr : Long) : ConnectionIO[Option[BusinessObjectRef]] = {
     (Fragment.const( "select " + attrStr + " from Mandate.MM_Business_Object_Reference ") ++
      fr"where business_obj_reference_id = $bor_id and histnr = $hnr"

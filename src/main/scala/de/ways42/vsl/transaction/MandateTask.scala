@@ -19,6 +19,9 @@ import monix.eval.Task
 import monix.execution.Scheduler
 import de.ways42.vsl.service.PaymentService
 import de.ways42.vsl.service.MandateService
+import de.ways42.vsl.tables.mandate.MandateDom
+import de.ways42.vsl.tables.mandate.MandateExtDom
+import de.ways42.vsl.tables.mandate.MandateDomain
 
 
 object MandateTask {
@@ -29,6 +32,17 @@ object MandateTask {
   
 class MandateTask( val xa : Transactor.Aux[Task, Unit]) {
 
+  /**
+   * Get all MandateExt actual
+   */
+  
+  def getAllMandateExtDomAkt()  : Task[Map[String,Map[Long,MandateDomain]]] = Task.parZip3(
+      BusinessObjectRef.selectAktAll().transact(xa),
+      Mandate.selectAktAll().transact(xa),
+      Payment.selectLastPaymentAlle().transact(xa)).map( x =>
+        MandateDomain.apply(
+            MandateExtDom.aggregateListMandateExtDom( 
+                x._1, MandateDom.aggregateMandateWithPayment( x._2, MandateDom.aggregatePayments(x._3)))))
   
   /**
    * Ein Mandat mit den zugehoerigen Payments parallel laden
