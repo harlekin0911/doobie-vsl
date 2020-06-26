@@ -20,7 +20,7 @@ import monix.execution.Scheduler
 import de.ways42.vsl.service.PaymentService
 import de.ways42.vsl.service.MandateService
 import de.ways42.vsl.tables.mandate.MandateDom
-import de.ways42.vsl.tables.mandate.MandateExtDom
+import de.ways42.vsl.tables.mandate.BusinessObjectRefDom
 import de.ways42.vsl.tables.mandate.MandateDomain
 
 
@@ -41,7 +41,7 @@ class MandateTask( val xa : Transactor.Aux[Task, Unit]) {
       Mandate.selectAktAll().transact(xa),
       Payment.selectLastPaymentAlle().transact(xa)).map( x =>
         MandateDomain.apply(
-            MandateExtDom.aggregateListMandateExtDom( 
+            BusinessObjectRefDom.aggregateListBusinessObjectRefDom( 
                 x._1, MandateDom.aggregateMandateWithPayment( x._2, MandateDom.aggregatePayments(x._3)))))
   
   /**

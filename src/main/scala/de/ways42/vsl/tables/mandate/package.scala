@@ -11,31 +11,31 @@ package object mandate {
   /**
    * Mandate with all its Payments
    */
-  type MandateDom    = (Mandate, List[Payment])
+//  type MandateDom    = (Mandate, List[Payment])
   
   /**
    * Mandate with actual Payment when exists
    */
-  type MandateAktDom = (Mandate, Option[Payment])
+  //type MandateAktDom = (Mandate, Option[Payment])
   
   /**
    * BusinessObjectReference and it's according actual Mandate
    */
-  type MandateExtDom    = (BusinessObjectRef, MandateDom)
+  //type MandateExtDom    = (BusinessObjectRef, MandateDom)
 
   /**
    * BusinessObjectReference and it's according Mandate with all its payments
    */
-  type MandateExtAktDom = (BusinessObjectRef, MandateAktDom)
+  //type MandateExtAktDom = (BusinessObjectRef, MandateAktDom)
   
   
   /**
    * Liste aller Mandatsstrukturen zu einem Vertrag
    */
-  type MandateDomain = ( String, Map[Long,MandateExtDom])
+  //type MandateDomain = ( String, Map[Long,MandateExtDom])
 
   /**
    * Liste aller Mandatsstrukturen zu einem Vertrag nur mit dem juengsten Payment
    */
-  type MandateAktDomain = ( String, Map[Long,MandateExtAktDom])
+  //type MandateAktDomain = ( String, Map[Long,MandateExtAktDom])
 }

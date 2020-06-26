@@ -8,16 +8,17 @@ import cats.data.Validated
 import cats.data.Validated.Invalid
 import cats.data.Validated.Valid
 
+case class MandateDom( m:Mandate, lp:List[Payment])
 
 object MandateDom {
   
-  def apply( m:Mandate, lp:List[Payment]) : MandateDom = (m, lp)
+  def apply( m:Mandate, lp:List[Payment]) : MandateDom = new MandateDom(m, lp)
   
   def buildValidated( m:Mandate, lp:List[Payment]) : Validated[String,MandateDom] = 
     validate( m, lp)
 
-  def validate( m:Mandate, lp:List[Payment]) : Validated[String, (Mandate,List[Payment])] = lp.filter( _.MANDATE_ID != m.MANDATE_ID) match {
-    case Nil => Valid((m,lp))
+  def validate( m:Mandate, lp:List[Payment]) : Validated[String, MandateDom] = lp.filter( _.MANDATE_ID != m.MANDATE_ID) match {
+    case Nil => Valid(MandateDom(m,lp))
     case fp   => 
       val ep = fp.fold( "Fehlerhafte Payments mit abweichender MandatsID: ")((f,p) => f + " " + p.toString())
       Invalid( "Objekte mit falscher MandatsId, " + ep)
@@ -28,8 +29,8 @@ object MandateDom {
 	 */
 	def aggregateMandateWithPayment( lm:List[Mandate], mp:Map[Long, List[Payment]]) : Map[Long, MandateDom] = 
 	  lm.foldRight( 
-	      Map.empty[Long,( Mandate, List[Payment])])(
-	          (m,z) => z.updated(m.MANDATE_ID, (m,mp.getOrElse(m.MANDATE_ID, List.empty))))
+	      Map.empty[Long,MandateDom])(
+	          (m,z) => z.updated(m.MANDATE_ID, MandateDom(m, List.empty)))
 	  
 	/**
 	 * Paments in die Mappe fuellen
@@ -37,12 +38,14 @@ object MandateDom {
 	def aggregatePayments( pl : List[Payment])  : Map[Long, List[Payment]] = pl.groupBy( _.MANDATE_ID)
 }
 
+case class MandateAktDom( m:Mandate, op:Option[Payment])
+
 object MandateAktDom {
   
   sealed trait Qual  {
     def catfn( f: (MandateAktDom) => Boolean, a:Qual) = ( acc: Map[Qual,  Map[Long, MandateAktDom]],e:MandateAktDom) => 
-      if (f(e._1, e._2)) 
-        acc.updated( a, acc.getOrElse(a, Map.empty[Long, MandateAktDom]).updated( e._1.MANDATE_ID, e))
+      if (f(e)) 
+        acc.updated( a, acc.getOrElse(a, Map.empty[Long, MandateAktDom]).updated( e.m.MANDATE_ID, e))
       else acc
   }
   
@@ -71,14 +74,14 @@ object MandateAktDom {
 	 * Mappe mit leeren Payment aufbauen
 	 */
 	def aggregateMandateWithEmptyPayment( ml:List[Mandate]) : Map[Long, MandateAktDom] = 
-	  ml.foldRight( Map.empty[Long,( Mandate, Option[Payment])])((m,z) => z.updated(m.MANDATE_ID, (m,None)))
+	  ml.foldRight( Map.empty[Long,MandateAktDom])((m,z) => z.updated(m.MANDATE_ID, MandateAktDom(m,None)))
 	  
 	/**
 	 * Paments in die Mappe fuellen
 	 */
 	def aggregateMandateWithPayment( mm : Map[Long, MandateAktDom], pl : List[Payment])  : Map[Long, MandateAktDom] = 
 	    pl.foldRight(mm)( (p,m) =>  m.get(p.MANDATE_ID)  match { 
-			  case Some(k)   => m.updated(p.MANDATE_ID, (k._1, Some(p)))
+			  case Some(k)   => m.updated(p.MANDATE_ID, MandateAktDom(k.m, Some(p)))
 			  case _         => m
 			})
 				
@@ -95,14 +98,14 @@ object MandateAktDom {
   	/**
 	 * Filter Mandate ohne Payments
 	 */
-	def mandateHasNoPayment( md : MandateAktDom) : Boolean = md._2.isEmpty
+	def mandateHasNoPayment( md : MandateAktDom) : Boolean = md.op.isEmpty
     
   /**
    * Datum der letzen Erneuerung der Gueltigkeit
    */
 	def getLastValidationDate( md : MandateAktDom) : Option[Date] = {
-	  md._2.flatMap( _.SCHEDULED_DUE_DATE match {
-	    case None => md._1.SIGNED_DATE
+	  md.op.flatMap( _.SCHEDULED_DUE_DATE match {
+	    case None => md.m.SIGNED_DATE
 	    case y    => y})
 	}
 	  
@@ -111,7 +114,7 @@ object MandateAktDom {
    */
 	def istMandateAbgelaufen( e:MandateAktDom) : Boolean = {
 	  val d = TimeService.getCurrentTimeYearsBefore( 3)
-		val v = getLastValidationDate(e._1,e._2).getOrElse( (new GregorianCalendar( 1900, 1, 1)).getTime())
+		val v = getLastValidationDate(e).getOrElse( (new GregorianCalendar( 1900, 1, 1)).getTime())
 			
 		v.compareTo( d) < 0			 			  			  
 	}
