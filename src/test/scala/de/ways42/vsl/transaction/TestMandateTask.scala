@@ -22,6 +22,8 @@ class TestMandateTask  extends AnyFunSuite  {
   
   val lmp = ms.getAllMandatesWithPayments()
   val mmp = ms.getMapMandateWithLatestPayment( lmp)
+  
+  val mmd = ms.getAllMandateExtDomAkt
      
   val t = for {
       _ <-  monix.eval.Task.unit;  m = 1;  h  = 2
@@ -33,6 +35,11 @@ class TestMandateTask  extends AnyFunSuite  {
     } yield (a.size,b.size,c.size, d.size, e.size)
 
   val e = t.runSyncUnsafe()
+
+  test( "MS-AllAktMandateDomain") {
+      val s = mmd.runSyncUnsafe().size
+      assert( s == 302630)
+    }
   
   test( "MS-getMandateWithPayments") {
     assert( MandateService.getMandateWithPayments( 22317).transact(xa).runSyncUnsafe()._2.size == 1)
