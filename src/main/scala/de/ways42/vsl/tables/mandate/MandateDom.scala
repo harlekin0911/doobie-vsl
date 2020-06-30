@@ -8,7 +8,25 @@ import cats.data.Validated
 import cats.data.Validated.Invalid
 import cats.data.Validated.Valid
 
-case class MandateDom( m:Mandate, lp:List[Payment])
+case class MandateDom( m:Mandate, lp:List[Payment]) {
+    /**
+   * Mandate mit letztem Payment aelter als 3 Jahre ?
+   */
+	def istAbgelaufen() : Boolean = {
+	  val d = TimeService.getCurrentTimeYearsBefore( 3)
+		val v = getLastValidationDate().getOrElse( (new GregorianCalendar( 1900, 1, 1)).getTime())
+			
+		v.compareTo( d) < 0			 			  			  
+	}
+	
+	  /**
+   * Datum der letzen Erneuerung der Gueltigkeit
+   */
+	def getLastValidationDate() : Option[Date] = lp match { 
+	  case Nil => m.SIGNED_DATE
+	  case _   => lp.max.SCHEDULED_DUE_DATE
+	  }
+}
 
 object MandateDom {
   

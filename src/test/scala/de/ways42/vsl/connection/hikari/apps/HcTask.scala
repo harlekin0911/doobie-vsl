@@ -44,7 +44,7 @@ object HcTask  {
     //implicit val s = t._2
     val c :Task[List[Int]] = for {
         xa <- xas
-        result <- Task.gather(
+        result <- Task.parSequence(
             List( sql"select count(*) from vsmadm.tvsl001".query[Int].unique.transact(xa), //ensuring xa.shutdown
                 sql"select count(*) from vsmadm.tvsl002".query[Int].unique.transact(xa))) //ensuring xa.shutdown
       } yield result

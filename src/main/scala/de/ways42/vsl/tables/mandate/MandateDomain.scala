@@ -33,19 +33,22 @@ object MandateDomain {
     
   def apply( med:BusinessObjectRefDom) : MandateDomain = MandateDomain(med.b.BUSINESS_OBJ_EXT_REF, Map((med.b.BUSINESS_OBJ_REFERENCE_ID, med)))
   
-  def apply( mmed:Map[Long,BusinessObjectRefDom]) : Map[String,Map[Long,MandateDomain]] = mmed.foldLeft( Map.empty[String,Map[Long,MandateDomain]])( 
-      (acc,mmed) => acc.get( mmed._2.b.BUSINESS_OBJ_EXT_REF) match {
-        case Some(u) => acc.updated( mmed._2.b.BUSINESS_OBJ_EXT_REF, u.updated( mmed._2.b.BUSINESS_OBJ_REFERENCE_ID, apply(mmed._2))) 
-        case None    => acc.updated( mmed._2.b.BUSINESS_OBJ_EXT_REF, Map(( mmed._2.b.BUSINESS_OBJ_REFERENCE_ID, apply(mmed._2))))
+  /**
+   * Construcion Bottom UP
+   */
+  def apply( mmed:Map[Long,BusinessObjectRefDom]) : Map[String,MandateDomain] = mmed.foldLeft( Map.empty[String,MandateDomain])( 
+      (acc,mmed) => acc.get( mmed._2.BUSINESS_OBJ_EXT_REF) match {
+        case Some(md) => acc.updated( mmed._2.b.BUSINESS_OBJ_EXT_REF, md.add(mmed._2))
+        case None     => acc.updated( mmed._2.b.BUSINESS_OBJ_EXT_REF, MandateDomain( mmed._2))
         }
       )
   /**
    * Construcion Bottom UP
    */
-  def apply( lmed:List[BusinessObjectRefDom]) : Map[String,Map[Long,MandateDomain]] = lmed.foldLeft( Map.empty[String,Map[Long,MandateDomain]])( 
+  def apply( lmed:List[BusinessObjectRefDom]) : Map[String,MandateDomain] = lmed.foldLeft( Map.empty[String,MandateDomain])( 
       (acc,bord) => acc.get( bord.BUSINESS_OBJ_EXT_REF) match {
-        case Some(u) => acc.updated( bord.BUSINESS_OBJ_EXT_REF, u.updated( bord.BUSINESS_OBJ_REFERENCE_ID, MandateDomain(bord))) 
-        case None    => acc.updated( bord.BUSINESS_OBJ_EXT_REF, Map((      bord.BUSINESS_OBJ_REFERENCE_ID, MandateDomain(bord))))
+        case Some(md) => acc.updated( bord.BUSINESS_OBJ_EXT_REF, md.add(bord))
+        case None     => acc.updated( bord.BUSINESS_OBJ_EXT_REF, MandateDomain( bord))
         }
       )
       

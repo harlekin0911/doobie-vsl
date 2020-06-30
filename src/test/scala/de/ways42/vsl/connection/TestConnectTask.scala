@@ -34,7 +34,7 @@ class TestConnectTask  extends AnyFunSuite  { // with GeneratorDrivenPropertyChe
     val t2 = Fragment.const( "select lv_vtg_nr from tvsl001").query[String].to[List].transact(xa)//.executeAsync
     val t3 = t1::t2::Nil
     var hans : List[List[String]] = Nil
-    val r = Task.gather( t3 ).map( _.toList ).runSyncUnsafe(scala.concurrent.duration.Duration(300, TimeUnit.SECONDS)) //runAsync( x => { assert( x.isRight == true);  x match { case Right(l) => hans = l; println( hans)}})
+    val r = Task.parSequence( t3 ).map( _.toList ).runSyncUnsafe(scala.concurrent.duration.Duration(300, TimeUnit.SECONDS)) //runAsync( x => { assert( x.isRight == true);  x match { case Right(l) => hans = l; println( hans)}})
     println( "hans: " + hans)
     println( "r: " + r.head.size + "'" + r.tail.head.size)
 	}

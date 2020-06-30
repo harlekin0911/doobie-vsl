@@ -9,10 +9,14 @@ import cats.data._
 
 case class BusinessObjectRefDom( b:BusinessObjectRef, md:Option[MandateDom]) {
   
+  def BUSINESS_OBJ_EXT_REF      = b.BUSINESS_OBJ_EXT_REF
+  def BUSINESS_OBJ_REFERENCE_ID = b.BUSINESS_OBJ_REFERENCE_ID
+
   def addMandate( m:Mandate) : BusinessObjectRefDom = md match {
     case None    => BusinessObjectRefDom( b, Some(MandateDom(m,Nil)))
     case Some(m) => throw new RuntimeException( "BusinessObjectRefDom hat bereits ein Mandate")
   }
+  
   def addPayment( p:Payment) : BusinessObjectRefDom = md match {
     case None    => this //throw new RuntimeException( "BusinessObjectRefDom hat kein Mandate")
     case Some(m) => 
@@ -21,8 +25,11 @@ case class BusinessObjectRefDom( b:BusinessObjectRef, md:Option[MandateDom]) {
       BusinessObjectRefDom( b, Some(MandateDom(m.m, p::m.lp)))
   }
   
-  def BUSINESS_OBJ_EXT_REF      = b.BUSINESS_OBJ_EXT_REF
-  def BUSINESS_OBJ_REFERENCE_ID = b.BUSINESS_OBJ_REFERENCE_ID
+  /**
+   * Abgelaufenes Mandat oder kein Mandat vorhanden
+   */
+  def isAbgelaufen: Boolean = md.map( _.istAbgelaufen())getOrElse(false)
+  
 }
 
 object BusinessObjectRefDom {

@@ -29,9 +29,12 @@ case class Payment (
 		PRENOTE_ID                : Option[Long],
 		PAYMENT_MODIFICATION      : Long,
 		PAYMENT_MODIFICATION_DATE : Option[Date]
-	)
+	) 
 
 object Payment {
+  
+  implicit val ordering : Ordering[Payment] = new Ordering[Payment] {
+    def compare(p1:Payment,p2:Payment) = p1.SCHEDULED_DUE_DATE.get.compareTo( p2.SCHEDULED_DUE_DATE.get) }
 	
   val attributes = Array[String] (
   	"MANDATOR",

@@ -1,6 +1,7 @@
 //scalaVersion := "2.12.7" // Scala 2.11/12
 //scalaVersion := "2.13.1" 
 scalaVersion := "2.12.10" 
+//scalaVersion := "2.13.3" 
 
 scalacOptions += "-Ypartial-unification" // 2.11.9+
 scalacOptions ++= Seq("-deprecation", "-feature")
@@ -14,7 +15,7 @@ libraryDependencies ++= Seq(
   , "org.tpolecat"    %% "doobie-postgres" % doobieVersion
   , "org.tpolecat"    %% "doobie-specs2"   % doobieVersion
   , "org.tpolecat"    %% "doobie-hikari"   % doobieVersion  
-  , "io.monix"        %% "monix"           % "3.0.0"
+  , "io.monix"        %% "monix"           % "3.2.2"
   , "org.scalatest"   %% "scalatest"       % "3.2.0-M1" % Test
   , "com.typesafe"    % "config"           % "1.4.0"
 //, "com.zaxxer"      % "HikariCP"         % "3.4.2"

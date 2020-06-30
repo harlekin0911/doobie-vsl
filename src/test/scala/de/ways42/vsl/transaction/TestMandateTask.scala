@@ -23,7 +23,6 @@ class TestMandateTask  extends AnyFunSuite  {
   val lmp = ms.getAllMandatesWithPayments()
   val mmp = ms.getMapMandateWithLatestPayment( lmp)
   
-  val mmd = ms.getAllMandateExtDomAkt
      
   val t = for {
       _ <-  monix.eval.Task.unit;  m = 1;  h  = 2
@@ -36,10 +35,6 @@ class TestMandateTask  extends AnyFunSuite  {
 
   val e = t.runSyncUnsafe()
 
-  test( "MS-AllAktMandateDomain") {
-      val s = mmd.runSyncUnsafe().size
-      assert( s == 302630)
-    }
   
   test( "MS-getMandateWithPayments") {
     assert( MandateService.getMandateWithPayments( 22317).transact(xa).runSyncUnsafe()._2.size == 1)
@@ -57,23 +52,23 @@ class TestMandateTask  extends AnyFunSuite  {
     
   test( "MS-Aktive-Ohne Payment") {
 	  println ( "Anzahl Mandate mit aktiven Status ohne Payments: "           + e._1) 
-	  assert(  e._1 == 12912)
+	  assert(  e._1 == 13270)
   }
   test( "MS-Aktive-Mit-Payments") {
     println ( "Anzahl Mandate mit aktiven Status und Payments: "            + e._2) 
-    assert(  e._2 == 233420)
+    assert(  e._2 == 233559)
   }
   test( "MS-Nicht-Terminierte-Abgelaufene") {
     println ( "Anzahl abgelaufene nicht terminierte Mandate: "              + e._3) 
-	  assert(  e._3 == 56848)
+	  assert(  e._3 == 57171)
   }
   test( "MS-Nicht-Terminierte-Abgelaufene-Ohne-Payment") {
     println ( "Anzahl abgelaufene nicht terminierte Mandate ohne Payment: " + e._4) 
-	  assert(  e._4 == 12912)
+	  assert(  e._4 == 13270)
   }
   test( "MS-Nicht-Terminierte-Abgelaufene-Mit-Payment") {
 	  println ( "Anzahl abgelaufene nicht terminierte Mandate mit Payment: "  + e._5) 
-	  assert(  e._5 == 43936)
+	  assert(  e._5 == 43901)
   }
 }
 class TestMandateTask2  extends AnyFunSuite  { 
@@ -88,7 +83,7 @@ class TestMandateTask2  extends AnyFunSuite  {
     val ms = MandateTask( xa)
     val mmd = ms.getAllMandateExtDomAkt
     val s = mmd.runSyncUnsafe().size
-    assert( s == 302630)
+    assert( s == 302956)
   }
 }
 class TestMandateTask3  extends AnyFunSuite  { 
@@ -100,10 +95,10 @@ class TestMandateTask3  extends AnyFunSuite  {
     //val (a,b,c) = HCPoolTask("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 3)
     val xa = Connect.usingOwnMonad( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
     val ms = MandateTask( xa)
-    val mmd = ms.getAllMandateDomainAkt
-    val s = mmd.runSyncUnsafe().size
-    
-    assert( s == 302957)
+    val mmd = ms.getAllMandateDomainAkt.runSyncUnsafe()
+    val s = mmd.size
+    val emptyBord = mmd.filter( emd => emd._2.mmed.filter( ebord => ebord._2.md.isEmpty) == 0).size
+    assert( s == 302957 && emptyBord == 0)
   }
 }
 
