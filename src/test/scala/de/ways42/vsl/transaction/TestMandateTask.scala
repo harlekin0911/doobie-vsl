@@ -97,8 +97,11 @@ class TestMandateTask3  extends AnyFunSuite  {
     val ms = MandateTask( xa)
     val mmd = ms.getAllMandateDomainAkt.runSyncUnsafe()
     val s = mmd.size
-    val emptyBord = mmd.filter( emd => emd._2.mmed.filter( ebord => ebord._2.md.isEmpty) == 0).size
-    assert( s == 302957 && emptyBord == 0)
+    val emptyBord = mmd.filter( emd => emd._2.mmed.filter( _._2.md.isEmpty).size > 0)
+    emptyBord.map( x => println("Vertrag: " + x._1 + ", BusinessObjectRef: " + x._2.mmed.mkString(",")))
+    val outOfDate     = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate).size > 0).size
+    val outOfDateTerm = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate && y._2.isTerminated).size > 0).size
+    assert( s == 302957 && emptyBord.size == 3 && outOfDate == 111838 && outOfDateTerm == 61235 )
   }
 }
 

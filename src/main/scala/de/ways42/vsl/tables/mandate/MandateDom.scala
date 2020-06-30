@@ -26,6 +26,8 @@ case class MandateDom( m:Mandate, lp:List[Payment]) {
 	  case Nil => m.SIGNED_DATE
 	  case _   => lp.max.SCHEDULED_DUE_DATE
 	  }
+	
+	def isTerminated : Boolean = m.TERMINATED_FLAG > 0
 }
 
 object MandateDom {

@@ -28,8 +28,12 @@ case class BusinessObjectRefDom( b:BusinessObjectRef, md:Option[MandateDom]) {
   /**
    * Abgelaufenes Mandat oder kein Mandat vorhanden
    */
-  def isAbgelaufen: Boolean = md.map( _.istAbgelaufen())getOrElse(false)
+  def isOutOfDate: Boolean = md.map( _.istAbgelaufen()).getOrElse(true)
   
+  /**
+   * Terminierte Mandate
+   */
+  def isTerminated : Boolean = md.map( _.isTerminated).getOrElse(true)
 }
 
 object BusinessObjectRefDom {
