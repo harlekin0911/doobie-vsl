@@ -7,10 +7,28 @@ import cats.implicits._
 import cats.data.Validated._
 import cats.data._
 
-case class BusinessObjectRefDom( b:BusinessObjectRef, md:Option[MandateDom])
+case class BusinessObjectRefDom( b:BusinessObjectRef, md:Option[MandateDom]) {
+  
+  def addMandate( m:Mandate) : BusinessObjectRefDom = md match {
+    case None    => BusinessObjectRefDom( b, Some(MandateDom(m,Nil)))
+    case Some(m) => throw new RuntimeException( "BusinessObjectRefDom hat bereits ein Mandate")
+  }
+  def addPayment( p:Payment) : BusinessObjectRefDom = md match {
+    case None    => this //throw new RuntimeException( "BusinessObjectRefDom hat kein Mandate")
+    case Some(m) => 
+      if( m.m.MANDATE_ID != p.MANDATE_ID) 
+        throw new RuntimeException( "BusinessObjectRefDom MandateId stimmt nicht mit Payment ueberein")
+      BusinessObjectRefDom( b, Some(MandateDom(m.m, p::m.lp)))
+  }
+  
+  def BUSINESS_OBJ_EXT_REF      = b.BUSINESS_OBJ_EXT_REF
+  def BUSINESS_OBJ_REFERENCE_ID = b.BUSINESS_OBJ_REFERENCE_ID
+}
 
 object BusinessObjectRefDom {
   
+  def apply( b:BusinessObjectRef) : BusinessObjectRefDom = BusinessObjectRefDom(b, None)
+
   def apply( ob:Option[BusinessObjectRef], m:Mandate, lp:List[Payment]) : Option[BusinessObjectRefDom] = 
     ob.flatMap( x => Some(apply( x, m, lp)))
     
@@ -18,6 +36,32 @@ object BusinessObjectRefDom {
 
   def apply( b:BusinessObjectRef, md: MandateDom) : BusinessObjectRefDom = BusinessObjectRefDom(b, Some(md))
   
+  def apply( lbor:List[BusinessObjectRef], lm:List[Mandate], lp:List[Payment]) : Map[Long,BusinessObjectRefDom] = {
+
+    // Mappe zur MandatsId, Busines_obj_refernce_id
+    val revMap : Map[Long,Long] = lbor.foldLeft(Map.empty[Long,Long])((acc,b) => acc.updated( b.MANDATE_ID, b.BUSINESS_OBJ_REFERENCE_ID))
+
+    // Mappe mit BORD
+    val aca  = lbor.foldLeft( Map.empty[Long,BusinessObjectRefDom])( 
+       (acc,bor) => acc.get(bor.BUSINESS_OBJ_REFERENCE_ID) match {
+         case Some(m) => acc // Gbts nicht
+         case None    => acc.updated( bor.BUSINESS_OBJ_REFERENCE_ID, BusinessObjectRefDom(bor))
+       })
+       
+    // BORD mit Mandate anreichern   
+    val acb = lm.foldLeft( aca)( (acc,m) => acc.get( revMap.get(m.MANDATE_ID).get) match {
+      case None      => acc // Mandate ohne Vertrag werden ignoriert
+      case Some(bor) => acc.updated( bor.b.BUSINESS_OBJ_REFERENCE_ID, bor.addMandate(m))
+    })
+    
+    //BORD Payments einfügen
+    val acc = lp.foldLeft( acb)( (acc,p) => acc.get( revMap.get(p.MANDATE_ID).get) match {
+      case None      => acc
+      case Some(bor) => acc.updated( bor.b.BUSINESS_OBJ_REFERENCE_ID, bor.addPayment(p))
+    })
+    
+    acc
+  }
   
   def applyV( b:BusinessObjectRef, m:Mandate, lp:List[Payment]) : BusinessObjectRefDom = 
     validate( b, m, lp) match {

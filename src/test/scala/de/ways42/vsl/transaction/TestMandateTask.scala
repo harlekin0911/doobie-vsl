@@ -76,3 +76,34 @@ class TestMandateTask  extends AnyFunSuite  {
 	  assert(  e._5 == 43936)
   }
 }
+class TestMandateTask2  extends AnyFunSuite  { 
+  
+  //CompanionImpl.Implicits.global
+  import monix.execution.Scheduler.Implicits.global
+  
+  test( "MS-AllAktMandateDomain-bottom-up") {
+  
+    //val (a,b,c) = HCPoolTask("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 3)
+    val xa = Connect.usingOwnMonad( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
+    val ms = MandateTask( xa)
+    val mmd = ms.getAllMandateExtDomAkt
+    val s = mmd.runSyncUnsafe().size
+    assert( s == 302630)
+  }
+}
+class TestMandateTask3  extends AnyFunSuite  { 
+  
+  //CompanionImpl.Implicits.global
+  import monix.execution.Scheduler.Implicits.global
+  
+  test( "MS-AllAktMandateDomain-top-down") {
+    //val (a,b,c) = HCPoolTask("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 3)
+    val xa = Connect.usingOwnMonad( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
+    val ms = MandateTask( xa)
+    val mmd = ms.getAllMandateDomainAkt
+    val s = mmd.runSyncUnsafe().size
+    
+    assert( s == 302957)
+  }
+}
+

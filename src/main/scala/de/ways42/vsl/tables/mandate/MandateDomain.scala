@@ -7,25 +7,31 @@ import cats.implicits._
 import cats.data.Validated._
 import cats.data._
 
-/** MandateDomain:
- * (string,Map[Long,(BusinessObjectRef,(Mandate,List[Payment]))])
- * (BUSINESS_OBJ_EXT_REF, Map[BUSINESS_OBJ_REFERENCE_ID,(BusinessObjectRef,(Mandate,List[Payment]))])
- * 
- * MandateExtDom:
- * (BusinessObjectRef,(MANDATE_ID, (Mandate,List[Payment])))
- */
 
-case class MandateDomain( extRef:String, mmed:Map[Long,BusinessObjectRefDom])
+
+case class MandateDomain( extRef:String, mmed:Map[Long,BusinessObjectRefDom]) {
+  
+  def add( bor: BusinessObjectRef) :  MandateDomain = {
+      
+    if ( bor.BUSINESS_OBJ_EXT_REF != extRef) 
+        throw new RuntimeException( "Vertragsnummern stimmen nicht ueberein")
+      
+    if ( ! mmed.get( bor.BUSINESS_OBJ_REFERENCE_ID).isEmpty)
+        throw new RuntimeException( "BusinessObjectRefId bereits vorhanden")
+      
+    MandateDomain( extRef, mmed.updated( bor.BUSINESS_OBJ_REFERENCE_ID, BusinessObjectRefDom( bor,None)))
+  }
+  
+  def add ( bord: BusinessObjectRefDom): MandateDomain = MandateDomain( extRef, mmed.updated( bord.b.BUSINESS_OBJ_REFERENCE_ID, bord))
+
+}
 
 object MandateDomain {
   
-  //def empty(bor:BusinesObjectRef) : MandateExtDomain = ( bor, M
   
   def apply( ob:Option[BusinessObjectRefDom]) : Option[MandateDomain] = ob.map( apply(_))
     
   def apply( med:BusinessObjectRefDom) : MandateDomain = MandateDomain(med.b.BUSINESS_OBJ_EXT_REF, Map((med.b.BUSINESS_OBJ_REFERENCE_ID, med)))
-  
-  //def apply( bor:BusinesObjectRef) : MandateDomain = (bor.BUSINESS_OBJ_EXT_REF, Map((bor.BUSINESS_OBJ_REFERENCE_ID, MandateDomain.empty)))
   
   def apply( mmed:Map[Long,BusinessObjectRefDom]) : Map[String,Map[Long,MandateDomain]] = mmed.foldLeft( Map.empty[String,Map[Long,MandateDomain]])( 
       (acc,mmed) => acc.get( mmed._2.b.BUSINESS_OBJ_EXT_REF) match {
@@ -37,21 +43,24 @@ object MandateDomain {
    * Construcion Bottom UP
    */
   def apply( lmed:List[BusinessObjectRefDom]) : Map[String,Map[Long,MandateDomain]] = lmed.foldLeft( Map.empty[String,Map[Long,MandateDomain]])( 
-      (acc,med) => acc.get( med.b.BUSINESS_OBJ_EXT_REF) match {
-        case Some(u) => acc.updated( med.b.BUSINESS_OBJ_EXT_REF, u.updated( med.b.BUSINESS_OBJ_REFERENCE_ID, apply(med))) 
-        case None    => acc.updated( med.b.BUSINESS_OBJ_EXT_REF, Map(( med.b.BUSINESS_OBJ_REFERENCE_ID, apply(med))))
+      (acc,bord) => acc.get( bord.BUSINESS_OBJ_EXT_REF) match {
+        case Some(u) => acc.updated( bord.BUSINESS_OBJ_EXT_REF, u.updated( bord.BUSINESS_OBJ_REFERENCE_ID, MandateDomain(bord))) 
+        case None    => acc.updated( bord.BUSINESS_OBJ_EXT_REF, Map((      bord.BUSINESS_OBJ_REFERENCE_ID, MandateDomain(bord))))
         }
       )
       
    /**
     * Construction Top->Down   
     */
-//   def apply( lbor:List[BusinesObjectRef]) : Map[String,Map[Long,MandateDomain]]  = lbor.foldLeft( Map.empty[String,Map[Long,MandateDomain]])(
-//       (acc,bor) => acc.get(bor.BUSINESS_OBJ_EXT_REF) match {
-//         case Some(m) => acc.updated( bor.BUSINESS_OBJ_EXT_REF, 
-//       }
+  def apply( lbor:List[BusinessObjectRef], lm:List[Mandate], lp:List[Payment]) : Map[String,MandateDomain] = 
+    BusinessObjectRefDom( lbor, lm, lp).foldLeft( Map.empty[String,MandateDomain])( (acc,mbor) => 
+        acc.get( mbor._2.BUSINESS_OBJ_EXT_REF) match {
+          case None      => acc.updated( mbor._2.BUSINESS_OBJ_EXT_REF, MandateDomain( mbor._2))
+          case Some( md) => acc.updated( mbor._2.BUSINESS_OBJ_EXT_REF, md.add( mbor._2))
+        })
+        
+      
   
-    
   import scala.language.implicitConversions
 
   implicit def MandateDomain2MandateDomainOps( m:MandateDomain) = new MandateDomainOps(m)

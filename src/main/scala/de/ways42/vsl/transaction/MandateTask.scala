@@ -36,6 +36,12 @@ class MandateTask( val xa : Transactor.Aux[Task, Unit]) {
    * Get all MandateExt actual
    */
   
+  def getAllMandateDomainAkt()  : Task[Map[String,MandateDomain]] = Task.parZip3(
+      BusinessObjectRef.selectAktAll().transact(xa),
+      Mandate.selectAktAll().transact(xa),
+      Payment.selectLastPaymentAlle().transact(xa)).
+      map( x => MandateDomain.apply( x._1, x._2, x._3))
+                
   def getAllMandateExtDomAkt()  : Task[Map[String,Map[Long,MandateDomain]]] = Task.parZip3(
       BusinessObjectRef.selectAktAll().transact(xa),
       Mandate.selectAktAll().transact(xa),
