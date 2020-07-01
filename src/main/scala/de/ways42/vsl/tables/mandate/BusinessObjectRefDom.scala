@@ -13,12 +13,17 @@ case class BusinessObjectRefDom( b:BusinessObjectRef, md:Option[MandateDom]) {
   def BUSINESS_OBJ_REFERENCE_ID = b.BUSINESS_OBJ_REFERENCE_ID
 
   def addMandate( m:Mandate) : BusinessObjectRefDom = md match {
-    case None    => BusinessObjectRefDom( b, Some(MandateDom(m,Nil)))
-    case Some(m) => throw new RuntimeException( "BusinessObjectRefDom hat bereits ein Mandate")
+    case None => 
+      if( m.MANDATE_ID != b.MANDATE_ID)
+        throw new RuntimeException( "BusinessObjectRef.mandate_id=<" +  b.MANDATE_ID + "> und Mandate.mandate_id=<" + m.MANDATE_ID + "> stimmen nicht ueberein")
+      BusinessObjectRefDom( b, Some(MandateDom(m,Nil)))
+      
+    case Some(m) => 
+      throw new RuntimeException( "BusinessObjectRefDom hat bereits ein Mandate, BusinessObjectRef.mandate_id=<" +  b.MANDATE_ID + ">")
   }
   
   def addPayment( p:Payment) : BusinessObjectRefDom = md match {
-    case None    => this //throw new RuntimeException( "BusinessObjectRefDom hat kein Mandate")
+    case None    => this //throw new RuntimeException( "BusinessObjectRefDom hat kein Mandate") // Fehler bei: 311779, 312585, 312794
     case Some(m) => 
       if( m.m.MANDATE_ID != p.MANDATE_ID) 
         throw new RuntimeException( "BusinessObjectRefDom MandateId stimmt nicht mit Payment ueberein")
@@ -70,6 +75,21 @@ object BusinessObjectRefDom {
       case None      => acc
       case Some(bor) => acc.updated( bor.b.BUSINESS_OBJ_REFERENCE_ID, bor.addPayment(p))
     })
+    
+    acc
+  }
+  
+  /**
+   * Aufbau eines einzelnen BusinessObjectRefDom top down
+   */
+  def apply( bor:BusinessObjectRef, lm:List[Mandate], lp:List[Payment]) : BusinessObjectRefDom = {
+
+    
+    // BORD mit Mandate anreichern   
+    val bordm = lm.foldLeft( BusinessObjectRefDom(bor))( (bord,m) => bord.addMandate(m))
+        
+    //BORD Payments einfügen
+    val acc = lp.foldLeft( bordm)( (bord,p) => bordm.addPayment(p))
     
     acc
   }

@@ -23,6 +23,13 @@ case class MandateDomain( extRef:String, mmed:Map[Long,BusinessObjectRefDom]) {
   }
   
   def add ( bord: BusinessObjectRefDom): MandateDomain = MandateDomain( extRef, mmed.updated( bord.b.BUSINESS_OBJ_REFERENCE_ID, bord))
+  
+  /**
+   * Liefert eine Liste von (BusinessObjectReferenceId,Mandate) zu dem die Mandate aufgrund von Signed Date und letzem Payment Datum abgelaufen sind,
+   * das Datum liegt laenger als 3 Jahre zurueck
+   */
+  def getOutDatedMandates : List[(Long,Mandate)] =
+    mmed.foldLeft(List.empty[(Long,Mandate)])( (acc,tbor) => if( tbor._2.isOutOfDate) (tbor._1,tbor._2.md.get.m)::acc else acc)
 
 }
 
@@ -61,7 +68,11 @@ object MandateDomain {
           case None      => acc.updated( mbor._2.BUSINESS_OBJ_EXT_REF, MandateDomain( mbor._2))
           case Some( md) => acc.updated( mbor._2.BUSINESS_OBJ_EXT_REF, md.add( mbor._2))
         })
-        
+  /**
+   * Konstruktion eines einzelnen Stand eines MandateDomain aus den Basis-Tabellen        
+   */
+  def apply( bor:BusinessObjectRef, lm:List[Mandate], lp:List[Payment]) : MandateDomain = 
+    MandateDomain( BusinessObjectRefDom( bor, lm, lp))
       
   
   import scala.language.implicitConversions
