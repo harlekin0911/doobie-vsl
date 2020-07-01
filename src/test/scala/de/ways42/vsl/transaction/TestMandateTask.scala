@@ -60,7 +60,7 @@ class TestMandateTask  extends AnyFunSuite  {
   }
   test( "MS-Nicht-Terminierte-Abgelaufene") {
     println ( "Anzahl abgelaufene nicht terminierte Mandate: "              + e._3) 
-	  assert(  e._3 == 57171)
+	  assert(  e._3 == 58460)
   }
   test( "MS-Nicht-Terminierte-Abgelaufene-Ohne-Payment") {
     println ( "Anzahl abgelaufene nicht terminierte Mandate ohne Payment: " + e._4) 
@@ -68,7 +68,7 @@ class TestMandateTask  extends AnyFunSuite  {
   }
   test( "MS-Nicht-Terminierte-Abgelaufene-Mit-Payment") {
 	  println ( "Anzahl abgelaufene nicht terminierte Mandate mit Payment: "  + e._5) 
-	  assert(  e._5 == 43901)
+	  assert(  e._5 == 45190)
   }
 }
 class TestMandateTask2  extends AnyFunSuite  { 
@@ -101,7 +101,7 @@ class TestMandateTask3  extends AnyFunSuite  {
     emptyBord.map( x => println("Vertrag: " + x._1 + ", BusinessObjectRef: " + x._2.mmed.mkString(",")))
     val outOfDate     = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate).size > 0).size
     val outOfDateTerm = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate && y._2.isTerminated).size > 0).size
-    assert( s == 302957 && emptyBord.size == 3 && outOfDate == 111838 && outOfDateTerm == 61235 )
+    assert( s == 302957 && emptyBord.size == 3 && outOfDate == 113145 && outOfDateTerm == 61281 )
   }
 }
 
