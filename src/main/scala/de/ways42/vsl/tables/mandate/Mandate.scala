@@ -55,9 +55,20 @@ case class Mandate (
     DEPOSIT_LOCATION     : Long      
     ) {
   
-  def setTerminated() = {
+  /**
+   * Mandate terminieren
+   */
+  def setTerminated() : Mandate = {
     val dop = TimeService.getTimestamp()
     copy( HISTNR = HISTNR + 1, DOP = dop,  IND = new Date(dop.getTime()), TERMINATED_FLAG = 1)
+  }
+  
+  /**
+   * Mandate auf abgelaufen setzen
+   */
+  def setAbgelaufen() : Mandate = {
+    val dop = TimeService.getTimestamp()
+    copy( HISTNR = HISTNR + 1, DOP = dop,  IND = new Date(dop.getTime()), REASON_FOR_CHANGE = 3L.some, MANDATE_STATUS = 5,  TERMINATED_FLAG = 1)
   }
 
 }
@@ -151,6 +162,15 @@ case class Mandate (
       case Some(t1) => insert( t1.setTerminated()).flatMap( _ => selectAktById( mandate_id))
       case None     => Option.empty[Mandate].pure[ConnectionIO]
     })
+  }
 
+  /**
+   * Mandate in der DB auf abgelaufen setzen 
+   */
+  def outDateAkt( mandate_id : Long) : ConnectionIO[Option[Mandate]] = {
+        selectAktById( mandate_id).flatMap({
+      case Some(t1) => insert( t1.setAbgelaufen()).flatMap( _ => selectAktById( mandate_id))
+      case None     => Option.empty[Mandate].pure[ConnectionIO]
+    })
   }
 }
