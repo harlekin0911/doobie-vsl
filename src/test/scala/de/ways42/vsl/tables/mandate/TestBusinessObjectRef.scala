@@ -43,13 +43,13 @@ class TestBusinessObjectRef extends AnyFunSuite {
 	test ( "Check-multiple-mandate-for-object-ext-ref") {
 	  val lbor : List[BusinessObjectRef]= BusinessObjectRef.selectAll.transact(xa).unsafeRunSync()
 	  val e:Map[String,List[BusinessObjectRef]] = lbor.groupBy(_.BUSINESS_OBJ_EXT_REF)
-	  val twoOrMore =e.filter( _._2.groupBy(_.MANDATE_ID).size > 1)
-	  assert( twoOrMore.size == 7404)  
+	  val twoOrMore = e.filter( _._2.groupBy(_.MANDATE_ID).size > 1).size
+	  assert( twoOrMore == 7759)  
 	}
 	test ( "Check-multiple-business-obj-ref-id-for-object-ext-ref") {
 	  val lbor : List[BusinessObjectRef]= BusinessObjectRef.selectAll.transact(xa).unsafeRunSync()
 	  val e:Map[String,List[BusinessObjectRef]] = lbor.groupBy(_.BUSINESS_OBJ_EXT_REF)
-	  val twoOrMore =e.filter( _._2.groupBy(_.BUSINESS_OBJ_REFERENCE_ID).size > 1)
-	  assert( twoOrMore.size == 7404)  
+	  val twoOrMore = e.filter( _._2.groupBy(_.BUSINESS_OBJ_REFERENCE_ID).size > 1).size
+	  assert( twoOrMore == 7759)  
 	}
 }

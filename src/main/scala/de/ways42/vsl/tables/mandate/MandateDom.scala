@@ -89,6 +89,19 @@ object MandateAktDom {
     }
   }
   
+	def getNichtTerminierteMandateMitPayment( t:Map[Long, MandateAktDom]) : Map[Long, MandateAktDom] =  t.filter( ! _._2.mandateHasNoPayment)
+	/**
+	 * Nicht terminierte  Mandate ohne Payment
+	 */
+	def getNichtTerminierteMandateOhnePayment( t:Map[Long, MandateAktDom])  : Map[Long, MandateAktDom] = t.filter( _._2.mandateHasNoPayment) 
+	  
+	def getNichtTerminierteAbgelaufeneMandateOhnePayment( t:Map[Long, MandateAktDom])  : Map[Long, MandateAktDom] = t.filter(_._2.abgelaufenOhnePayment)
+	
+	def getNichtTerminierteAbgelaufeneMandateWithPayment( t:Map[Long, MandateAktDom])  : Map[Long, MandateAktDom] = t.filter( _._2.abgelaufenMitPayment)  
+	/**
+	 * Nicht terminierte Abgelaufene Mandate
+	 */
+	def getNichtTerminierteAbgelaufeneMandate( t:Map[Long, MandateAktDom])  : Map[Long, MandateAktDom] = t.filter( _._2.abgelaufen)
   
 	/**
 	 * Mappe mit leeren Payment aufbauen
@@ -113,7 +126,7 @@ object MandateAktDom {
 
   
   import scala.language.implicitConversions
-  implicit def MandateAktDom2MandateAktDomOps( md:MandateAktDom) = new MandateAktDomOps(md)
+  implicit def MandateAktDom2MandateAktDomOps( md:MandateAktDom) : MandateAktDomOps = new MandateAktDomOps(md)
   
   	/**
 	 * Filter Mandate ohne Payments

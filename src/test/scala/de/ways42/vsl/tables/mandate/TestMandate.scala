@@ -38,13 +38,13 @@ class TestMandate extends AnyFunSuite {
 	  val c =  Mandate.selectAktAllNotTerminated().transact(xa).unsafeRunSync
 	  val s = c.size
 	  println( "Anzahl akt all not terminate d" + s)
-		assert( s == 246332)
+		assert( s == 246829)
   }
 	test ( "selectAktAllTerminated") {
 	  val c =  Mandate.selectAktAllTerminated().transact(xa).unsafeRunSync
 	  val s = c.size
 	  println( "Anzahl akt all terminated " + s)
-		assert( s == 65733)
+		assert( s == 66073)
   }
 	
 }
@@ -60,7 +60,7 @@ class TestMandateInsert extends AnyFunSuite {
         Timestamp.valueOf("2020-05-14 07:59:57.000000"), 
         None, 
         Date.valueOf("2020-05-14"),	
-        1, // Mandate_id	
+        739114, // Mandate_id, max 314828
         Some( "M18/101//314509"), 
         "1", 
         1, 
@@ -93,7 +93,7 @@ class TestMandateInsert extends AnyFunSuite {
     assert( Mandate.insert(m).transact(xa).unsafeRunSync == 1)
   }
   test( "Terminate_akt") {
-    val m = Mandate.terminateAkt( 1)
+    val m = Mandate.terminateAkt( 739114)
     assert( m.transact(xa).unsafeRunSync.get.TERMINATED_FLAG == 1)
   }
 }
@@ -101,7 +101,7 @@ class TestMandateInsert extends AnyFunSuite {
 class TestMandateRemove extends AnyFunSuite {
   val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
   test( "Delete") {
-    assert( Mandate.delete(1).transact(xa).unsafeRunSync == 2)
+    assert( Mandate.delete(739114).transact(xa).unsafeRunSync == 2)
   }
 
 }

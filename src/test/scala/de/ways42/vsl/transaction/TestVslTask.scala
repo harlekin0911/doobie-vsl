@@ -23,24 +23,24 @@ class TestVslTask  extends AnyFunSuite  {
   test( "VS-AktiveVertraegeMitAktivenVersicherungen") {
     val r = lmp.size
 		println ( "Anzahl nicht terminierte: " + r) 
-	  assert(  r == 246523)
+	  assert(  r == 240146)
   }
   
   test("VS-Beitragspflichtige-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpfl).size
 		println ( "Anzahl beitragspflichtige: " + r) 
-	  assert(  r == 164412)
+	  assert(  r == 158983)
   }
     
   test("VS-BeitragspflichtigeNurVertrag-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpflNurVertrag).size
 		println ( "Anzahl beitragspflichtigeNurVertrag: " + r) 
-	  assert(  r == 14)
+	  assert(  r == 10)
   }
   test("VS-BeitragspflichtigeNurVers-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpflNurVers).size
 		println ( "Anzahl beitragspflichtigeNurVers: " + r) 
-	  assert(  r == 8052)
+	  assert(  r == 8169)
   }
 
 }
