@@ -1,9 +1,9 @@
-package de.ways42.vsl.service
+package de.ways42.vsl.domains.vsl.service
 
 import doobie.free.ConnectionIO
-import de.ways42.vsl.tables.vsmadm.Tvsl002
-import de.ways42.vsl.tables.vsmadm.Tvsl001
-import de.ways42.vsl.tables.vsmadm.VslDom
+import de.ways42.vsl.domains.vsl.tables.Tvsl002
+import de.ways42.vsl.domains.vsl.tables.Tvsl001
+import de.ways42.vsl.domains.vsl.domain.VslDom
 
 
 

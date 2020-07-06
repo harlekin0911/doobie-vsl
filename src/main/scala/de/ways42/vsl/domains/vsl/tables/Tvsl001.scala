@@ -1,4 +1,4 @@
-package de.ways42.vsl.tables.vsmadm
+package de.ways42.vsl.domains.vsl.tables
 
 
 import doobie._

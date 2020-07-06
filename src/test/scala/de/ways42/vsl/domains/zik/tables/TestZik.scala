@@ -1,4 +1,4 @@
-package de.ways42.vsl.tables.vsmadm
+package de.ways42.vsl.domains.zik.tables
 
 //import de.ways42.vsl.tables.Tables.TVSL001
 

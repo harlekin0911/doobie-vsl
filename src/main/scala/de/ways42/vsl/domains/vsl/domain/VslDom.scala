@@ -1,7 +1,13 @@
-package de.ways42.vsl.tables.vsmadm
+package de.ways42.vsl.domains.vsl.domain
+
+
+import de.ways42.vsl.domains.vsl.tables.Tvsl002
+import de.ways42.vsl.domains.vsl.tables.Tvsl001
+
 
 
 object VslDom {
+      
   
   import scala.language.implicitConversions
   
