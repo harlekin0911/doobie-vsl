@@ -1,4 +1,4 @@
-package de.ways42.vsl.service
+package de.ways42.vsl.domains.mandate.service
 
 
 import java.sql.Date
@@ -16,10 +16,10 @@ import doobie.util.transactor.Transactor
 //import monix.execution.Scheduler
 
 //import de.ways42.vsl.tables.mandate.MandateAktDomOps._
-import de.ways42.vsl.tables.mandate.Payment
-import de.ways42.vsl.tables.mandate.Mandate
-import de.ways42.vsl.tables.mandate.MandateAktDom
-import de.ways42.vsl.tables.mandate.BusinessObjectRef
+import de.ways42.vsl.domains.mandate.tables.BusinessObjectRef
+import de.ways42.vsl.domains.mandate.tables.Payment
+import de.ways42.vsl.domains.mandate.tables.Mandate
+import de.ways42.vsl.domains.mandate.domain.MandateAktDom
 import java.util.Calendar
 
 

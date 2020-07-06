@@ -1,6 +1,6 @@
-package de.ways42.vsl.service
+package de.ways42.vsl.domains.mandate.service
 
-import de.ways42.vsl.tables.mandate.Payment
+import de.ways42.vsl.domains.mandate.tables.Payment
 
 object PaymentService {
   

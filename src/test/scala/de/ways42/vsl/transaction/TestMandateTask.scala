@@ -6,7 +6,8 @@ import org.scalatest.funsuite.AnyFunSuite
 import de.ways42.vsl.connection.Connect
 import de.ways42.vsl.transaction.MandateTask
 import doobie.implicits.toConnectionIOOps
-import de.ways42.vsl.tables.mandate.MandateAktDom
+import de.ways42.vsl.domains.mandate.domain.MandateAktDom
+import de.ways42.vsl.domains.mandate.service.MandateService
 
 //import de.ways42.vsl.connection.hikari.HCPoolTask
 

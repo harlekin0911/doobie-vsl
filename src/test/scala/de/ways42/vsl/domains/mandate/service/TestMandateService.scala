@@ -1,4 +1,4 @@
-package de.ways42.vsl.service
+package de.ways42.vsl.domains.mandate.service
 
 
 import org.scalatest.funsuite.AnyFunSuite //TestSuite
@@ -10,10 +10,10 @@ import cats._
 import cats.effect._
 import cats.implicits._
 import de.ways42.vsl.connection.Connect
-import de.ways42.vsl.tables.mandate.Payment
-import de.ways42.vsl.tables.mandate.Mandate
-import de.ways42.vsl.tables.mandate.MandateAktDom
-import de.ways42.vsl.tables.mandate.MandateAktDom._
+import de.ways42.vsl.domains.mandate.tables.Payment
+import de.ways42.vsl.domains.mandate.tables.Mandate
+import de.ways42.vsl.domains.mandate.domain.MandateAktDom
+import de.ways42.vsl.domains.mandate.domain.MandateAktDom._
 
 
 class TestMandateService  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {

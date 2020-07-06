@@ -1,4 +1,4 @@
-package de.ways42.vsl.tables
+package de.ways42.vsl.domains.mandate.tables
 
 
 /**

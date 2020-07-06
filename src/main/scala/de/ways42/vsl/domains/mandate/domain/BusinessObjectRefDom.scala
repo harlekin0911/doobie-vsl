@@ -1,4 +1,4 @@
-package de.ways42.vsl.tables.mandate
+package de.ways42.vsl.domains.mandate.domain
 
 import cats.data.Validated
 import cats.data.Validated.Invalid
@@ -6,6 +6,9 @@ import cats.data.Validated.Valid
 import cats.implicits._
 import cats.data.Validated._
 import cats.data._
+import de.ways42.vsl.domains.mandate.tables.Payment
+import de.ways42.vsl.domains.mandate.tables.BusinessObjectRef
+import de.ways42.vsl.domains.mandate.tables.Mandate
 
 case class BusinessObjectRefDom( b:BusinessObjectRef, md:Option[MandateDom]) {
   

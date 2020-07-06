@@ -1,11 +1,11 @@
 package de.ways42.vsl.transaction
 
-import de.ways42.vsl.tables.mandate.Payment
-import de.ways42.vsl.tables.mandate.Mandate
-import de.ways42.vsl.tables.mandate.MandateAktDom
-import de.ways42.vsl.tables.mandate.MandateAktDom._
+import de.ways42.vsl.domains.mandate.tables.Payment
+import de.ways42.vsl.domains.mandate.tables.Mandate
+import de.ways42.vsl.domains.mandate.tables.BusinessObjectRef
+import de.ways42.vsl.domains.mandate.domain.MandateAktDom
+import de.ways42.vsl.domains.mandate.domain.MandateAktDom._
 import java.sql.Date
-import de.ways42.vsl.tables.mandate.BusinessObjectRef
 import doobie.util.transactor.Transactor
 
 import doobie._
@@ -17,11 +17,11 @@ import cats.implicits._
 import java.util.GregorianCalendar
 import monix.eval.Task
 import monix.execution.Scheduler
-import de.ways42.vsl.service.PaymentService
-import de.ways42.vsl.service.MandateService
-import de.ways42.vsl.tables.mandate.MandateDom
-import de.ways42.vsl.tables.mandate.BusinessObjectRefDom
-import de.ways42.vsl.tables.mandate.MandateDomain
+import de.ways42.vsl.domains.mandate.service.PaymentService
+import de.ways42.vsl.domains.mandate.service.MandateService
+import de.ways42.vsl.domains.mandate.domain.MandateDom
+import de.ways42.vsl.domains.mandate.domain.BusinessObjectRefDom
+import de.ways42.vsl.domains.mandate.domain.MandateDomain
 
 
 object MandateTask {

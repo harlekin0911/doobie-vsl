@@ -1,4 +1,4 @@
-package de.ways42.vsl.tables.mandate
+package de.ways42.vsl.domains.mandate.tables
 
 import doobie._
 import doobie.implicits._

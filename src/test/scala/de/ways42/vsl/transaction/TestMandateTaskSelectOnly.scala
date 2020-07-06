@@ -6,9 +6,9 @@ import org.scalatest.funsuite.AnyFunSuite
 import de.ways42.vsl.connection.Connect
 import de.ways42.vsl.transaction.MandateTask
 import doobie.implicits.toConnectionIOOps
-import de.ways42.vsl.tables.mandate.Payment
-import de.ways42.vsl.tables.mandate.Mandate
-import de.ways42.vsl.tables.mandate.BusinessObjectRef
+import de.ways42.vsl.domains.mandate.tables.Payment
+import de.ways42.vsl.domains.mandate.tables.Mandate
+import de.ways42.vsl.domains.mandate.tables.BusinessObjectRef
 import monix.eval.Task
 
 //import de.ways42.vsl.connection.hikari.HCPoolTask

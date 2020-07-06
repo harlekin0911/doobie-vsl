@@ -1,4 +1,4 @@
-package de.ways42.vsl.tables.mandate
+package de.ways42.vsl.domain.mandate.tables
 
 //import de.ways42.vsl.tables.Tables.TVSL001
 
@@ -14,6 +14,7 @@ import doobie._
 import doobie.implicits._
 import java.sql.Timestamp
 import java.sql.Date
+import de.ways42.vsl.domains.mandate.tables.BusinessObjectRef
 
 
 class TestBusinessObjectRef extends AnyFunSuite {

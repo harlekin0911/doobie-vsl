@@ -1,4 +1,4 @@
-package de.ways42.vsl.tables.mandate
+package de.ways42.vsl.domains.mandate.domain
 
 import java.sql.Date
 import java.util.GregorianCalendar
@@ -7,6 +7,9 @@ import de.ways42.vsl.service.TimeService
 import cats.data.Validated
 import cats.data.Validated.Invalid
 import cats.data.Validated.Valid
+import de.ways42.vsl.domains.mandate.tables.Payment
+import de.ways42.vsl.domains.mandate.tables.Mandate
+
 
 case class MandateDom( m:Mandate, lp:List[Payment]) {
     /**

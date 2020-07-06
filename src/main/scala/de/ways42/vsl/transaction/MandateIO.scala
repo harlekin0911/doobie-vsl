@@ -1,9 +1,6 @@
 package de.ways42.vsl.transaction
 
-import de.ways42.vsl.tables.mandate.Payment
-import de.ways42.vsl.tables.mandate.Mandate
 import java.sql.Date
-import de.ways42.vsl.tables.mandate.BusinessObjectRef
 import doobie.util.transactor.Transactor
 
 import doobie._
@@ -13,6 +10,10 @@ import cats._
 import cats.effect._
 import cats.implicits._
 import java.util.GregorianCalendar
+
+import de.ways42.vsl.domains.mandate.tables.Payment
+import de.ways42.vsl.domains.mandate.tables.Mandate
+import de.ways42.vsl.domains.mandate.tables.BusinessObjectRef
 
 
 object MandateIO {
