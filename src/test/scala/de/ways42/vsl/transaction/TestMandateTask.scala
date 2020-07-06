@@ -135,7 +135,7 @@ class TestMandateTask3  extends AnyFunSuite  {
     emptyBord.map( x => println("Vertrag: " + x._1 + ", BusinessObjectRef: " + x._2.mmed.mkString(",")))
     val outOfDate     = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate).size > 0).size
     val outOfDateTerm = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate && y._2.isTerminated).size > 0).size
-    assert( s == 302957 && emptyBord.size == 4 && outOfDate == 113147 && outOfDateTerm == 61281 )
+    assert( s == 302957 && emptyBord.size == 4 && outOfDate == 113166 && outOfDateTerm == 61282 )
   }
 }
 

@@ -12,8 +12,8 @@ import doobie._
 import doobie.implicits._
 import doobie.util.transactor.Transactor
 
-import monix.eval.Task
-import monix.execution.Scheduler
+//import monix.eval.Task
+//import monix.execution.Scheduler
 
 //import de.ways42.vsl.tables.mandate.MandateAktDomOps._
 import de.ways42.vsl.tables.mandate.Payment

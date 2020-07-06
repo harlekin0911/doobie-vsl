@@ -65,10 +65,14 @@ object BusinessObjectRefDom {
        })
        
     // BORD mit Mandate anreichern   
-    val acb = lm.foldLeft( aca)( (acc,m) => acc.get( revMap.get(m.MANDATE_ID).get) match {
-      case None      => acc // Mandate ohne Vertrag werden ignoriert
-      case Some(bor) => acc.updated( bor.b.BUSINESS_OBJ_REFERENCE_ID, bor.addMandate(m))
-    })
+    val acb = lm.foldLeft( aca)( (acc,m) => 
+      revMap.get(m.MANDATE_ID) match { 
+        case None => acc // sollte es nicht geben
+        case Some(id) =>
+          acc.get( id )match {
+            case None      => acc // Mandate ohne Vertrag werden ignoriert
+            case Some(bor) => acc.updated( bor.b.BUSINESS_OBJ_REFERENCE_ID, bor.addMandate(m))
+      }})
     
     //BORD Payments einfügen
     val acc = lp.foldLeft( acb)( (acc,p) => acc.get( revMap.get(p.MANDATE_ID).get) match {

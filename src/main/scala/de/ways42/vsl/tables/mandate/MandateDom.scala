@@ -58,7 +58,34 @@ object MandateDom {
 	def aggregatePayments( pl : List[Payment])  : Map[Long, List[Payment]] = pl.groupBy( _.MANDATE_ID)
 }
 
-case class MandateAktDom( m:Mandate, op:Option[Payment])
+case class MandateAktDom( m:Mandate, op:Option[Payment]) {
+  
+  def mandateHasNoPayment() : Boolean = op.isEmpty
+    
+	def isTerminated : Boolean = m.TERMINATED_FLAG > 0
+
+	/**
+   * Datum der letzen Erneuerung der Gueltigkeit
+   */
+	def getLastValidationDate() : Option[Date] = op.flatMap( _.SCHEDULED_DUE_DATE match {
+	    case None => m.SIGNED_DATE
+	    case y    => y})
+	
+	  
+  /**
+   * Mandate mit letztem Payment aelter als 3 Jahre ?
+   */
+	def abgelaufen() : Boolean = {
+	  val d = TimeService.getCurrentTimeYearsBefore( 3)
+		val v = getLastValidationDate().getOrElse( (new GregorianCalendar( 1900, 1, 1)).getTime())
+			
+		v.compareTo( d) < 0			 			  			  
+	}
+  
+  def abgelaufenMitPayment : Boolean  = abgelaufen && ! mandateHasNoPayment
+  def abgelaufenOhnePayment : Boolean = abgelaufen &&   mandateHasNoPayment
+
+}
 
 object MandateAktDom {
   
@@ -125,40 +152,31 @@ object MandateAktDom {
 	  aggregateMandateWithPayment( aggregateMandateWithEmptyPayment(lm),lp)	  
 
   
-  import scala.language.implicitConversions
-  implicit def MandateAktDom2MandateAktDomOps( md:MandateAktDom) : MandateAktDomOps = new MandateAktDomOps(md)
+//  import scala.language.implicitConversions
+//  implicit def MandateAktDom2MandateAktDomOps( md:MandateAktDom) : MandateAktDomOps = new MandateAktDomOps(md)
   
   	/**
 	 * Filter Mandate ohne Payments
 	 */
-	def mandateHasNoPayment( md : MandateAktDom) : Boolean = md.op.isEmpty
+	def mandateHasNoPayment( md : MandateAktDom) : Boolean = md.mandateHasNoPayment()
     
   /**
    * Datum der letzen Erneuerung der Gueltigkeit
    */
-	def getLastValidationDate( md : MandateAktDom) : Option[Date] = {
-	  md.op.flatMap( _.SCHEDULED_DUE_DATE match {
-	    case None => md.m.SIGNED_DATE
-	    case y    => y})
-	}
+	def getLastValidationDate( md : MandateAktDom) : Option[Date] = md.getLastValidationDate()
 	  
   /**
    * Mandate mit letztem Payment aelter als 3 Jahre ?
    */
-	def istMandateAbgelaufen( e:MandateAktDom) : Boolean = {
-	  val d = TimeService.getCurrentTimeYearsBefore( 3)
-		val v = getLastValidationDate(e).getOrElse( (new GregorianCalendar( 1900, 1, 1)).getTime())
-			
-		v.compareTo( d) < 0			 			  			  
-	}
+	def istMandateAbgelaufen( e:MandateAktDom) : Boolean = e.abgelaufen()
 
   
-  class MandateAktDomOps( md:MandateAktDom) {
-    def mandateHasNoPayment : Boolean = MandateAktDom.mandateHasNoPayment(md)
-    def getLastValidationDate : Option[Date] = MandateAktDom.getLastValidationDate( md)
-    def abgelaufen : Boolean            = MandateAktDom.istMandateAbgelaufen(md)
-    def abgelaufenMitPayment : Boolean  = MandateAktDom.istMandateAbgelaufen(md) && ! MandateAktDom.mandateHasNoPayment(md)
-    def abgelaufenOhnePayment : Boolean = MandateAktDom.istMandateAbgelaufen(md) &&   MandateAktDom.mandateHasNoPayment(md)
-  }
+//  class MandateAktDomOps( md:MandateAktDom) {
+//    def mandateHasNoPayment : Boolean = MandateAktDom.mandateHasNoPayment(md)
+//    def getLastValidationDate : Option[Date] = MandateAktDom.getLastValidationDate( md)
+//    def abgelaufen : Boolean            = MandateAktDom.istMandateAbgelaufen(md)
+//    def abgelaufenMitPayment : Boolean  = MandateAktDom.istMandateAbgelaufen(md) && ! MandateAktDom.mandateHasNoPayment(md)
+//    def abgelaufenOhnePayment : Boolean = MandateAktDom.istMandateAbgelaufen(md) &&   MandateAktDom.mandateHasNoPayment(md)
+//  }
   
 }
