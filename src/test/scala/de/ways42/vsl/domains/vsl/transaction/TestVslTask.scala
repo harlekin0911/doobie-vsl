@@ -1,10 +1,9 @@
-package de.ways42.vsl.service
+package de.ways42.vsl.domains.vsl.transaction
 
 
 import org.scalatest.funsuite.AnyFunSuite
 
 import de.ways42.vsl.connection.Connect
-import de.ways42.vsl.transaction.VslTask
 import doobie.implicits.toConnectionIOOps
 import de.ways42.vsl.domains.vsl.domain.VslDom._
 

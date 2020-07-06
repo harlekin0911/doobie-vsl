@@ -1,10 +1,9 @@
-package de.ways42.vsl.service
+package de.ways42.vsl.domains.mandate.transaction
 
 
 import org.scalatest.funsuite.AnyFunSuite
 
 import de.ways42.vsl.connection.Connect
-import de.ways42.vsl.transaction.MandateTask
 import doobie.implicits.toConnectionIOOps
 import de.ways42.vsl.domains.mandate.tables.Payment
 import de.ways42.vsl.domains.mandate.tables.Mandate

@@ -1,4 +1,4 @@
-package de.ways42.vsl.transaction
+package de.ways42.vsl.domains.mandate.transaction
 
 import de.ways42.vsl.domains.mandate.tables.Payment
 import de.ways42.vsl.domains.mandate.tables.Mandate

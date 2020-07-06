@@ -1,4 +1,4 @@
-package de.ways42.vsl.transaction
+package de.ways42.vsl.domains.mandate.transaction
 
 import java.sql.Date
 import doobie.util.transactor.Transactor

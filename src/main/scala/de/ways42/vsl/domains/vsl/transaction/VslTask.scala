@@ -1,4 +1,4 @@
-package de.ways42.vsl.transaction
+package de.ways42.vsl.domains.vsl.transaction
 
 import de.ways42.vsl.domains.vsl.service.VslService
 import de.ways42.vsl.domains.vsl.tables.Tvsl001
