@@ -6,6 +6,7 @@ import de.ways42.vsl.domains.vsl.tables.Tvsl002
 import doobie.implicits.toConnectionIOOps
 import doobie.util.transactor.Transactor
 import monix.eval.Task
+import de.ways42.vsl.domains.vsl.domain.VslDom
 
 
 object VslTask {
@@ -34,7 +35,7 @@ class VslTask( val xa : Transactor.Aux[Task, Unit]) {
 	 * Alle aktiven, aufrechten Vertraege mit ihren aktiven Versicherungen 
 	 * parallel laden und eine Mappe bilden 
 	 */
-	def getAktiveVertraegeMitAktVersicherungen() : Task[Map[String, (Tvsl001, Map[Short,Tvsl002])]] = for {
+	def getAktiveVertraegeMitAktVersicherungen() : Task[Map[String, VslDom]] = for {
 	    ll <- getAllActiveVertraegeWithVersicherungen()
 	  } yield  VslService.buildAktVertraegeMitVersicherungen( ll._1, ll._2)	
 }
