@@ -5,6 +5,11 @@ import de.ways42.vsl.domains.vsl.tables.Tvsl002
 import de.ways42.vsl.domains.vsl.tables.Tvsl001
 
 case class VslDom( tvsl001:Tvsl001, mtvsl002: Map[Short,Tvsl002]) {
+  
+  def addVersicherung( t2:Tvsl002) : VslDom = 
+    if ( t2.LV_VTG_NR != tvsl001.LV_VTG_NR) 
+      throw new RuntimeException( "Die Vertragsnummern stimmen nicht ueberein: " + tvsl001.LV_VTG_NR + " " + t2.LV_VTG_NR)
+    else VslDom( tvsl001, mtvsl002.updated(t2.LV_VERS_NR, t2))
  /**
   * Ist beitagspflichtig
   */
@@ -35,6 +40,25 @@ object VslDom {
               throw new RuntimeException( "Die Vertragsnummern stimmen nicht ueberein: " + vertrag.LV_VTG_NR + " " + v.LV_VTG_NR)
             else m.updated( v.LV_VERS_NR, v)))
 
+  /**
+   * Construction top down, Mappe [VtgNr,VslDom] aufbauen
+   */
+  def apply( lv:List[Tvsl001], lvers:List[Tvsl002]) : Map[String,VslDom] = {
+  //def buildAktVertraegeMitVersicherungen( lv:List[Tvsl001], lvers:List[Tvsl002]) : Map[String,VslDom] = {
+	  
+    // Mappe mit leeren Versicherungen aufbauen
+	  def aggregateVertragWithEmptyVers( mv:List[Tvsl001]) : Map[String, VslDom] = 
+	    mv.foldRight( Map.empty[String,VslDom])((m,acc) => acc.updated(m.LV_VTG_NR, VslDom(m)))
+	  
+	  // Versicherungen in die Mappe fuellen
+	  def aggregateVertragWithVers( mv : Map[String, VslDom], pl:List[Tvsl002])  : Map[String, VslDom] = 
+	    pl.foldRight(mv)( (p,m) =>  m.get(p.LV_VTG_NR)  match { 
+			  case Some(v)   => m.updated(p.LV_VTG_NR, v.addVersicherung(p))
+			  case _         => m
+			})
+      
+		aggregateVertragWithVers( aggregateVertragWithEmptyVers(lv),lvers)
+  }
       
   
 //  import scala.language.implicitConversions

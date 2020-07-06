@@ -27,15 +27,17 @@ class VslTask( val xa : Transactor.Aux[Task, Unit]) {
 	/**
 	 * Alle aktuellen aufrechten Vertraege mit ihren aktuellen Versicherungen parallel laden 
 	 */
-  def getAllActiveVertraegeWithVersicherungen() : Task[(List[Tvsl001], List[Tvsl002])] = Task.parZip2(
-	    Tvsl001.selectAktAllAktive().transact(xa),
-	    Tvsl002.selectAktAktiveAll().transact(xa))
+  def getAllActiveVertraegeWithVersicherungen() : Task[(List[Tvsl001], List[Tvsl002])] = {
+    val (la,lb) = VslService.getAllActiveVertraegeWithVersicherungen()
+    Task.parZip2(la.transact(xa),lb.transact(xa))
+  }
+//	    Tvsl001.selectAktAllAktive().transact(xa),
+//	    Tvsl002.selectAktAktiveAll().transact(xa))
 
 	/**
 	 * Alle aktiven, aufrechten Vertraege mit ihren aktiven Versicherungen 
 	 * parallel laden und eine Mappe bilden 
 	 */
-	def getAktiveVertraegeMitAktVersicherungen() : Task[Map[String, VslDom]] = for {
-	    ll <- getAllActiveVertraegeWithVersicherungen()
-	  } yield  VslService.buildAktVertraegeMitVersicherungen( ll._1, ll._2)	
+	def getAktiveVertraegeMitAktVersicherungen() : Task[Map[String, VslDom]] = 
+	  getAllActiveVertraegeWithVersicherungen().map( x => VslDom( x._1, x._2)	)
 }
