@@ -17,7 +17,7 @@ class TestVslTask  extends AnyFunSuite  {
   
   lazy val vs = VslTask( xa)
   
-  val lmp = vs.getAktiveVertraegeMitAktVersicherungen().runSyncUnsafe()
+  lazy val lmp = vs.getAktiveVertraegeMitAktVersicherungen().runSyncUnsafe()
   
   test( "VS-AktiveVertraegeMitAktivenVersicherungen") {
     val r = lmp.size
