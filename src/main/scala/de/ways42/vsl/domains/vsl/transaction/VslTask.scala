@@ -11,11 +11,11 @@ import de.ways42.vsl.domains.vsl.domain.VslDom
 
 object VslTask {
   
-  def apply( xa : Transactor.Aux[Task, Unit]) : VslTask = new VslTask( xa)
+  def apply[A]( xa : Transactor.Aux[Task, A]) : VslTask[A] = new VslTask[A]( xa)
 
 }
   
-class VslTask( val xa : Transactor.Aux[Task, Unit]) {
+class VslTask[A]( val xa : Transactor.Aux[Task, A]) {
   
   /**
    * Einen aktuellen Vertrag mit den zugehoerigen aktuellen Versicherungen parallel laden
@@ -23,7 +23,7 @@ class VslTask( val xa : Transactor.Aux[Task, Unit]) {
   def getVertragWithVersicherung( vtgnr : String) : Task[Option[VslDom]] = { //: Task[(Option[Tvsl001], List[Tvsl002])] = {
     val (v,lvers) = VslService.getVertragWithVersicherung(vtgnr)
     Task.parZip2(v.transact(xa),lvers.transact(xa)).map( x => x._1 match { 
-      case Some(_) => Some(VslDom( x._1.get, x._2)); 
+      case Some(h) => Some(VslDom( h, x._2)); 
       case None    => None
     })
   }

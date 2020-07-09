@@ -77,6 +77,14 @@ object Trol001 {
           Fragment.const( "df_zt  = (select max(df_zt)  from vsmadm.trol001 r3 " + 
                                       "where r1.isttop_nrx = r3.isttop_nrx and r1.istkomp_nr = r3.istkomp_nr and r1.rollen_cd = r3.rollen_cd and r1.rang_nr = r3.rang_nr and r1.va_dtm = r3.va_dtm)")
     )).query[Trol001].option
+    //to[List].map{ case h::Nil => Some(h) ; case h::h2::t => throw new RuntimeException( "Aktuelle Rolle nicht eindeutig"); case _ => None}
+    
+    //.optionstatt to[List] funktoniert nicht liefert bei leer Exception: 
+    // com.ibm.db2.jcc.am.SqlException: [jcc][t4][10120][10898][4.13.127] UngÂ³ltige Operation: result set ist geschlossen. ERRORCODE=-4470, SQLSTATE=null
+    
+    // hilft:
+    // "jdbc:db2://172.17.4.39:50001/vslt01:allowNextOnExhaustedResultSet=1;",
+
   }
   
   /**

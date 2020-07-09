@@ -20,7 +20,11 @@ import de.ways42.vsl.connection.Connect
 
 class TestVsl extends AnyFunSuite {
 
-	val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
+	val xa : Transactor.Aux[IO, Unit] = Connect( 
+	    "com.ibm.db2.jcc.DB2Driver", 
+	    "jdbc:db2://172.17.4.39:50001/vslt01:allowNextOnExhaustedResultSet=1;", 
+	    "VSMADM", 
+	    "together")
 
 	test( "Vsl-Select-Basic-1") {
 		val q = Query( "select * from VSMADM.TVSL001")
@@ -45,12 +49,31 @@ class TestVsl extends AnyFunSuite {
 			val c : Long = Tvsl001.selectAktAllAktive().transact(xa).unsafeRunSync.length
 			assert ( c == 240146)
 	}
+	test( "Vsl-Vtgnr-AKT-empty") {
+			assert ( Tvsl001.selectAktById(   "1234567890123").transact(xa).unsafeRunSync.isEmpty == true)
+	}
 	test( "Vsl-Vtgnr-AKT-beitragspflichtige") {
 			val d : Long = Tvsl001.selectAktAllBeitragspflichtig().transact(xa).unsafeRunSync.length
 			assert (  d == 167152)
 	}
-	test( "VSL-tvsl002") {
+}
+
+class TestTvsl002 extends AnyFunSuite {
+
+	val xa : Transactor.Aux[IO, Unit] = Connect( 
+	    "com.ibm.db2.jcc.DB2Driver", 
+	    "jdbc:db2://172.17.4.39:50001/vslt01", 
+	    "VSMADM", 
+	    "together")
+
+	test( "VSL-tvsl002-vtg-alle") {
 			assert ( Tvsl002.selectVtgnr( "0003065903411").transact(xa).unsafeRunSync.length == 6)
+  }
+	test( "VSL-tvsl002-vtg-akt") {
+			assert ( Tvsl002.selectAktZuVertrag("0003065903411").transact(xa).unsafeRunSync.length == 2)
+  }
+	test( "VSL-tvsl003-akt-empty") {
+			assert ( Tvsl002.selectAktZuVertrag("1234567890123").transact(xa).unsafeRunSync.length == 0)
   }
 }
 

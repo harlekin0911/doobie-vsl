@@ -20,7 +20,12 @@ import de.ways42.vsl.connection.Connect
 
 class TestRol extends AnyFunSuite {
 
-	val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
+	val xa : Transactor.Aux[IO, Unit] = Connect( 
+	    "com.ibm.db2.jcc.DB2Driver", 
+	    //"jdbc:db2://172.17.4.39:50001/vslt01:driverType=4;fullyMaterializeLobData=true;fullyMaterializeInputStreams=true;progressiveStreaming=2;progresssiveLocators=2;"
+	    "jdbc:db2://172.17.4.39:50001/vslt01:allowNextOnExhaustedResultSet=1;",
+	    "VSMADM", 
+	    "together")
 
   test ( "Vsl-Rolle-selectById") {
 			assert( Trol001.selectById( "0050034703671", "", 89, 1).transact(xa).unsafeRunSync.length == 2 )
@@ -28,6 +33,9 @@ class TestRol extends AnyFunSuite {
 	
   test ( "Vsl-Rolle-selectAktById") {
 			assert( Trol001.selectAktById( "0050034703671", "", 89, 1).transact(xa).unsafeRunSync.get.ISTTOP_NRX.trim == "0050034703671" )
+  }  
+  test ( "Vsl-Rolle-selectAktById-Empty") {
+			assert( Trol001.selectAktById( "1234567890123", "", 89, 1).transact(xa).unsafeRunSync.isEmpty == true )
   }  
 }
 
