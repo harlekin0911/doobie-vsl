@@ -44,7 +44,7 @@ class TestMandateService  extends AnyFunSuite  { // with GeneratorDrivenProperty
   test( "MS-NichtTerminierteAbgelaufene") {
     val c =  m.filter( _._2.abgelaufen).size
     println ( "Anzahl abgelaufene nicht terminierte Mandate: " + c) 
-	  assert(  c == 58460)
+	  assert(  c > 58460 && c < 58480)
   }
   test( "MS-NichtTerminierteAbgelaufeneMitPayment") {
     val c =  m.filter( _._2.abgelaufenMitPayment).size

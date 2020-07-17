@@ -18,18 +18,24 @@ import monix.execution.schedulers.SchedulerService
 
 object HcTransactor {
   
-  // @ToDo
-  // Leider ist der Pool noch nicht down
-  def apply( ec : ExecutionContext, hcc:HikariConfig)( implicit ev: ContextShift[IO])  : IO[HikariTransactor[IO]] = 
-      IO.pure(HikariTransactor.apply[IO](new HikariDataSource(hcc), ec, Blocker.liftExecutionContext(ec)))
+  
+  /** 
+   *  Der Pool muss nach Verwendung geschlossen werden
+   */
+  def apply( ec : ExecutionContext, ds:HikariDataSource)( implicit ev: ContextShift[IO])  : IO[HikariTransactor[IO]] = 
+      IO.pure(HikariTransactor.apply[IO](ds, ec, Blocker.liftExecutionContext(ec)))
 
-   // Leider ist der Pool noch nicht down
-  // @ToDo
-
-  def apply( ec : ExecutionContext, ds:HikariDataSource)( implicit ev: ContextShift[Task]) : Task[HikariTransactor[Task]] = {
+  /** 
+   *  Leider ist der Pool nicht down
+   *  Der Pool muss nach Verwendung geschlossen werden
+   */
+  def applyTask( ec : ExecutionContext, ds:HikariDataSource)( implicit ev: ContextShift[Task]) : Task[HikariTransactor[Task]] = {
     Task.pure( HikariTransactor.apply[Task](ds, ec, Blocker.liftExecutionContext(ec)))
   }
   
+  /**
+   * Pool und ExcetutionService muesssen nach Verwendung geschlossen werden bzw heruntergefahren
+   */
   def apply(driver:String, url:String, user:String, passwd:String, size:Int) : (Task[HikariTransactor[Task]],SchedulerService, HikariDataSource) = {
 
     val c = HcConfig.hcConfig(driver, url, user, passwd, size)
@@ -39,7 +45,7 @@ object HcTransactor {
     val ds = HcConfig.getDataSource( c)
     val scheduler :  SchedulerService = Scheduler(es)
 
-    ( HcTransactor( ec, ds)( Task.contextShift(scheduler)), scheduler, ds)
+    ( HcTransactor.applyTask( ec, ds)( Task.contextShift(scheduler)), scheduler, ds)
   }
 
 }

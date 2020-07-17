@@ -28,15 +28,15 @@ object HcIOResourceApp extends App {
   //implicit val cs = IO.contextShift(ExecutionContext.global)
 
   val hcc = HcConfig.hcConfig()
+  val ds  = new HikariDataSource(hcc)
   val fixedThreadPool  : ExecutorService = Executors.newFixedThreadPool(32)
 	val BlockingFileIO : ExecutionContext  = ExecutionContext.fromExecutor(fixedThreadPool)
   implicit val cs2 = IO.contextShift(BlockingFileIO)
   
   // transactor with config
-  val transactor:  IO[HikariTransactor[IO]] = HcTransactor( BlockingFileIO, hcc)
-  val transactorG: IO[HikariTransactor[IO]] = HcTransactor( ExecutionContext.global, hcc)
+  val transactor:  IO[HikariTransactor[IO]] = HcTransactor( BlockingFileIO, ds)
+  val transactorG: IO[HikariTransactor[IO]] = HcTransactor( ExecutionContext.global, ds)
 
-  //def main( args:Array[String]) : Unit = {
     val c = for {
       xa <- transactor
       result <- sql"select 41 from sysibm.sysdummy1".query[Int].unique.transact(xa)
@@ -46,7 +46,8 @@ object HcIOResourceApp extends App {
     } yield (result, result2)
   println(c.unsafeRunSync())
   
-  // Leider ist der Pool noch nicht down 
-  //}
+  // Leider ist der Pool noch nicht down, jetzt schon
+  ds.close()
+  fixedThreadPool.shutdown()
 }
 

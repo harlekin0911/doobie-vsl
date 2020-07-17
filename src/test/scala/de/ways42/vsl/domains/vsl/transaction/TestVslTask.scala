@@ -54,15 +54,14 @@ class TestVslTask2  extends AnyFunSuite  {
   
   
   test( "Load-Single-Vertrag") {
-  implicit val (xas,ss,ds) = HcTransactor( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together", 5)
+    implicit val (xas,ss,ds) = HcTransactor( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together", 5)
   
-  val vt  = xas.map( xa => VslTask(xa)).flatMap(_.getVertragWithVersicherung("0003065903411")).runSyncUnsafe()
-  //val vt2 = xas.map( xa => VslTask(xa)).flatMap(_.getVertragWithVersicherung("1234567890123")).runSyncUnsafe()
+    val vt  = xas.map( xa => VslTask(xa)).flatMap(_.getVertragWithVersicherung("0003065903411")).runSyncUnsafe()
+    val vt2 = xas.map( xa => VslTask(xa)).flatMap(_.getVertragWithVersicherung("1234567890123")).runSyncUnsafe()
 
+    assert( vt.isEmpty == false && vt2.isEmpty == true)
       
-      println( vt)
-      vt.mkString( " ")
-      ds.close()
-      ss.shutdown()
+    ds.close()
+    ss.shutdown()
   }
 }

@@ -23,10 +23,10 @@ class TestVslService  extends AnyFunSuite  {
   
   
   test( "VS-GetSingleVertrag-beides") {
-    val (o1,l2) = VslService.getVertragWithVersicherung( "1234567890123")
+    val (o1,l2) = VslService.getVertragWithVersicherung( "0003065903411")
     val a = o1.transact(xa).unsafeRunSync()
     val b = l2.transact(xa).unsafeRunSync()
-    assert(  a.isEmpty == true && b.size == 4)
+    assert(  a.isEmpty == false && b.size == 4)
 
  	}
   test( "VS-GetSingleVertrag-1-opt-vertrag") {
