@@ -65,3 +65,25 @@ class TestVslTask2  extends AnyFunSuite  {
     ss.shutdown()
   }
 }
+class TestVslTask3  extends AnyFunSuite  { 
+  
+  //CompanionImpl.Implicits.global
+  //import monix.execution.Scheduler.Implicits.global
+  import monix.eval.Task
+  
+  
+  test( "Load-Single-Vertrag") {
+    implicit val (xas,ss,ds) = HcTransactor( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together", 5)
+  
+    val vt  = xas.map( xa => VslTask(xa)).flatMap(_.getAktiveVertraegeMitAktVersicherungenMandate()).runSyncUnsafe()
+
+    val s  = vt.size
+    val es = vt.filter( x => x._2.vsldom.isEmpty == true).size
+    val nm = vt.filter( x => x._2.lr1 == Nil).size
+    assert( s == 529401 && es == 289256 && nm == 240145)
+      
+    ds.close()
+    ss.shutdown()
+  }
+}
+

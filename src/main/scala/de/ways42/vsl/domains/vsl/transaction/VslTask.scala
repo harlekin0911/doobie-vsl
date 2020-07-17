@@ -7,6 +7,7 @@ import doobie.implicits.toConnectionIOOps
 import doobie.util.transactor.Transactor
 import monix.eval.Task
 import de.ways42.vsl.domains.vsl.domain.VslDom
+import de.ways42.vsl.domains.vsl.domain.MandateRefDom
 
 
 object VslTask {
@@ -50,4 +51,14 @@ class VslTask[A]( val xa : Transactor.Aux[Task, A]) {
     Task.parZip2(la.transact(xa),lb.transact(xa)).map( x => VslDom( x._1, x._2)	)
 	}
 //	  getAllActiveVertraegeWithVersicherungen().map( x => VslDom( x._1, x._2)	)
+	
+	/**
+	 * Alle aktiven, aufrechten Vertraege mit ihren aktiven Versicherungen 
+	 * parallel laden und eine Mappe bilden 
+	 */
+		def getAktiveVertraegeMitAktVersicherungenMandate() : Task[Map[String, MandateRefDom]] = {
+	    val ( la,lb,lc) = VslService.getAllActiveVertraegeWithVersicherungenMandate()
+	    Task.parZip3(la.transact(xa),lb.transact(xa), lc.transact(xa)).map( x => MandateRefDom( x._1, x._2, x._3)	)
+	}
+
 }
