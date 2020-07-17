@@ -33,9 +33,23 @@ class TestRol extends AnyFunSuite {
 	
   test ( "Vsl-Rolle-selectAktById") {
 			assert( Trol001.selectAktById( "0050034703671", "", 89, 1).transact(xa).unsafeRunSync.get.ISTTOP_NRX.trim == "0050034703671" )
+  } 
+    
+  test ( "Vsl-Rolle-selectAktById-all-rang") {
+			assert( Trol001.selectAktById( "0050034703671",  89).transact(xa).unsafeRunSync.size == 2 )
+  }  
+  test ( "Vsl-Rolle-selectAktById-1") {
+			assert( Trol001.selectAktById( "0070010919631", "", 89, 1).transact(xa).unsafeRunSync.isEmpty == false )
+  } 
+  test ( "Vsl-Rolle-selectAktById-all-rang-3") {
+			assert( Trol001.selectAktById( "0070010919631",  89).transact(xa).unsafeRunSync.size == 3 )
   }  
   test ( "Vsl-Rolle-selectAktById-Empty") {
 			assert( Trol001.selectAktById( "1234567890123", "", 89, 1).transact(xa).unsafeRunSync.isEmpty == true )
+  }  
+  test ( "Vsl-Rolle-selectAktAll") {
+    val s = Trol001.selectAktAll( 89).transact(xa).unsafeRunSync.size
+			assert( s == 296061 )
   }  
 }
 

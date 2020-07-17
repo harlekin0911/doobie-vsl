@@ -14,6 +14,16 @@ import java.util.GregorianCalendar
 import java.util.Calendar
 import de.ways42.vsl.service.TimeService
 
+/**
+ * Primary Key: 
+ *   ISTTOP_NRX, type=CHARACTER, pos=0
+ *   ISTKOMP_NR, type=CHARACTER, pos=1  leer ( '')  bei rolle 89 Mandat
+ *   ROLLEN_CD, type=SMALLINT, pos=2
+ *   RANG_NR, type=SMALLINT, pos=3
+ *   GV_DTM, type=INTEGER, pos=6
+ *   VA_DTM, type=INTEGER, pos=4
+ *   DF_ZT, type=INTEGER, pos=5
+ */
 case class Trol001 (
 
 		ISTTOP_NRX   : String,
@@ -57,18 +67,35 @@ object Trol001 {
   lazy val attrStr = attributes.mkString(",")
 	  
   /**
-   * Alle Mandatsrollen zu einem Vertrag holen
+   * Alle Mandatsrollen zu einem Vertrag, Rolle und Rang holen
    */
-  def selectById( top : String, komp : String, roll : Int, rang : Int) : ConnectionIO[List[Trol001]] = {
+  def selectById( top:String, komp:String, roll:Int, rang:Int) : ConnectionIO[List[Trol001]] = {
     ( Fragment.const( "select "+ attrStr + " from vsmadm.trol001") ++
       fr"where isttop_nrx = $top and istkomp_nr = $komp and rollen_cd = $roll and rang_nr = $rang"
     ).query[Trol001].to[List]
   }
+  /**
+   * Alle Mandatsrollen zu einem Vertrag, Rolle und Rang holen
+   */
+  def selectById( top : String, roll : Int) : ConnectionIO[List[Trol001]] = {
+    ( Fragment.const( "select "+ attrStr + " from vsmadm.trol001") ++
+      fr"where isttop_nrx = $top and rollen_cd = $roll"
+    ).query[Trol001].to[List]
+  }
   
   /**
-   * Aktuelle Mandatsrolle zu einem Vertrag selektieren, falls vorhanden 
+   * Aktuelle Mandatsrolle zu einem Vertrag und Rang selektieren, falls vorhanden 
+   * 
+   * .option statt to[List] funktoniert nicht, liefert bei leer Exception: 
+   * com.ibm.db2.jcc.am.SqlException: [jcc][t4][10120][10898][4.13.127] Ungueltige Operation: result set ist geschlossen. ERRORCODE=-4470, SQLSTATE=null
+   *
+   * Workaraoud:
+   * to[List].map{ case h::Nil => Some(h) ; case h::h2::t => throw new RuntimeException( "Aktuelle Rolle nicht eindeutig"); case _ => None}
+   * 
+   * hilft:
+   * "jdbc:db2://172.17.4.39:50001/vslt01:allowNextOnExhaustedResultSet=1;",
    */
-  def selectAktById( top : String, komp : String, roll : Int, rang : Int) : ConnectionIO[Option[Trol001]] = {
+  def selectAktById( top:String, komp:String, roll:Int, rang:Int) : ConnectionIO[Option[Trol001]] = {
     ( Fragment.const( "select "+ attrStr + " from vsmadm.trol001 r1") ++
       Fragments.whereAnd(           
           fr"r1.isttop_nrx = $top and r1.istkomp_nr = $komp and r1.rollen_cd = $roll and r1.rang_nr = $rang",
@@ -77,14 +104,39 @@ object Trol001 {
           Fragment.const( "df_zt  = (select max(df_zt)  from vsmadm.trol001 r3 " + 
                                       "where r1.isttop_nrx = r3.isttop_nrx and r1.istkomp_nr = r3.istkomp_nr and r1.rollen_cd = r3.rollen_cd and r1.rang_nr = r3.rang_nr and r1.va_dtm = r3.va_dtm)")
     )).query[Trol001].option
-    //to[List].map{ case h::Nil => Some(h) ; case h::h2::t => throw new RuntimeException( "Aktuelle Rolle nicht eindeutig"); case _ => None}
-    
-    //.optionstatt to[List] funktoniert nicht liefert bei leer Exception: 
-    // com.ibm.db2.jcc.am.SqlException: [jcc][t4][10120][10898][4.13.127] UngÂ³ltige Operation: result set ist geschlossen. ERRORCODE=-4470, SQLSTATE=null
-    
-    // hilft:
-    // "jdbc:db2://172.17.4.39:50001/vslt01:allowNextOnExhaustedResultSet=1;",
 
+  }
+  
+  /**
+   * Aktuelle Mandatsrolle zu einem Vertrag selektieren, falls vorhanden 
+   */
+  def selectAktById( top:String, roll:Int) : ConnectionIO[List[Trol001]] = {
+    ( Fragment.const( "select "+ attrStr + " from vsmadm.trol001 r1") ++
+      Fragments.whereAnd(           
+          fr"r1.isttop_nrx = $top and r1.rollen_cd = $roll",
+          Fragment.const( "va_dtm = " + 
+              "(select max(va_dtm) from vsmadm.trol001 r2 " + 
+                  "where r1.isttop_nrx = r2.isttop_nrx and r1.istkomp_nr = r2.istkomp_nr and r1.rollen_cd = r2.rollen_cd and r1.rang_nr = r2.rang_nr)"),
+          Fragment.const( "df_zt  = " + 
+              "(select max(df_zt)  from vsmadm.trol001 r3 " + 
+                   "where r1.isttop_nrx = r3.isttop_nrx and r1.istkomp_nr = r3.istkomp_nr and r1.rollen_cd = r3.rollen_cd and r1.rang_nr = r3.rang_nr and r1.va_dtm = r3.va_dtm)")
+    )).query[Trol001].to[List]
+  }
+
+  /**
+   * Aktuelle Mandatsrolle zu einem Vertrag selektieren, falls vorhanden 
+   */
+  def selectAktAll( roll:Int) : ConnectionIO[List[Trol001]] = {
+    ( Fragment.const( "select "+ attrStr + " from vsmadm.trol001 r1") ++
+      Fragments.whereAnd(           
+          fr"r1.rollen_cd = $roll",
+          Fragment.const( "va_dtm = " + 
+              "(select max(va_dtm) from vsmadm.trol001 r2 " + 
+                  "where r1.isttop_nrx = r2.isttop_nrx and r1.istkomp_nr = r2.istkomp_nr and r1.rollen_cd = r2.rollen_cd and r1.rang_nr = r2.rang_nr)"),
+          Fragment.const( "df_zt  = " + 
+              "(select max(df_zt)  from vsmadm.trol001 r3 " + 
+                   "where r1.isttop_nrx = r3.isttop_nrx and r1.istkomp_nr = r3.istkomp_nr and r1.rollen_cd = r3.rollen_cd and r1.rang_nr = r3.rang_nr and r1.va_dtm = r3.va_dtm)")
+    )).query[Trol001].to[List]
   }
   
   /**
