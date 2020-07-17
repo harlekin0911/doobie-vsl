@@ -33,7 +33,7 @@ object HcConfig {
   /**
    * Open the Hikari-Pool
    */
-  def getDataSource( dbCfg : DbConf) : DataSource = {
+  def getDataSource( dbCfg : DbConf) : HikariDataSource = {
 
     val ds = new HikariDataSource()        
          

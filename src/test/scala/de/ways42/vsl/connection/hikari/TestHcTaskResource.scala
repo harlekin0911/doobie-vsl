@@ -22,7 +22,8 @@ import scala.util.Failure
 
 class TestHcTaskResource  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
   
-  val xap = HcResource( HcConfig.getDataSource(SiteConfig.dbConf), 5)
+  val ds =  HcConfig.getDataSource(SiteConfig.dbConf)
+  val xap = HcResource(ds, 5)
     
   import monix.eval.Task
 	import monix.execution.Scheduler.Implicits.global
@@ -115,6 +116,7 @@ class TestHcTaskResource  extends AnyFunSuite  { // with GeneratorDrivenProperty
     }
     Thread.sleep(10000)
     println("awake again")
+    //ds.close()
   }
 /* 
   test( "Test-HCPool2-parallel") {

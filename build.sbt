@@ -29,3 +29,16 @@ libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.30"
 libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.7.30"
 libraryDependencies += "com.codahale.metrics" % "metrics-core" % metricsVersion
 libraryDependencies += "com.codahale.metrics" % "metrics-jvm" % metricsVersion
+
+import Tests._
+
+{
+  def groupByFirst(tests: Seq[TestDefinition]) =
+    tests groupBy (_.name(4)) map {
+      case (letter, tests) =>
+        val options = ForkOptions().withRunJVMOptions(Vector("-Dfirst.letter"+letter))
+        new Group(letter.toString, tests, SubProcess(options))
+    } toSeq
+
+    Test / testGrouping := groupByFirst( (Test / definedTests).value )
+}
