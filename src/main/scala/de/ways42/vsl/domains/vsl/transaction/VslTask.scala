@@ -60,5 +60,13 @@ class VslTask[A]( val xa : Transactor.Aux[Task, A]) {
 	    val ( la,lb,lc) = VslService.getAllActiveVertraegeWithVersicherungenMandate()
 	    Task.parZip3(la.transact(xa),lb.transact(xa), lc.transact(xa)).map( x => MandateRefDom( x._1, x._2, x._3)	)
 	}
+	/**
+	 * Alle aufrechten Vertraege mit ihren  Versicherungen 
+	 * parallel laden und eine Mappe bilden 
+	 */
+		def getVertraegeMitVersicherungenMandate() : Task[Map[String, MandateRefDom]] = {
+	    val ( la,lb,lc) = VslService.getAllVertraegeWithVersicherungenMandate()
+	    Task.parZip3(la.transact(xa),lb.transact(xa), lc.transact(xa)).map( x => MandateRefDom( x._1, x._2, x._3)	)
+	}
 
 }

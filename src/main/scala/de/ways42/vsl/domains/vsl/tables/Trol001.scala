@@ -138,7 +138,23 @@ object Trol001 {
                    "where r1.isttop_nrx = r3.isttop_nrx and r1.istkomp_nr = r3.istkomp_nr and r1.rollen_cd = r3.rollen_cd and r1.rang_nr = r3.rang_nr and r1.va_dtm = r3.va_dtm)")
     )).query[Trol001].to[List]
   }
-  
+
+  /**
+   * Aktuelle Mandatsrolle zu einem Vertrag selektieren, falls vorhanden 
+   */
+  def selectAktAllAktive( roll:Int) : ConnectionIO[List[Trol001]] = {
+    ( Fragment.const( "select "+ attrStr + " from vsmadm.trol001 r1") ++
+      Fragments.whereAnd(           
+          fr"r1.rollen_cd = $roll and rstat_cd = 1",
+          Fragment.const( "va_dtm = " + 
+              "(select max(va_dtm) from vsmadm.trol001 r2 " + 
+                  "where r1.isttop_nrx = r2.isttop_nrx and r1.istkomp_nr = r2.istkomp_nr and r1.rollen_cd = r2.rollen_cd and r1.rang_nr = r2.rang_nr)"),
+          Fragment.const( "df_zt  = " + 
+              "(select max(df_zt)  from vsmadm.trol001 r3 " + 
+                   "where r1.isttop_nrx = r3.isttop_nrx and r1.istkomp_nr = r3.istkomp_nr and r1.rollen_cd = r3.rollen_cd and r1.rang_nr = r3.rang_nr and r1.va_dtm = r3.va_dtm)")
+    )).query[Trol001].to[List]
+  }
+
   /**
    * Insert  the entry
    */

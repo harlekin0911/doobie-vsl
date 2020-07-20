@@ -128,7 +128,7 @@ object Tvsl002 {
   /**
    * Alle aufrechten, aktiven Versicherungen laden
    */
-  def selectAktAktiveAll() :  ConnectionIO[List[Tvsl002]] = {
+  def selectAktAllAktive() :  ConnectionIO[List[Tvsl002]] = {
     ( Fragment.const( "select " + attrStr + " from VSMADM.TVSL002") ++ 
       fr"where SYSTAT_CD = 1 and lv_vers_stat_cd < 60 and GV_DTM < 25000101 and GE_DTM >= 25000101 order by lv_vers_nr asc" 
     ).query[Tvsl002].to[List]

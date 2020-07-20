@@ -22,13 +22,20 @@ object VslService {
 	 */
   def getAllActiveVertraegeWithVersicherungen() : (ConnectionIO[List[Tvsl001]], ConnectionIO[List[Tvsl002]]) = (
 	    Tvsl001.selectAktAllAktive(),
-	    Tvsl002.selectAktAktiveAll())
+	    Tvsl002.selectAktAllAktive())
 
 	/**
 	 * Alle aktuellen aufrechten Vertraege mit ihren aktuellen Versicherungen parallel laden 
 	 */
   def getAllActiveVertraegeWithVersicherungenMandate() : (ConnectionIO[List[Tvsl001]], ConnectionIO[List[Tvsl002]], ConnectionIO[List[Trol001]]) = (
 	    Tvsl001.selectAktAllAktive(),
-	    Tvsl002.selectAktAktiveAll(),
+	    Tvsl002.selectAktAllAktive(),
+	    Trol001.selectAktAllAktive(89))
+	/**
+	 * Alle aktuellen aufrechten Vertraege mit ihren aktuellen Versicherungen parallel laden 
+	 */
+  def getAllVertraegeWithVersicherungenMandate() : (ConnectionIO[List[Tvsl001]], ConnectionIO[List[Tvsl002]], ConnectionIO[List[Trol001]]) = (
+	    Tvsl001.selectAktAll(),
+	    Tvsl002.selectAktAll(),
 	    Trol001.selectAktAll(89))
 }
