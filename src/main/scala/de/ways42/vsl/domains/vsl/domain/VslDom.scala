@@ -17,7 +17,7 @@ case class VslDom( tvsl001:Tvsl001, mtvsl002: Map[Short,Tvsl002]) {
  
   /**
   * Ist beitagspflichtig, falsch in der DB
-  * Nur der Vertrag, keine Versicherung ist beitragspflichti
+  * Nur der Vertrag, keine Versicherung ist beitragspflichtig
   */
   def istBpflNurVertrag : Boolean = tvsl001.LV_VERTR_STAT_CD >  0 && mtvsl002.filter( _._2.LV_VERS_STAT_CD == 0).size > 0
 
@@ -33,11 +33,16 @@ object VslDom {
   
   def apply( vertrag:Tvsl001) : VslDom = VslDom( vertrag, Map.empty[Short,Tvsl002])
   
-    def apply( vertrag:Tvsl001, versicherungen:List[Tvsl002]) : VslDom = VslDom( vertrag, 
+  /**
+   * Aufbau eines einzelnen Objektes
+   */
+  def apply( vertrag:Tvsl001, versicherungen:List[Tvsl002]) : VslDom = VslDom( vertrag, 
         versicherungen.foldLeft(Map.empty[Short,Tvsl002])( 
           (m,v) => 
             if ( v.LV_VTG_NR != vertrag.LV_VTG_NR) 
               throw new RuntimeException( "Die Vertragsnummern stimmen nicht ueberein: " + vertrag.LV_VTG_NR + " " + v.LV_VTG_NR)
+            else if ( m.get(v.LV_VERS_NR).isDefined)
+              throw new RuntimeException( "Zur Versicherung mit Nummer: " + v.LV_VERS_NR + " ist bereits eine Versicherung vorhanden")              
             else m.updated( v.LV_VERS_NR, v)))
 
   /**

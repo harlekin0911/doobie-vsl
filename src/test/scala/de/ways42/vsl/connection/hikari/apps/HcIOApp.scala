@@ -8,7 +8,7 @@ import doobie.hikari._
 import doobie.implicits._
 import doobie.util.query.Query
 import scala.concurrent.ExecutionContext
-import de.ways42.vsl.connection.hikari.HcResource
+import de.ways42.vsl.connection.hikari.HcIOResource
 
 //object Pool {
   
@@ -20,7 +20,7 @@ object HcIOApp extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] =
 
-    HcResource( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50013/vslt03", "vsmadm", "together").use { xa =>
+    HcIOResource( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50013/vslt03", "vsmadm", "together").use { xa =>
 
       // Construct and run your server here!
       for {

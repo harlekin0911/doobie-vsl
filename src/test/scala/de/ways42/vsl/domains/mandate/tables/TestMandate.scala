@@ -36,16 +36,16 @@ class TestMandate extends AnyFunSuite {
 		assert( s > 250000)
   }
 	test ( "selectAktAllNotTerminated") {
-	  val c =  Mandate.selectAktAllNotTerminated().transact(xa).unsafeRunSync
+	  val c =  Mandate.selectAktAllAktive().transact(xa).unsafeRunSync
 	  val s = c.size
 	  println( "Anzahl akt all not terminate d" + s)
-		assert( s == 246829)
+		assert(  246828 < s && s < 246831)
   }
 	test ( "selectAktAllTerminated") {
 	  val c =  Mandate.selectAktAllTerminated().transact(xa).unsafeRunSync
 	  val s = c.size
 	  println( "Anzahl akt all terminated " + s)
-		assert( s == 66073)
+		assert( 66072 < s && s < 66074)
   }
 	
 }

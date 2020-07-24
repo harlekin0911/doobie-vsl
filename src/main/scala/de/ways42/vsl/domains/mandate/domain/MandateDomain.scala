@@ -38,6 +38,7 @@ case class MandateDomain( extRef:String, mmed:Map[Long,BusinessObjectRefDom]) {
 
 object MandateDomain {
   
+  def apply( vtgnr:String) : MandateDomain = MandateDomain( vtgnr, Map.empty)
   
   def apply( ob:Option[BusinessObjectRefDom]) : Option[MandateDomain] = ob.map( apply(_))
     

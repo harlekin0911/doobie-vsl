@@ -14,6 +14,7 @@ case class BusinessObjectRefDom( b:BusinessObjectRef, md:Option[MandateDom]) {
   
   def BUSINESS_OBJ_EXT_REF      = b.BUSINESS_OBJ_EXT_REF
   def BUSINESS_OBJ_REFERENCE_ID = b.BUSINESS_OBJ_REFERENCE_ID
+  def MANDATE_ID                = b.MANDATE_ID
 
   def addMandate( m:Mandate) : BusinessObjectRefDom = md match {
     case None => 
@@ -63,7 +64,7 @@ object BusinessObjectRefDom {
     // Mappe mit BORD
     val aca  = lbor.foldLeft( Map.empty[Long,BusinessObjectRefDom])( 
        (acc,bor) => acc.get(bor.BUSINESS_OBJ_REFERENCE_ID) match {
-         case Some(m) => acc // Gbts nicht
+         case Some(m) => acc // Gibts nicht 
          case None    => acc.updated( bor.BUSINESS_OBJ_REFERENCE_ID, BusinessObjectRefDom(bor))
        })
        
@@ -78,10 +79,14 @@ object BusinessObjectRefDom {
       }})
     
     //BORD Payments einfügen
-    val acc = lp.foldLeft( acb)( (acc,p) => acc.get( revMap.get(p.MANDATE_ID).get) match {
+    val acc = lp.foldLeft( acb)( (acc,p) =>  
+        revMap.get(p.MANDATE_ID)  match {
       case None      => acc
-      case Some(bor) => acc.updated( bor.b.BUSINESS_OBJ_REFERENCE_ID, bor.addPayment(p))
-    })
+      case Some(id)  =>
+        acc.get(id) match {
+          case Some(bor) => acc.updated( bor.b.BUSINESS_OBJ_REFERENCE_ID, bor.addPayment(p))
+          case None      => acc
+        }})
     
     acc
   }

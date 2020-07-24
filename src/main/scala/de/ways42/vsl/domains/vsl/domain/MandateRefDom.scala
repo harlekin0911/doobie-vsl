@@ -60,4 +60,11 @@ object MandateRefDom {
       
 		aggregateWithRolle( mvsld, lrol)
   } 
+  
+    /**
+   * Construction eines einzelnen MandateRefDom
+   */
+  def apply(  lv:Tvsl001, lvers:List[Tvsl002], lrol:List[Trol001]) : MandateRefDom = 
+    lrol.foldLeft(MandateRefDom(VslDom( lv, lvers)))( (v,r) =>  v.add(r))
+    	  
 }

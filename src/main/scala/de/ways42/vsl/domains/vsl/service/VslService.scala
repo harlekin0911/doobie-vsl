@@ -13,10 +13,18 @@ object VslService {
     /**
    * Einen aktuellen Vertrag mit den zugehoerigen aktuellen Versicherungen parallel laden
    */
+  def getAktVertragWithVersicherungMandate( vtgnr : String) : 
+    (ConnectionIO[Option[Tvsl001]], ConnectionIO[List[Tvsl002]], ConnectionIO[List[Trol001]]) = (
+	    Tvsl001.selectAktById( vtgnr),
+	    Tvsl002.selectAktZuVertrag(vtgnr),
+	    Trol001.selectAktById(vtgnr, 89)) // 89 ist Mandate
+  	
+    /**
+   * Einen aktuellen Vertrag mit den zugehoerigen aktuellen Versicherungen parallel laden
+   */
   def getVertragWithVersicherung( vtgnr : String) : (ConnectionIO[Option[Tvsl001]], ConnectionIO[List[Tvsl002]]) = (
 	    Tvsl001.selectAktById( vtgnr),
 	    Tvsl002.selectAktZuVertrag(vtgnr))
-  	
 	/**
 	 * Alle aktuellen aufrechten Vertraege mit ihren aktuellen Versicherungen parallel laden 
 	 */

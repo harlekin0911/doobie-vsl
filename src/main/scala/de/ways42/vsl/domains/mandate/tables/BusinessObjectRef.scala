@@ -65,6 +65,13 @@ object BusinessObjectRef {
                                         " where b1.business_obj_reference_id = b2.business_obj_reference_id)")
     ).query[BusinessObjectRef].to[List]
   }
+  def selectAktAllAktive() : ConnectionIO[List[BusinessObjectRef]] = {
+    ( Fragment.const( "select " + attrStr + " from Mandate.MM_Business_Object_Reference b1") ++
+      Fragment.const( "where  terminated_flag = 0 and " +
+          "histnr = (select max(histnr) from mandate.MM_Business_Object_Reference b2" + 
+                       " where b1.business_obj_reference_id = b2.business_obj_reference_id)")
+    ).query[BusinessObjectRef].to[List]
+  }
 
   def selectById( bor_id : Long, hnr : Long) : ConnectionIO[Option[BusinessObjectRef]] = {
     (Fragment.const( "select " + attrStr + " from Mandate.MM_Business_Object_Reference ") ++
@@ -95,10 +102,10 @@ object BusinessObjectRef {
     ).query[BusinessObjectRef].to[List]
   }
 
-  def selectAktByBusinessObjExtRef( businessObjExtRef : String) : ConnectionIO[Option[BusinessObjectRef]] = {
+  def selectAktByBusinessObjExtRef( businessObjExtRef : String) : ConnectionIO[List[BusinessObjectRef]] = {
     (Fragment.const( "select "+ attrStr + " from Mandate.MM_Business_Object_Reference bor1 ") ++
-     Fragments.whereAnd( fr"BUSINESS_OBJ_EXT_REF = $businessObjExtRef", maxInd( "business_obj_ext_ref"))
-    ).query[BusinessObjectRef].option
+     Fragments.whereAnd( fr"BUSINESS_OBJ_EXT_REF = $businessObjExtRef", maxInd( "business_obj_reference_id"))
+    ).query[BusinessObjectRef].to[List]
   }
 
 }

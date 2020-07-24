@@ -23,7 +23,7 @@ import scala.util.Failure
 class TestHcTaskResource  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
   
   val ds =  HcConfig.getDataSource(SiteConfig.dbConf)
-  val xap = HcResource(ds, 5)
+  val xap = HcTaskResource(ds, 5)
     
   import monix.eval.Task
 	import monix.execution.Scheduler.Implicits.global
@@ -192,5 +192,24 @@ class TestHcTaskResource  extends AnyFunSuite  { // with GeneratorDrivenProperty
 	    }
     }
     * */
-    
+class TestHcTaskResource2  extends AnyFunSuite  {
   
+    
+  import monix.eval.Task
+	import monix.execution.Scheduler.Implicits.global
+	import scala.concurrent.duration.Duration
+	implicit val sc = monix.execution.Scheduler.io( "Monix-Pool")
+  val xap = HcTaskResource("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together", 32)
+
+	val t = (s:String ) => xap.use { xa =>
+	    val q = sql"select 42 from sysibm.sysdummy1".query[Int].unique.transact( xa)
+	    //val q2 = q.runAsync( x => { assert( x.contains( 42)); println( "executed-1")})//.map( _=> ExitCode.Success))
+	    //val q3 = q.runSyncUnsafe(scala.concurrent.duration.Duration(100, TimeUnit.SECONDS))
+	    println( "inner-executed-t")
+	    q.flatMap( n => {println(s + " flatmap: " + n);Task(n)})//.map( _=> ExitCode.Success))
+	  } 
+	
+	test( "TestHcTaskResource2-41") {
+	  assert ( t("41").runSyncUnsafe() == 42)
+	}
+} 

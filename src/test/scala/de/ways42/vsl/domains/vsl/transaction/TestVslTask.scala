@@ -20,7 +20,7 @@ class TestVslTask  extends AnyFunSuite  {
   
   lazy val vs = VslTask( xa)
   
-  lazy val lmp = vs.getAktiveVertraegeMitAktVersicherungen().runSyncUnsafe()
+  lazy val lmp = vs.getAllAktiveVslDom().runSyncUnsafe()
   
   test( "VS-AktiveVertraegeMitAktivenVersicherungen") {
     val r = lmp.size
@@ -56,8 +56,8 @@ class TestVslTask2  extends AnyFunSuite  {
   test( "Load-Single-Vertrag") {
     implicit val (xas,ss,ds) = HcTransactor( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together", 5)
   
-    val vt  = xas.map( xa => VslTask(xa)).flatMap(_.getVertragWithVersicherung("0003065903411")).runSyncUnsafe()
-    val vt2 = xas.map( xa => VslTask(xa)).flatMap(_.getVertragWithVersicherung("1234567890123")).runSyncUnsafe()
+    val vt  = xas.map( xa => VslTask(xa)).flatMap(_.getSingleVslDom("0003065903411")).runSyncUnsafe()
+    val vt2 = xas.map( xa => VslTask(xa)).flatMap(_.getSingleVslDom("1234567890123")).runSyncUnsafe()
 
     assert( vt.isEmpty == false && vt2.isEmpty == true)
       
@@ -75,7 +75,7 @@ class TestVslTask3  extends AnyFunSuite  {
   test( "Load-Aktive-All-MandateRefDom") {
     implicit val (xas,ss,ds) = HcTransactor( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together", 5)
   
-    val vt  = xas.map( xa => VslTask(xa)).flatMap(_.getAktiveVertraegeMitAktVersicherungenMandate()).runSyncUnsafe()
+    val vt  = xas.map( xa => VslTask(xa)).flatMap(_.getAllAktiveMandateRefDom()).runSyncUnsafe()
 
     val s  = vt.size
     val mes = vt.filter( x => x._2.vsldom.isEmpty == true) // mandate ohne vertrag
@@ -102,7 +102,7 @@ class TestVslTask4  extends AnyFunSuite  {
   test( "Load-All-MandateRefDom") {
     implicit val (xas,ss,ds) = HcTransactor( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together", 5)
   
-    val vt  = xas.map( xa => VslTask(xa)).flatMap(_.getVertraegeMitVersicherungenMandate()).runSyncUnsafe()
+    val vt  = xas.map( xa => VslTask(xa)).flatMap(_.getAllMandateRefDom()).runSyncUnsafe()
 
     val s  = vt.size
     val mes = vt.filter( x => x._2.vsldom.isEmpty == true) // mandate ohne vertrag

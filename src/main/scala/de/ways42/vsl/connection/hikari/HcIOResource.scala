@@ -18,27 +18,27 @@ import de.ways42.vsl.connection.SiteConfig
 import com.zaxxer.hikari.HikariConfig
 import scala.concurrent.ExecutionContext
 
-object HcResource {
+object HcIOResource {
 
 
-  def apply(ds: HikariDataSource, size:Int)( implicit ev: ContextShift[Task]): Resource[Task, HikariTransactor[Task]] = for {
-    ec <- ExecutionContexts.fixedThreadPool[Task](size) // our connect EC
-    be <- Blocker[Task]    // our blocking EC
-  } yield   HikariTransactor.apply[Task](ds, ec, be)
+  def apply(ds: HikariDataSource, size:Int)( implicit ev: ContextShift[IO]): Resource[IO, HikariTransactor[IO]] = for {
+    ec <- ExecutionContexts.fixedThreadPool[IO](size) // our connect EC
+    be <- Blocker[IO]    // our blocking EC
+  } yield   HikariTransactor.apply[IO](ds, ec, be)
 
   /**
    * Create a Transactor Resource backed with a Hikari Pool
    */
-  def apply(ds: DataSource, size:Int)( implicit ev: ContextShift[Task]): Resource[Task, DataSourceTransactor[Task]] = for {
-    ce <- ExecutionContexts.fixedThreadPool[Task](size) // our connect EC
-    be <- Blocker[Task]    // our blocking EC
-  } yield Transactor.fromDataSource[Task](ds, ce, be)
+  def apply(ds: DataSource, size:Int)( implicit ev: ContextShift[IO]): Resource[IO, DataSourceTransactor[IO]] = for {
+    ce <- ExecutionContexts.fixedThreadPool[IO](size) // our connect EC
+    be <- Blocker[IO]    // our blocking EC
+  } yield Transactor.fromDataSource[IO](ds, ce, be)
 
   /**
    * The same with flatMap
    */
-  def apply2(ds: DataSource, size:Int)( implicit ev: ContextShift[Task]): Resource[Task, DataSourceTransactor[Task]] = 
-    ExecutionContexts.fixedThreadPool[Task](size).flatMap(ce => Blocker[Task].map( be =>  Transactor.fromDataSource[Task](ds, ce, be))) 
+  def apply2(ds: DataSource, size:Int)( implicit ev: ContextShift[IO]): Resource[IO, DataSourceTransactor[IO]] = 
+    ExecutionContexts.fixedThreadPool[IO](size).flatMap(ce => Blocker[IO].map( be =>  Transactor.fromDataSource[IO](ds, ce, be))) 
 
   
   // Resource yielding a transactor configured with a bounded connect EC and an unbounded
@@ -49,12 +49,13 @@ object HcResource {
   // "sa",                                   // username
   // "",                                     // password
 
-  def apply(driver:String, url:String, user:String, passwd:String)(implicit ev: ContextShift[IO]): Resource[IO, HikariTransactor[IO]] = for {
+
+  def apply(driver:String, url:String, user:String, passwd:String)(implicit ev: ContextShift[IO]) : Resource[IO, HikariTransactor[IO]] = for {
       ce <- ExecutionContexts.fixedThreadPool[IO](32) // our connect EC
       be <- Blocker[IO]    // our blocking EC
       xa <- HikariTransactor.newHikariTransactor[IO](driver, url, user, passwd,
               ce, // await connection here
               be) // execute JDBC operations here
-    } yield xa
+    } yield xa    
 }
 

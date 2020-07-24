@@ -77,6 +77,13 @@ object Payment {
     ).query[Payment].unique
   }
   
+  def selectLastByMandateId( mandate_id : Long) : ConnectionIO[List[Payment]] = {
+    ( Fragment.const( "select " + attrStr + " from Mandate.MM_Payment p1") ++
+      fr"where mandate_id = $mandate_id" ++
+     Fragment.const( "where SCHEDULED_DUE_DATE = ( select max(SCHEDULED_DUE_DATE) from MANDATE.MM_PAYMENT p2 where p1.mandate_id = p2.mandate_id)")
+    ).query[Payment].to[List]
+  }
+  
   def selectAllByMandateId( mandate_id : Long) : ConnectionIO[List[Payment]] = {
     ( Fragment.const( "select " + attrStr + " from Mandate.MM_Payment") ++
       fr"where mandate_id = $mandate_id"

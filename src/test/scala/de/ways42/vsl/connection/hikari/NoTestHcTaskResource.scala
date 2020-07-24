@@ -37,7 +37,7 @@ object NoTestHcTaskResource    {
 
   }
   
-  val xap = HcResource( HcConfig.getDataSource(SiteConfig.dbConf), 5)
+  val xap = HcTaskResource( HcConfig.getDataSource(SiteConfig.dbConf), 5)
     
   import monix.eval.Task
 	import monix.execution.Scheduler.Implicits.global

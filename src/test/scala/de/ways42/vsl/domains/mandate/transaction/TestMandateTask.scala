@@ -129,14 +129,14 @@ class TestMandateTask3  extends AnyFunSuite  {
     //val (a,b,c) = HCPoolTask("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "vsmadm", "together", 3)
     val xa = Connect.usingOwnMonad( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
     val ms = MandateTask( xa)
-    val mmd = ms.getAllMandateDomainAktTopDown().runSyncUnsafe()
+    val mmd = ms.getAktAllMandateDomain().runSyncUnsafe()
     val s = mmd.size
     val emptyBord = mmd.filter( emd => emd._2.mmed.filter( _._2.md.isEmpty).size > 0)
-    emptyBord.map( x => println("Vertrag: " + x._1 + ", BusinessObjectRef: " + x._2.mmed.mkString(",")))
+    //emptyBord.map( x => println("Vertrag: " + x._1 + ", BusinessObjectRef: " + x._2.mmed.mkString(",")))
     val ebs = emptyBord.size
     val outOfDate     = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate).size > 0).size
     val outOfDateTerm = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate && y._2.isTerminated).size > 0).size
-    assert( s == 302957 && ebs == 4 && outOfDate == 113166 && outOfDateTerm == 61282 )
+    assert( s == 302957 && ebs == 4 && outOfDate == 113268 && outOfDateTerm == 61282 )
   }
 }
 
