@@ -21,23 +21,33 @@ class TestVslMandateTask  extends AnyFunSuite  {
   lazy val lmp = vs.getAllAktive().runSyncUnsafe()
   
   test ( "VslMandateDom-omdom-is-empty") {
-    val s = lmp.filter( x => x._2.omdom.isEmpty).size
-    assert( s == 0)
+    val s = lmp.filter( x => x._2.omdom.isEmpty)
+    println( s.head)
+    val ss = s.size
+    assert( ss == 68839)
   }
   test ( "VslMandateDom-omrd-is-empty") {
-    val s = lmp.filter( x => x._2.omrd.isEmpty).size
-    assert( s == 0)    
+    val s = lmp.filter( x => x._2.omrd.isEmpty)
+    println( s.head)
+    val ss = s.size
+    assert( ss == 13363)    
+  }
+  test ( "VslMandateDom-non-empty") {
+    val s = lmp.filter( x => x._2.omdom.isDefined && x._2.omrd.isDefined && x._2.omdom.get.anzahlMandate() != x._2.omrd.get.anzahlMandate())
+    println( s.head)
+    val ss = s.size
+    assert( ss == 11369)
   }
   test( "VslMandateDom-AktiveVertraegeMitAktivenVersicherungen") {
     val r = lmp.size
 		println ( "Anzahl nicht terminierte: " + r) 
-	  assert(  r == 240146)
+	  assert(  r == 371795)
   }
   
   test("VslMandateDom-Beitragspflichtige-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpfl).size
 		println ( "Anzahl beitragspflichtige: " + r) 
-	  assert(  r == 158982)
+	  assert(  r == 158981)
   }
     
   test("VslMandateDom-BeitragspflichtigeNurVertrag-Vericherungen") {

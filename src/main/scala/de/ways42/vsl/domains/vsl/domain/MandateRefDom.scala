@@ -7,6 +7,9 @@ import de.ways42.vsl.domains.vsl.tables.Tvsl002
 
 /**
  * Vsl-Domain mit seinen Rollen
+ * 
+ * In der Rolle lr1 ist die Vertragsnummer (isttop_nrx) nicht gestrippt
+ * Jedoch in der vtgnr
  */
 
 case class MandateRefDom( vtgnr:String, vsldom:Option[VslDom], lr1:List[Trol001]) {
@@ -32,6 +35,12 @@ case class MandateRefDom( vtgnr:String, vsldom:Option[VslDom], lr1:List[Trol001]
   * Der Vertrag ist beitragsfrei, aber es gbt beitragspflichtige Versicherungen
   */
   def istBpflNurVers : Boolean = vsldom.map( _.istBpflNurVers).getOrElse(false)
+  
+  /**
+   * Anzahl Mandate
+   */
+  
+  def anzahlMandate() = lr1.size
   
 }
 
