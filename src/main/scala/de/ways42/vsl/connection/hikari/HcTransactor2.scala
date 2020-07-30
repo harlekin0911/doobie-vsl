@@ -21,6 +21,7 @@ import  scala.language.higherKinds
 import monix.execution.Callback
 
 import cats.effect.{LiftIO, Sync}
+import de.ways42.vsl.connection.JdbcOptions
 
 object HcTransactor2 {
     
@@ -37,7 +38,7 @@ object HcTransactor2 {
   
   def apply(driver:String, url:String, user:String, passwd:String, size:Int) : (Task[HikariTransactor[Task]],SchedulerService, HikariDataSource) = {
 
-    val c = HcConfig.hcConfig(driver, url, user, passwd, size)
+    val c = HcConfig.hcConfig(driver, url + JdbcOptions.db2Options, user, passwd, size)
     val es : ExecutorService   = Executors.newFixedThreadPool(size)
     val ec : ExecutionContext  = ExecutionContext.fromExecutor(es) //ExecutionContext.global
       

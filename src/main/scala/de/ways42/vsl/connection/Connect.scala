@@ -25,7 +25,7 @@ object Connect {
 
 		val xa = Transactor.fromDriverManager[IO](
 				driver, //"com.ibm.db2.jcc.DB2Driver",           // driver classname
-				url, //"jdbc:db2://172.17.4.39:50001/vslt01", // connect URL (driver-specific)
+				url + JdbcOptions.db2Options, //"jdbc:db2://172.17.4.39:50001/vslt01", // connect URL (driver-specific)
 				user, 
 				passwd
 		    //Blocker.liftExecutionContext( ExecutionContext.global) // just for testing		
@@ -40,7 +40,7 @@ object Connect {
 
 			Transactor.fromDriverManager[Task]( 
 					driver, //"com.ibm.db2.jcc.DB2Driver", // driver classname
-					url, //"jdbc:db2://172.17.4.39:50001/vslt01", // connect URL (driver-specific)
+					url + JdbcOptions.db2Options, //"jdbc:db2://172.17.4.39:50001/vslt01", // connect URL (driver-specific)
 //					"jdbc:db2://172.17.4.39:50013/vslt03", // connect URL (driver-specific)
 					user,
 					passwd 

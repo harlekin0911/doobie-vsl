@@ -17,10 +17,9 @@ import monix.eval.Task
 import de.ways42.vsl.connection.SiteConfig
 import com.zaxxer.hikari.HikariConfig
 import scala.concurrent.ExecutionContext
+import de.ways42.vsl.connection.JdbcOptions
 
 object HcTaskResource {
-
-  val jdbcOption = ":allowNextOnExhaustedResultSet=1;"
 
   def apply(ds: HikariDataSource, size:Int)( implicit ev: ContextShift[Task]): Resource[Task, HikariTransactor[Task]] = for {
     ec <- ExecutionContexts.fixedThreadPool[Task](size) // our connect EC
@@ -54,7 +53,7 @@ object HcTaskResource {
   def apply(driver:String, url:String, user:String, passwd:String, size:Int)(implicit ev: ContextShift[Task]): Resource[Task, HikariTransactor[Task]] = for {
       ce <- ExecutionContexts.fixedThreadPool[Task](size) // our connect EC
       be <- Blocker[Task]    // our blocking EC
-      xa <- HikariTransactor.newHikariTransactor[Task](driver, url+ jdbcOption, user, passwd,
+      xa <- HikariTransactor.newHikariTransactor[Task](driver, url + JdbcOptions.db2Options, user, passwd,
               ce, // await connection here
               be) // execute JDBC operations here
     } yield xa

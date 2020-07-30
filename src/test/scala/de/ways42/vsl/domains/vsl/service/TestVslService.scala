@@ -19,7 +19,7 @@ import de.ways42.vsl.domains.vsl.service.VslService
 
 class TestVslService  extends AnyFunSuite  { 
   
-  val xa = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01:allowNextOnExhaustedResultSet=1;", "VSMADM", "together")
+  val xa = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
   
   
   test( "VS-GetSingleVertrag-beides") {

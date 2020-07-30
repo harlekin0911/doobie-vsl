@@ -17,6 +17,7 @@ import monix.eval.Task
 import de.ways42.vsl.connection.SiteConfig
 import com.zaxxer.hikari.HikariConfig
 import scala.concurrent.ExecutionContext
+import de.ways42.vsl.connection.JdbcOptions
 
 object HcIOResource {
 
@@ -53,7 +54,7 @@ object HcIOResource {
   def apply(driver:String, url:String, user:String, passwd:String)(implicit ev: ContextShift[IO]) : Resource[IO, HikariTransactor[IO]] = for {
       ce <- ExecutionContexts.fixedThreadPool[IO](32) // our connect EC
       be <- Blocker[IO]    // our blocking EC
-      xa <- HikariTransactor.newHikariTransactor[IO](driver, url, user, passwd,
+      xa <- HikariTransactor.newHikariTransactor[IO](driver, url + JdbcOptions.db2Options, user, passwd,
               ce, // await connection here
               be) // execute JDBC operations here
     } yield xa    

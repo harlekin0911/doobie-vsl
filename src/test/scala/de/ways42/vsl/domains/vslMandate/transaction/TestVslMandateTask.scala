@@ -97,7 +97,7 @@ class TestVslMandateTask3  extends AnyFunSuite  {
   
   
   test( "VslMandate-All") {
-    implicit val (xas,ss,ds) = HcTransactor( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together", 5)
+    implicit val (xas,ss,ds) = HcTransactor( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together", 32)
   
     val vt  = xas.map( xa => VslMandateTask(xa)).flatMap(_.getAll()).runSyncUnsafe()
 

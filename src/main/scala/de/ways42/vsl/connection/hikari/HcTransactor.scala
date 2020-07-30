@@ -15,6 +15,7 @@ import doobie.hikari.HikariTransactor
 import monix.eval.Task
 import monix.execution.Scheduler
 import monix.execution.schedulers.SchedulerService
+import de.ways42.vsl.connection.JdbcOptions
 
 object HcTransactor {
   
@@ -38,7 +39,7 @@ object HcTransactor {
    */
   def apply(driver:String, url:String, user:String, passwd:String, size:Int) : (Task[HikariTransactor[Task]],SchedulerService, HikariDataSource) = {
 
-    val c = HcConfig.hcConfig(driver, url, user, passwd, size)
+    val c = HcConfig.hcConfig(driver, url + JdbcOptions.db2Options, user, passwd, size)
     val es : ExecutorService   = Executors.newFixedThreadPool(size)
     val ec : ExecutionContext  = ExecutionContext.fromExecutor(es) //ExecutionContext.global
       

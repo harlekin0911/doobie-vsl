@@ -22,7 +22,7 @@ class TestVsl extends AnyFunSuite {
 
 	val xa : Transactor.Aux[IO, Unit] = Connect( 
 	    "com.ibm.db2.jcc.DB2Driver", 
-	    "jdbc:db2://172.17.4.39:50001/vslt01:allowNextOnExhaustedResultSet=1;", 
+	    "jdbc:db2://172.17.4.39:50001/vslt01", 
 	    "VSMADM", 
 	    "together")
 
@@ -47,14 +47,14 @@ class TestVsl extends AnyFunSuite {
 			assert ( Tvsl001.selectAllMaxCount( 5).transact(xa).unsafeRunSync.take(5).length == 5)
 			assert ( Tvsl001.selectAktById(   "0003065903411").transact(xa).unsafeRunSync.get.LV_VTG_NR.trim() == "0003065903411")
 			val c : Long = Tvsl001.selectAktAllAktive().transact(xa).unsafeRunSync.length
-			assert ( c == 240146)
+			assert ( c == 239743)
 	}
 	test( "Vsl-Vtgnr-AKT-empty") {
 			assert ( Tvsl001.selectAktById(   "1234567890123").transact(xa).unsafeRunSync.isEmpty == true)
 	}
 	test( "Vsl-Vtgnr-AKT-beitragspflichtige") {
 			val d : Long = Tvsl001.selectAktAllBeitragspflichtig().transact(xa).unsafeRunSync.length
-			assert (  d == 167152)
+			assert (  d == 167150)
 	}
 }
 

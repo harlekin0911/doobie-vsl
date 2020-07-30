@@ -27,7 +27,7 @@ object HcIOResourceApp extends App {
   
   //implicit val cs = IO.contextShift(ExecutionContext.global)
 
-  val hcc = HcConfig.hcConfig()
+  val hcc = HcConfig.hcConfig("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50013/vslt03", "vsmadm", "together", 32)
   val ds  = new HikariDataSource(hcc)
   val fixedThreadPool  : ExecutorService = Executors.newFixedThreadPool(32)
 	val BlockingFileIO : ExecutionContext  = ExecutionContext.fromExecutor(fixedThreadPool)
