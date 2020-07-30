@@ -89,7 +89,7 @@ class TestMandateService2  extends AnyFunSuite  { // with GeneratorDrivenPropert
   test( "MS-NichtTerminierteAbgelaufeneOhnePayment") {
     val c =  m.get(MandateAktDom.Qual.NtOodNoPayment).map( _.size).getOrElse(0)
     //println ( "Anzahl abgelaufene nicht terminierte Mandate: " + c) 
-	  assert(  13260 <  c && c == 13280)
+	  assert(  13260 <  c && c < 13280)
   }
 
 }

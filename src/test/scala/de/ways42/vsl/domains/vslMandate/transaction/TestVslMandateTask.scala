@@ -106,7 +106,7 @@ class TestVslMandateTask3  extends AnyFunSuite  {
     val es   = mes.size
     val mnm = vt.filter( x => x._2.omrd.isEmpty == true)  // ohne mandate
     val nm = mnm.size
-    assert( s == 457232 && es == 118688 && nm == 69582)  
+    assert( s == 457232 && es == 154275 && nm == 69582)  
     
     
     println( mes.take(5).mkString(";"))
