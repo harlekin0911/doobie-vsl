@@ -42,7 +42,7 @@ class TestMandateTask  extends AnyFunSuite  {
        
   test( "MS-Aktive-Ohne Payment") {
 	  println ( "Anzahl Mandate mit aktiven Status ohne Payments: "           + e._1) 
-	  assert(  e._1 == 13270)
+	  assert(  13270 < e._1 && e._1 < 13280 )
   }
   test( "MS-Aktive-Mit-Payments") {
     println ( "Anzahl Mandate mit aktiven Status und Payments: "            + e._2) 
@@ -50,15 +50,15 @@ class TestMandateTask  extends AnyFunSuite  {
   }
   test( "MS-Nicht-Terminierte-Abgelaufene") {
     println ( "Anzahl abgelaufene nicht terminierte Mandate: "              + e._3) 
-	  assert(  e._3 == 58460)
+	  assert(  58460 < e._3 && e._3 < 58490 )
   }
   test( "MS-Nicht-Terminierte-Abgelaufene-Ohne-Payment") {
     println ( "Anzahl abgelaufene nicht terminierte Mandate ohne Payment: " + e._4) 
-	  assert(  e._4 == 13270)
+	  assert(  13270 < e._4 && e._4 < 13280 )
   }
   test( "MS-Nicht-Terminierte-Abgelaufene-Mit-Payment") {
 	  println ( "Anzahl abgelaufene nicht terminierte Mandate mit Payment: "  + e._5) 
-	  assert(  e._5 == 45190)
+	  assert(  45190 < e._5 && e._4 < 45230)
   }
 
   test( "MS-getMandateWithPayments") {
