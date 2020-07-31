@@ -116,4 +116,30 @@ class TestVslMandateTask3  extends AnyFunSuite  {
   }
 } 
 
+class TestVslMandateTask4  extends AnyFunSuite  { 
+  
+  import monix.eval.Task
+  
+  
+  test( "VslMandate-AktiveBeitragsfreiMandateAbgelaufen") {
+    implicit val (xas,ss,ds) = HcTransactor( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together", 32)
+  
+    val vt  = xas.map( xa => VslMandateTask(xa)).flatMap(_.getAllAktive()).runSyncUnsafe()
+    val bfr = vt.filter( x => x._2.omrd.map(_.istBfr).getOrElse(false))
+    val bfrSize = bfr.size
+
+    val bfrAufrecht = bfr.filter( _._2.isAufrecht)
+    val bfrAufrechtSize = bfrAufrecht.size
+    
+    val bfrNotValid = bfr.filter( _._2.validateMandate())
+    val bfrNotValidSize = bfrNotValid.size
+
+    assert( bfrSize == 199451 && bfrAufrecht  == 199451 && bfrNotValidSize == 0 )  
+    
+       
+    ds.close()
+    ss.shutdown()
+  }
+} 
+
 

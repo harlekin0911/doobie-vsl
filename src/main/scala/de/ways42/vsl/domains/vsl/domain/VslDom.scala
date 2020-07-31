@@ -10,22 +10,28 @@ case class VslDom( tvsl001:Tvsl001, mtvsl002: Map[Short,Tvsl002]) {
     if ( t2.LV_VTG_NR != tvsl001.LV_VTG_NR) 
       throw new RuntimeException( "Die Vertragsnummern stimmen nicht ueberein: " + tvsl001.LV_VTG_NR + " " + t2.LV_VTG_NR)
     else VslDom( tvsl001, mtvsl002.updated(t2.LV_VERS_NR, t2))
- /**
-  * Ist beitagspflichtig
-  */
-  def istBpfl : Boolean = tvsl001.LV_VERTR_STAT_CD == 0 && mtvsl002.filter( _._2.LV_VERS_STAT_CD == 0).size > 0
+ 
+  /**
+   * Gueltige Vertraege
+   */
+  def isAufrecht : Boolean = tvsl001.isAufrecht && mtvsl002.find( _._2.isAufrecht).isEmpty
+ 
+  /**
+   * Ist beitagspflichtig
+   */
+  def istBpfl : Boolean = tvsl001.istBpfl && mtvsl002.find( _._2.istBpfl).isDefined
  
   /**
   * Ist beitagspflichtig, falsch in der DB
   * Nur der Vertrag, keine Versicherung ist beitragspflichtig
   */
-  def istBpflNurVertrag : Boolean = tvsl001.LV_VERTR_STAT_CD >  0 && mtvsl002.filter( _._2.LV_VERS_STAT_CD == 0).size > 0
+  def istBpflNurVertrag : Boolean = tvsl001.istBpfl && mtvsl002.find( _._2.istBpfl).isEmpty
 
   /**
   * Ist beitagspflichtig, falsch in der DB
   * Der Vertrag ist beitragsfrei, aber es gbt beitragspflichtige Versicherungen
   */
-  def istBpflNurVers : Boolean = tvsl001.LV_VERTR_STAT_CD == 0 && mtvsl002.filter( _._2.LV_VERS_STAT_CD == 0).size == 0
+  def istBpflNurVers : Boolean = tvsl001.istBfr && mtvsl002.find( _._2.istBpfl).isDefined
   
 }
 

@@ -18,11 +18,21 @@ case class MandateRefDom( vtgnr:String, vsldom:Option[VslDom], lr1:List[Trol001]
     if ( r1.ISTTOP_NRX.trim() == vtgnr ) 
       MandateRefDom( vtgnr, vsldom, r1::lr1)
     else throw new RuntimeException( "Vertragsnummer<" + vtgnr + "> und rolle.isttop_nrx<" + r1.ISTTOP_NRX.trim() + "> stimmen nicht ueberein")
-  
+
+  /**
+   * Bestehender Vertrag
+   */
+  def isAufrecht : Boolean = vsldom.map( _.isAufrecht).getOrElse( false)
  /**
   * Ist beitagspflichtig
   */
   def istBpfl : Boolean = vsldom.map( _.istBpfl).getOrElse(false)
+  
+  /**
+   * Beitragsfrei
+   */
+  
+  def istBfr : Boolean = ! istBpfl
  
   /**
   * Ist beitagspflichtig, falsch in der DB

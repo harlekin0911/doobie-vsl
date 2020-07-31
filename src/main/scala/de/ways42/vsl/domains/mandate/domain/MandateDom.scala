@@ -31,6 +31,9 @@ case class MandateDom( m:Mandate, lp:List[Payment]) {
 	  }
 	
 	def isTerminated : Boolean = m.TERMINATED_FLAG > 0
+	
+	def mandateExtRef : Option[String] = m.MANDATE_EXT_REF
+	def mandateId     : Long           = m.MANDATE_ID
 }
 
 object MandateDom {

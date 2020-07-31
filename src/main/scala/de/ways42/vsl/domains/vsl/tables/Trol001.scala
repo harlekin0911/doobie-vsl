@@ -43,6 +43,8 @@ case class Trol001 (
     val vadf = TimeService.vadf()
     copy( VA_DTM = vadf._1, DF_ZT = vadf._2, GV_DTM = vadf._1, RSTAT_CD = 2)
   }
+  
+  lazy val mandateExtRef : String = ROLLSPEZ_TXT.substring( 0, ROLLSPEZ_TXT.indexOf(";"))
 }
 
 object Trol001 {

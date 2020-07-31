@@ -60,7 +60,22 @@ case class Tvsl001(
 		LV_STUF_ZAHL_BTR : Double , 
 		LV_SWISSRE_JZ    : Short , 
 		LV_SWISSRE_CD    : Short
-		)
+		) {
+  /**
+   * Gueltige Vertraege
+   */
+  def isAufrecht : Boolean = LV_VERTR_STAT_CD < 60
+ 
+  /**
+   * Ist beitagspflichtig
+   */
+  def istBpfl : Boolean = LV_VERTR_STAT_CD == 0 
+ 
+  /**
+   * Ist beitagsfrei
+   */
+  def istBfr : Boolean = LV_VERTR_STAT_CD > 0 
+}
 
 object Tvsl001 {
 		  

@@ -31,6 +31,12 @@ case class VslMandateDomain( vtgnr:String, omrd:Option[MandateRefDom], omdom:Opt
       throw new RuntimeException( "Vertragsnummer<" + vtgnr + "> und MandateDomain.extRef<" +  md.extRef + "> stimmen nicht ueberein")
     VslMandateDomain( vtgnr, omrd, Some(md))
   }
+  
+  /**
+   * Gueltiger Vertrag
+   */
+  def isAufrecht =  omrd.map( _.isAufrecht).getOrElse(false) 
+  
  /**
   * Ist beitagspflichtig
   */
@@ -48,6 +54,25 @@ case class VslMandateDomain( vtgnr:String, omrd:Option[MandateRefDom], omdom:Opt
   */
   def istBpflNurVers : Boolean = omrd.map( _.istBpflNurVers).getOrElse(false)
   
+  /**
+   * Validate Mandates
+   * ueberpruefung ob die Mandate in Mandatsverwalung und Rolle uebereinstimmen
+   */
+  
+  def validateMandate() : Boolean = {
+    
+    if ( omrd.isEmpty   && omdom.isEmpty)   return true;
+    if ( omrd.isDefined && omdom.isEmpty)   return false;
+    if ( omrd.isEmpty   && omdom.isDefined) return false;
+    
+    val rollen = omrd.get.lr1
+    val mmandate = omdom.get.mmed
+        
+    val rollenOhneMandate = rollen.filter(   x => mmandate.find( y => y._2.mandateExtRef.map( _ == x.mandateExtRef).getOrElse(false)).isEmpty)
+    val mandateOhneRollen = mmandate.filter( y =>   rollen.find( x => y._2.mandateExtRef.map( _ == x.mandateExtRef).getOrElse(false)).isEmpty)
+    
+    rollenOhneMandate.isEmpty && mandateOhneRollen.isEmpty
+  }
 }
 
 object VslMandateDomain {

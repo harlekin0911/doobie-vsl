@@ -51,7 +51,19 @@ case class Tvsl002(
 		LV_STUFEN_DTM   : Long, 
 		LV_DIVVORBU_CD  : Short, 
 		LV_LERG_OPT_CD  : Short 
-		)   
+		)   {
+  
+    /**
+   * Gueltige Versicherung
+   */
+  def isAufrecht : Boolean = LV_VERS_STAT_CD < 60
+ 
+  /**
+   * Ist beitagspflichtig
+   */
+  def istBpfl : Boolean = LV_VERS_STAT_CD == 0
+ 
+}
 				 
 object Tvsl002 {
 

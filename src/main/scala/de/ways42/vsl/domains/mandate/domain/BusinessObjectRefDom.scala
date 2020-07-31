@@ -43,6 +43,9 @@ case class BusinessObjectRefDom( b:BusinessObjectRef, md:Option[MandateDom]) {
    * Terminierte Mandate
    */
   def isTerminated : Boolean = md.map( _.isTerminated).getOrElse(true)
+  
+  def mandateExtRef : Option[String] = md.flatMap( _.mandateExtRef )
+  def mandateId     : Option[Long]   = md.map(    _.mandateId )
 }
 
 object BusinessObjectRefDom {
