@@ -106,7 +106,7 @@ class TestMandateTask2  extends AnyFunSuite  {
   
     val mmd = xap.use( xa => MandateTask( xa).getAllMandateDomainAktBottomUp)
     val s = mmd.runSyncUnsafe().size
-    assert( s == 302956)
+    assert( s == 302955)
   }
 }
 class TestMandateTask3  extends AnyFunSuite  { 

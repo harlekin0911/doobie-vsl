@@ -25,13 +25,13 @@ class TestVslTask  extends AnyFunSuite  {
   test( "VS-AktiveVertraegeMitAktivenVersicherungen") {
     val r = lmp.size
 		println ( "Anzahl nicht terminierte: " + r) 
-	  assert(  r == 240146)
+	  assert(  r ==  239743)
   }
   
   test("VS-Beitragspflichtige-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpfl).size
 		println ( "Anzahl beitragspflichtige: " + r) 
-	  assert(  r == 158983)
+	  assert(  r == 158981)
   }
     
   test("VS-BeitragspflichtigeNurVertrag-Vericherungen") {
@@ -83,7 +83,7 @@ class TestVslTask3  extends AnyFunSuite  {
     val nm = vt.filter( x => x._2.lr1 == Nil).size // vertraege ohne mandate
     //assert( s == 529401 && es == 289256 && nm == 240145) // ohne trim
     //assert( s == 529401 && es == 118689 && nm == 240145) // trim nur beim get
-    assert( s == 358833 && es == 118688 && nm == 69582)   // trim komplett beim Aufbau MandateRefDom
+    assert( s ==  358432 && es == 118688 && nm == 69582)   // trim komplett beim Aufbau MandateRefDom
     
     
     println( mes.take(5).mkString(";"))

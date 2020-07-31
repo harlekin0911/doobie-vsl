@@ -31,7 +31,7 @@ class TestMandateTaskSelectOnly  extends AnyFunSuite  {
       Mandate.selectAktAll().transact(xa),
       Payment.selectLastPaymentAlle().transact(xa)).runSyncUnsafe()
     val s = ( v._1.size, v._2.size, v._3.size)  
-    assert( s._1 == 312905 && s._2 < 312910 && s._2 > 312900 && s._3 == 281156)
+    assert( s._1 == 312906 && s._2 < 312910 && s._2 > 312900 && s._3 == 281156)
   }
   
     
