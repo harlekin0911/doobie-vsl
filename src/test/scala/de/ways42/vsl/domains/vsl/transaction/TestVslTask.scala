@@ -83,7 +83,7 @@ class TestVslTask3  extends AnyFunSuite  {
     val nm = vt.filter( x => x._2.lr1 == Nil).size // vertraege ohne mandate
     //assert( s == 529401 && es == 289256 && nm == 240145) // ohne trim
     //assert( s == 529401 && es == 118689 && nm == 240145) // trim nur beim get
-    assert( s ==  358432 && es == 118688 && nm == 69582)   // trim komplett beim Aufbau MandateRefDom
+    assert( s ==  358432 && es == 118689 && nm == 69181)   // trim komplett beim Aufbau MandateRefDom
     
     
     println( mes.take(5).mkString(";"))
