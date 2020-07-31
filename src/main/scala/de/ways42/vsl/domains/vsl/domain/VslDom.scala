@@ -14,7 +14,7 @@ case class VslDom( tvsl001:Tvsl001, mtvsl002: Map[Short,Tvsl002]) {
   /**
    * Gueltige Vertraege
    */
-  def isAufrecht : Boolean = tvsl001.isAufrecht && mtvsl002.find( _._2.isAufrecht).isEmpty
+  def isAufrecht : Boolean = tvsl001.isAufrecht && mtvsl002.find( _._2.isAufrecht).isDefined
  
   /**
    * Ist beitagspflichtig
