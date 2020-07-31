@@ -38,6 +38,11 @@ case class VslMandateDomain( vtgnr:String, omrd:Option[MandateRefDom], omdom:Opt
   def isAufrecht =  omrd.map( _.isAufrecht).getOrElse(false) 
   
  /**
+  * Ist beitagsfrei
+  */
+  def istBfr : Boolean = omrd.map( _.istBfr).getOrElse(false)
+ 
+ /**
   * Ist beitagspflichtig
   */
   def istBpfl : Boolean = omrd.map( _.istBpfl).getOrElse(false)
