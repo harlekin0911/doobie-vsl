@@ -134,7 +134,7 @@ class TestVslMandateTask4  extends AnyFunSuite  {
     val bfrNotValid = bfr.filter( _._2.validateMandate())
     val bfrNotValidSize = bfrNotValid.size
 
-    assert( bfrSize == 199451 && bfrAufrecht  == 199451 && bfrNotValidSize == 0 )  
+    assert( bfrSize == 199451 && bfrAufrechtSize  == 199451 && bfrNotValidSize == 0 )  
     
        
     ds.close()
