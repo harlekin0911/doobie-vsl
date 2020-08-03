@@ -53,12 +53,12 @@ class TestVslMandateTask  extends AnyFunSuite  {
   test("VslMandateDom-BeitragspflichtigeNurVertrag-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpflNurVertrag).size
 		println ( "Anzahl beitragspflichtigeNurVertrag: " + r) 
-	  assert(  r == 10)
+	  assert(  r == 8169)
   }
   test("VslMandateDom-BeitragspflichtigeNurVers-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpflNurVers).size
 		println ( "Anzahl beitragspflichtigeNurVers: " + r) 
-	  assert(  r == 8169)
+	  assert(  r == 10)
   }
 
 }
