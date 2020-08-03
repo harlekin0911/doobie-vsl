@@ -32,8 +32,13 @@ case class MandateRefDom( vtgnr:String, vsldom:Option[VslDom], lr1:List[Trol001]
    * Beitragsfrei
    */
   
-  def istBfr : Boolean = ! istBpfl
+  def istBfr : Boolean = vsldom.map( _.istBfr).getOrElse(false)
  
+  /**
+   * Reserve
+   */
+  
+  def isReserve : Boolean = vsldom.map( _.isReserve).getOrElse(false)
   /**
   * Ist beitagspflichtig, falsch in der DB
   * Nur der Vertrag, keine Versicherung ist beitragspflichti

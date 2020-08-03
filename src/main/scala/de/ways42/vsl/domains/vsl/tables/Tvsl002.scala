@@ -63,6 +63,15 @@ case class Tvsl002(
    */
   def istBpfl : Boolean = LV_VERS_STAT_CD == 0
  
+  /**
+   * Ist beitagsfrei
+   */
+  def istBfr : Boolean = 0 < LV_VERS_STAT_CD && LV_VERS_STAT_CD < 60
+
+  /**
+   * Ist reserve
+   */
+  def isReserve : Boolean = 60 <= LV_VERS_STAT_CD 
 }
 				 
 object Tvsl002 {

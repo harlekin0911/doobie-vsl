@@ -125,17 +125,25 @@ class TestVslMandateTask4  extends AnyFunSuite  {
     implicit val (xas,ss,ds) = HcTransactor( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together", 32)
   
     val vt  = xas.map( xa => VslMandateTask(xa)).flatMap(_.getAllAktive()).runSyncUnsafe()
+    val vtSize = vt.size
     //val bfr = vt.filter( x => x._2.omrd.map(_.istBfr).getOrElse(false))
+    
+    val aufrecht = vt.filter( x => x._2.isAufrecht)
+    val aufrechtSize = aufrecht.size
+    
     val bfr = vt.filter( x => x._2.istBfr)
     val bfrSize = bfr.size
 
-    val bfrAufrecht = bfr.filter( _._2.isAufrecht)
+    val bfrAufrecht = vt.filter( _._2.isAufrecht)
     val bfrAufrechtSize = bfrAufrecht.size
     
     val bfrNotValid = bfr.filter( _._2.validateMandate())
     val bfrNotValidSize = bfrNotValid.size
 
-    assert( bfrSize == 199451 && bfrAufrechtSize  == 80762 && bfrNotValidSize == 0 )  
+    val reserve = vt.filter( _._2.isReserve)
+    val reserveSize = reserve.size
+    
+    assert( aufrechtSize ==  239743 && vtSize == 371795 && bfrSize == 199451 && bfrAufrechtSize  == 80762 && bfrNotValidSize == 0 )  
     
        
     ds.close()

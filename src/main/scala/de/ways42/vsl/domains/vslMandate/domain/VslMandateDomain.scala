@@ -47,6 +47,10 @@ case class VslMandateDomain( vtgnr:String, omrd:Option[MandateRefDom], omdom:Opt
   */
   def istBpfl : Boolean = omrd.map( _.istBpfl).getOrElse(false)
  
+ /**
+  * Ist reserve
+  */
+  def isReserve : Boolean = omrd.map( _.isReserve).getOrElse(false)
   /**
   * Ist beitagspflichtig, falsch in der DB
   * Nur der Vertrag, keine Versicherung ist beitragspflichti

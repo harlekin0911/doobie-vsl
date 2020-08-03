@@ -74,7 +74,12 @@ case class Tvsl001(
   /**
    * Ist beitagsfrei
    */
-  def istBfr : Boolean = LV_VERTR_STAT_CD > 0 
+  def istBfr : Boolean = 0 < LV_VERTR_STAT_CD && LV_VERTR_STAT_CD < 60 
+  
+  /**
+   * auf reserve
+   */
+  def isReserve : Boolean = 60 <= LV_VERTR_STAT_CD
 }
 
 object Tvsl001 {
