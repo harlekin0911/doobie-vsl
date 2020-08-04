@@ -28,7 +28,7 @@ case class VslDom( tvsl001:Tvsl001, mtvsl002: Map[Short,Tvsl002]) {
   /**
    * Ist beitagspflichtig
    */
-  def isReserve : Boolean = tvsl001.isReserve && mtvsl002.find( _._2.isReserve).isDefined
+  def isReserve : Boolean = tvsl001.isReserve //&& mtvsl002.find( _._2.isReserve).isDefined
  
   /**
   * Ist beitagspflichtig, falsch in der DB

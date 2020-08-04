@@ -134,7 +134,7 @@ class TestVslMandateTask4  extends AnyFunSuite  {
     val bfr = vt.filter( x => x._2.istBfr)
     val bfrSize = bfr.size
 
-    val bfrAufrecht = vt.filter( _._2.isAufrecht)
+    val bfrAufrecht = bfr.filter( _._2.isAufrecht)
     val bfrAufrechtSize = bfrAufrecht.size
     
     val bfrNotValid = bfr.filter( _._2.validateMandate())
@@ -143,7 +143,7 @@ class TestVslMandateTask4  extends AnyFunSuite  {
     val reserve = vt.filter( _._2.isReserve)
     val reserveSize = reserve.size
     
-    assert( aufrechtSize ==  239743 && vtSize == 371795 && bfrSize == 199451 && bfrAufrechtSize  == 80762 && bfrNotValidSize == 0 )  
+    assert( aufrechtSize ==  239743 && vtSize == 371795 && bfrSize == 72583 && bfrAufrechtSize  == 72583 && bfrNotValidSize == 0 && reserveSize == 0)  
     
        
     ds.close()
