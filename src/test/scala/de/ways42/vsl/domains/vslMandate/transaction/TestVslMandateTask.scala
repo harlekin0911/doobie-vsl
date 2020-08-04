@@ -100,13 +100,40 @@ class TestVslMandateTask3  extends AnyFunSuite  {
     implicit val (xas,ss,ds) = HcTransactor( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together", 32)
   
     val vt  = xas.map( xa => VslMandateTask(xa)).flatMap(_.getAll()).runSyncUnsafe()
-
-    val s  = vt.size
-    val mes = vt.filter( x => x._2.omdom.isEmpty == true) // ohne vertrag
+    val vtSize  = vt.size
+    
+    // ohne vertrag
+    val mes = vt.filter( x => x._2.omdom.isEmpty == true) 
     val es   = mes.size
-    val mnm = vt.filter( x => x._2.omrd.isEmpty == true)  // ohne mandate
+    
+    // ohne mandate
+    val mnm = vt.filter( x => x._2.omrd.isEmpty == true)  
     val nm = mnm.size
-    assert( s == 457232 && es == 154275 && nm == 12142)  
+
+    val aufrecht = vt.filter( x => x._2.isAufrecht)
+    val aufrechtSize = aufrecht.size
+    
+    val bfr = vt.filter( x => x._2.istBfr)
+    val bfrSize = bfr.size
+
+    val bfrAufrecht = bfr.filter( _._2.isAufrecht)
+    val bfrAufrechtSize = bfrAufrecht.size
+    
+    val bfrNotValid = bfr.filter( _._2.validateMandate())
+    val bfrNotValidSize = bfrNotValid.size
+
+    val reserve = vt.filter( _._2.isReserve)
+    val reserveSize = reserve.size
+    
+    assert(  
+        vtSize           == 457232  && 
+        es               == 154275  && 
+        nm               == 12142   &&
+        aufrechtSize     ==  239743 &&
+        bfrSize          == 72583   && 
+        bfrAufrechtSize  == 72583   && 
+        bfrNotValidSize  == 0       && 
+        reserveSize      == 0)  
     
     
     println( mes.take(5).mkString(";"))
@@ -126,7 +153,14 @@ class TestVslMandateTask4  extends AnyFunSuite  {
   
     val vt  = xas.map( xa => VslMandateTask(xa)).flatMap(_.getAllAktive()).runSyncUnsafe()
     val vtSize = vt.size
-    //val bfr = vt.filter( x => x._2.omrd.map(_.istBfr).getOrElse(false))
+    
+    // ohne vertrag
+    val mes = vt.filter( x => x._2.omdom.isEmpty == true) 
+    val es   = mes.size
+    
+    // ohne mandate
+    val mnm = vt.filter( x => x._2.omrd.isEmpty == true)  
+    val nm = mnm.size
     
     val aufrecht = vt.filter( x => x._2.isAufrecht)
     val aufrechtSize = aufrecht.size
@@ -143,7 +177,15 @@ class TestVslMandateTask4  extends AnyFunSuite  {
     val reserve = vt.filter( _._2.isReserve)
     val reserveSize = reserve.size
     
-    assert( aufrechtSize ==  239743 && vtSize == 371795 && bfrSize == 72583 && bfrAufrechtSize  == 72583 && bfrNotValidSize == 0 && reserveSize == 0)  
+    assert(  
+        vtSize           == 371795  && 
+        es               == 154275  && 
+        nm               == 12142   &&
+        aufrechtSize     ==  239743 &&
+        bfrSize          == 72583   && 
+        bfrAufrechtSize  == 72583   && 
+        bfrNotValidSize  == 0       && 
+        reserveSize      == 0)  
     
        
     ds.close()
