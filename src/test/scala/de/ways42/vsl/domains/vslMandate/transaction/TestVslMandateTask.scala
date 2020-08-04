@@ -128,12 +128,12 @@ class TestVslMandateTask3  extends AnyFunSuite  {
     assert(  
         vtSize           == 457232  && 
         es               == 154275  && 
-        nm               == 12142   &&
+        nm               == 12142   && 
         aufrechtSize     ==  239743 &&
         bfrSize          == 72583   && 
         bfrAufrechtSize  == 72583   && 
         bfrNotValidSize  == 0       && 
-        reserveSize      == 0)  
+        reserveSize      == 202824)  
     
     
     println( mes.take(5).mkString(";"))
@@ -179,8 +179,8 @@ class TestVslMandateTask4  extends AnyFunSuite  {
     
     assert(  
         vtSize           == 371795  && 
-        es               == 154275  && 
-        nm               == 12142   &&
+        es               ==  68839  && 
+        nm               == 13363   &&
         aufrechtSize     ==  239743 &&
         bfrSize          == 72583   && 
         bfrAufrechtSize  == 72583   && 
