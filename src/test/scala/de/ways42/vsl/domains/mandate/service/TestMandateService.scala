@@ -14,6 +14,7 @@ import de.ways42.vsl.domains.mandate.tables.Payment
 import de.ways42.vsl.domains.mandate.tables.Mandate
 import de.ways42.vsl.domains.mandate.domain.MandateAktDom
 import de.ways42.vsl.domains.mandate.domain.MandateAktDom._
+import de.ways42.vsl.TestResults
 
 
 class TestMandateService  extends AnyFunSuite  { // with GeneratorDrivenPropertyChecks  { // with Matchers { // with PropertyChecks {
@@ -44,12 +45,12 @@ class TestMandateService  extends AnyFunSuite  { // with GeneratorDrivenProperty
   test( "MS-NichtTerminierteAbgelaufene") {
     val c =  m.filter( _._2.abgelaufen).size
     println ( "Anzahl abgelaufene nicht terminierte Mandate: " + c) 
-	  assert(  c > 58460 && c < 58490)
+	  assert(  c == TestResults.nichtTerminierteAbgelaufene)
   }
   test( "MS-NichtTerminierteAbgelaufeneMitPayment") {
     val c =  m.filter( _._2.abgelaufenMitPayment).size
     println ( "Anzahl abgelaufene nicht terminierte Mandate: " + c) 
-	  assert(  45190 < c && c < 45220)
+	  assert(  c == TestResults.nichtTerminierteAbgelaufeneMitPayment)
   }
   test( "MS-NichtTerminierteAbgelaufeneOhnePayment") {
     val c =  m.filter( _._2.abgelaufenOhnePayment).size
@@ -79,12 +80,12 @@ class TestMandateService2  extends AnyFunSuite  { // with GeneratorDrivenPropert
   test( "MS-NichtTerminierteAbgelaufene") {
     val c =  m.get(MandateAktDom.Qual.NtOod).map( _.size).getOrElse(0)
     //println ( "Anzahl abgelaufene nicht terminierte Mandate: " + c) 
-	  assert(  58460 < c && c < 58490)
+	  assert(  c == TestResults.nichtTerminierteAbgelaufene)
   }
   test( "MS-NichtTerminierteAbgelaufeneMitPayment") {
     val c =  m.get(MandateAktDom.Qual.NtOodPayment).map( _.size).getOrElse(0)
     //println ( "Anzahl abgelaufene nicht terminierte Mandate: " + c) 
-	  assert(  45190 < c && c < 45230)
+	  assert(  c == TestResults.nichtTerminierteAbgelaufeneMitPayment)
   }
   test( "MS-NichtTerminierteAbgelaufeneOhnePayment") {
     val c =  m.get(MandateAktDom.Qual.NtOodNoPayment).map( _.size).getOrElse(0)

@@ -8,6 +8,7 @@ import doobie.implicits.toConnectionIOOps
 import de.ways42.vsl.domains.mandate.domain.MandateAktDom
 import de.ways42.vsl.domains.mandate.service.MandateService
 import de.ways42.vsl.connection.hikari.HcTaskResource
+import de.ways42.vsl.TestResults
 
 
 class TestMandateTask  extends AnyFunSuite  { 
@@ -127,8 +128,8 @@ class TestMandateTask3  extends AnyFunSuite  {
     assert( 
         s == 302957 &&
         ebs == 4 && 
-        113313 < outOfDate     && outOfDate < 113320 &&
-        61200  < outOfDateTerm && outOfDateTerm <  61290 )
+        outOfDate     == TestResults.outOfDate     &&
+        outOfDateTerm == TestResults.outOfDateTerm)
   }
 }
 
