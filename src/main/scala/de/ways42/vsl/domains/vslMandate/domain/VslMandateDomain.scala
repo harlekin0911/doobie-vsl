@@ -11,7 +11,7 @@ import de.ways42.vsl.domains.vsl.domain.MandateRefDom
  * Vsl-Domain mit seinen Rollen
  */
 
-case class VslMandateDomain( vtgnr:String, omrd:Option[MandateRefDom], omdom:Option[MandateDomain]) {
+case class VslMandateDomain( vtgnr:String, omrd:Option[MandateRefDom], omdom:Option[MandateDomain], lz:List[ZikDomain]) {
   
   def add( mrd:MandateRefDom) = {
     
@@ -21,7 +21,7 @@ case class VslMandateDomain( vtgnr:String, omrd:Option[MandateRefDom], omdom:Opt
     if ( mrd.vtgnr != vtgnr ) 
       throw new RuntimeException( "Vertragsnummer<" + vtgnr + "> und MandateRefDom.vtgnr<" + mrd.vtgnr + "> stimmen nicht ueberein")
     
-    VslMandateDomain( vtgnr, Some(mrd), omdom)
+    VslMandateDomain( vtgnr, Some(mrd), omdom, lz)
   }
   
   def add( md:MandateDomain) = {
@@ -29,7 +29,7 @@ case class VslMandateDomain( vtgnr:String, omrd:Option[MandateRefDom], omdom:Opt
       throw new RuntimeException( "Option[MandateRefDom] ist nicht empty")
     if ( md.extRef != vtgnr ) 
       throw new RuntimeException( "Vertragsnummer<" + vtgnr + "> und MandateDomain.extRef<" +  md.extRef + "> stimmen nicht ueberein")
-    VslMandateDomain( vtgnr, omrd, Some(md))
+    VslMandateDomain( vtgnr, omrd, Some(md), lz)
   }
   
   /**
@@ -91,7 +91,7 @@ object VslMandateDomain {
       throw  throw new RuntimeException("Vtgnr<" + vtgnr + "> und MandateRefDom.vtgnr<" + v.get.vtgnr + "> stimmen nicht ueberein")
     if ( mm.isDefined && mm.get.extRef != vtgnr)
       throw  throw new RuntimeException("Vtgnr<" + vtgnr + "> und MandateDomain.extRef<" + mm.get.extRef + "> stimmen nicht ueberein")
-    new VslMandateDomain( vtgnr, v, mm)
+    new VslMandateDomain( vtgnr, v, mm, Nil)
   }
   
   /**
