@@ -232,7 +232,7 @@ class TestVslMandateTask5  extends AnyFunSuite  {
         bfrSize          == 55992   && 
         bfrAufrechtSize  == 55992   && 
         bfrNotValidSize  == 0       && 
-        reserveSize      == 202824)  
+        reserveSize      == 85617)  
         
   }
 } 
