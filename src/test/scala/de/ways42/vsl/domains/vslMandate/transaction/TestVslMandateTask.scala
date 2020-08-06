@@ -6,6 +6,7 @@ import org.scalatest.funsuite.AnyFunSuite
 import de.ways42.vsl.connection.Connect
 import de.ways42.vsl.connection.hikari.HcTransactor
 import de.ways42.vsl.connection.hikari.HcTaskResource
+import de.ways42.vsl.TestResults
 
 
 
@@ -126,12 +127,12 @@ class TestVslMandateTask3  extends AnyFunSuite  {
     val reserveSize = reserve.size
     
     assert(  
-        vtSize           == 457232  && 
+        vtSize           == TestResults.alleVertraege         && 
         es               == 154275  && 
         nm               == 12142   && 
-        aufrechtSize     ==  239743 &&
-        bfrSize          == 72583   && 
-        bfrAufrechtSize  == 72583   && 
+        aufrechtSize     == TestResults.aufrechteVertraege     &&
+        bfrSize          == TestResults.aufrechtBeitragsfrei   && 
+        bfrAufrechtSize  == TestResults.aufrechtBeitragsfrei   && 
         bfrNotValidSize  == 0       && 
         reserveSize      == 202824)  
     
@@ -193,4 +194,46 @@ class TestVslMandateTask4  extends AnyFunSuite  {
   }
 } 
 
+class TestVslMandateTask5  extends AnyFunSuite  { 
+  
+  import monix.eval.Task
+  
+  
+  test( "VslMandate-All-ohne-Mandate") {
+    implicit val (xas,ss,ds) = HcTransactor( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together", 32)
+  
+    //VslMandateDom ohne Mandate
+    val vt  = xas.map( xa => VslMandateTask(xa)).flatMap(_.getAll()).map( _.filter( x => x._2.omdom.isEmpty == true)).runSyncUnsafe()
+    ds.close()
+    ss.shutdown()
+
+        
+    val vtSize  = vt.size
+    
+    val aufrecht = vt.filter( x => x._2.isAufrecht)
+    val aufrechtSize = aufrecht.size
+    
+    val bfr = vt.filter( x => x._2.istBfr)
+    val bfrSize = bfr.size
+
+    val bfrAufrecht = bfr.filter( _._2.isAufrecht)
+    val bfrAufrechtSize = bfrAufrecht.size
+    
+    val bfrNotValid = bfr.filter( _._2.validateMandate())
+    val bfrNotValidSize = bfrNotValid.size
+
+    val reserve = vt.filter( _._2.isReserve)
+    val reserveSize = reserve.size
+    
+
+    assert(  
+        vtSize           == 154275         && 
+        aufrechtSize     == TestResults.aufrechteVertraege     &&
+        bfrSize          == TestResults.aufrechtBeitragsfrei   && 
+        bfrAufrechtSize  == TestResults.aufrechtBeitragsfrei   && 
+        bfrNotValidSize  == 0       && 
+        reserveSize      == 202824)  
+        
+  }
+} 
 

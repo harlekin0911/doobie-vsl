@@ -51,7 +51,7 @@ class TestMandateTask  extends AnyFunSuite  {
   }
   test( "MS-Nicht-Terminierte-Abgelaufene") {
     println ( "Anzahl abgelaufene nicht terminierte Mandate: "              + e._3) 
-	  assert(  58460 < e._3 && e._3 < 58490 )
+	  assert(  e._3 == TestResults.nichtTerminierteAbgelaufene )
   }
   test( "MS-Nicht-Terminierte-Abgelaufene-Ohne-Payment") {
     println ( "Anzahl abgelaufene nicht terminierte Mandate ohne Payment: " + e._4) 
