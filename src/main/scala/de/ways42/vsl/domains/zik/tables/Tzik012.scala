@@ -56,7 +56,7 @@ object Tzik012 {
 
 	lazy val attrStr = attributes.mkString(",")
 
-	def selectAllById( nkto : String, nkart : String, uart : Int) : Query0[Tzik012] = {
+	def selectAllById( nkto : String, nkart : String, uart : Int) : ConnectionIO[List[Tzik012]] = {
 	  
 			val s = Fragment.const( "select")
 			val a = Fragment.const(  attrStr)
@@ -65,10 +65,10 @@ object Tzik012 {
 	    val o = Fragment.const( "order by va_dtm desc, df_zt desc, mod_cnt desc")
 	    //val w = Fragment.apply[Tuple3[String, String, Int]]( "where z_nkto_nr = ? and z_nktoart_cd = ? and z_uktoart_cd = ?", ( nkto, nkart, uart))
 		  val w = fr"where z_nkto_nr = $nkto and z_nktoart_cd = $nkart and z_uktoart_cd = $uart"
-					(s ++ a ++ f ++ w ++ o).query[Tzik012]
+					(s ++ a ++ f ++ w ++ o).query[Tzik012].to[List]
 	}
 
-	def selectAktById( nkto : String, nkart : String, uart : Int) : Query0[Tzik012] = {
+	def selectAktById( nkto : String, nkart : String, uart : Int) : ConnectionIO[Option[Tzik012]] = {
 			val s = Fragment.const( "select")
 			val a = Fragment.const( attrStr)
 			val f = Fragment.const( "from vsmadm.tzik012 z1")
@@ -76,10 +76,20 @@ object Tzik012 {
 			val w1 = Fragment.const(  "and va_dtm   = ( select max (va_dtm)   from tzik012 z2 where z1.z_nkto_nr = z2.z_nkto_nr and z1.z_nktoart_cd = z2.z_nktoart_cd and z1.z_uktoart_cd = z2.z_uktoart_cd)")
 			val w2 = Fragment.const(  "and df_zt    = ( select max (df_zt)    from tzik012 z3 where z1.z_nkto_nr = z3.z_nkto_nr and z1.z_nktoart_cd = z3.z_nktoart_cd and z1.z_uktoart_cd = z3.z_uktoart_cd and z1.va_dtm = z3.va_dtm)")
 			val w3 = Fragment.const0( "and mod_cnt  = ( select max (mod_cnt)  from tzik012 z4 where z1.z_nkto_nr = z4.z_nkto_nr and z1.z_nktoart_cd = z4.z_nktoart_cd and z1.z_uktoart_cd = z4.z_uktoart_cd and z1.va_dtm = z4.va_dtm and z1.df_zt = z4.df_zt)")
-			(s ++ a ++ f ++ w ++ w1 ++ w2 ++ w3).query[Tzik012]
+			(s ++ a ++ f ++ w ++ w1 ++ w2 ++ w3).query[Tzik012].option
+	}
+	def selectAktByNkto( nkto : String) : ConnectionIO[List[Tzik012]] = {
+			val s = Fragment.const( "select")
+			val a = Fragment.const( attrStr)
+			val f = Fragment.const( "from vsmadm.tzik012 z1")
+			val w = fr"where z_nkto_nr = $nkto"
+			val w1 = Fragment.const(  "and va_dtm   = ( select max (va_dtm)   from tzik012 z2 where z1.z_nkto_nr = z2.z_nkto_nr and z1.z_nktoart_cd = z2.z_nktoart_cd and z1.z_uktoart_cd = z2.z_uktoart_cd)")
+			val w2 = Fragment.const(  "and df_zt    = ( select max (df_zt)    from tzik012 z3 where z1.z_nkto_nr = z3.z_nkto_nr and z1.z_nktoart_cd = z3.z_nktoart_cd and z1.z_uktoart_cd = z3.z_uktoart_cd and z1.va_dtm = z3.va_dtm)")
+			val w3 = Fragment.const0( "and mod_cnt  = ( select max (mod_cnt)  from tzik012 z4 where z1.z_nkto_nr = z4.z_nkto_nr and z1.z_nktoart_cd = z4.z_nktoart_cd and z1.z_uktoart_cd = z4.z_uktoart_cd and z1.va_dtm = z4.va_dtm and z1.df_zt = z4.df_zt)")
+			(s ++ a ++ f ++ w ++ w1 ++ w2 ++ w3).query[Tzik012].to[List]
 	}
 	
-	def selectNktoAktByNkartandUktoart( nkart : NonEmptyList[String], uart : NonEmptyList[Int]) : Query0[Tzik012] = {
+	def selectNktoAktByNkartandUktoart( nkart : NonEmptyList[String], uart : NonEmptyList[Int]) : ConnectionIO[List[Tzik012]] = {
 			val s = Fragment.const(   "select")
 			val a = Fragment.const(    attrStr)
 			val f = Fragment.const(   "from vsmadm.tzik012 z1")
@@ -91,7 +101,7 @@ object Tzik012 {
 					Fragment.const(  "va_dtm    = ( select max (va_dtm)   from tzik012 z2 where z1.z_nkto_nr = z2.z_nkto_nr and z1.z_nktoart_cd = z2.z_nktoart_cd and z1.z_uktoart_cd = z2.z_uktoart_cd)"),
 					Fragment.const(  "df_zt     = ( select max (df_zt)    from tzik012 z3 where z1.z_nkto_nr = z3.z_nkto_nr and z1.z_nktoart_cd = z3.z_nktoart_cd and z1.z_uktoart_cd = z3.z_uktoart_cd and z1.va_dtm = z3.va_dtm)"),
 					Fragment.const0( "mod_cnt   = ( select max (mod_cnt)  from tzik012 z4 where z1.z_nkto_nr = z4.z_nkto_nr and z1.z_nktoart_cd = z4.z_nktoart_cd and z1.z_uktoart_cd = z4.z_uktoart_cd and z1.va_dtm = z4.va_dtm and z1.df_zt = z4.df_zt)"))
-			(s ++ a ++ f ++ w ).query[Tzik012]
+			(s ++ a ++ f ++ w ).query[Tzik012].to[List]
 	}
 
 }

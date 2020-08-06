@@ -23,15 +23,19 @@ class TestZik extends AnyFunSuite {
 	val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
 
 	test ( "Test-ZIK-selectAktById") {
-	  assert( Tzik012.selectAktById( "002110500524101", "1", 0).option.transact(xa).unsafeRunSync.get.Z_NKTO_NR  == "002110500524101")
+	  assert( Tzik012.selectAktById( "002110500524101", "1", 0).transact(xa).unsafeRunSync.get.Z_NKTO_NR  == "002110500524101")
   }
 	
   test ( "Test-ZIK-selectAllById") {
-	  assert( Tzik012.selectAllById( "002110500524101", "1", 0).to[List].transact(xa).unsafeRunSync.head.Z_NKTO_NR  == "002110500524101")
+	  assert( Tzik012.selectAllById( "002110500524101", "1", 0).transact(xa).unsafeRunSync.size  == 7)
   }
+  test ( "Test-ZIK-selectAktByNkto") {
+	  assert( Tzik012.selectAktByNkto( "002110500524101").transact(xa).unsafeRunSync.size  == 1)
+  }
+  
 
   test ( "Test-ZIK-selectNktoAktByNkartandUktoart") {
-	  val z12 = Tzik012.selectNktoAktByNkartandUktoart( NonEmptyList("1", List("C")), NonEmptyList( 0, Nil)).to[List].transact(xa).unsafeRunSync
+	  val z12 = Tzik012.selectNktoAktByNkartandUktoart( NonEmptyList("1", List("C")), NonEmptyList( 0, Nil)).transact(xa).unsafeRunSync
 	  val l = z12.length
 		assert( l == 441378)
 	  
