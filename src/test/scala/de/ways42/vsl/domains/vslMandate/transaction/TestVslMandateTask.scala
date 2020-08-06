@@ -229,7 +229,7 @@ class TestVslMandateTask5  extends AnyFunSuite  {
     assert(  
         vtSize           == 154275    && 
         aufrechtSize     == 68658     &&
-        bfrSize          == TestResults.aufrechtBeitragsfrei   && 
+        bfrSize          == 55992   && 
         bfrAufrechtSize  == TestResults.aufrechtBeitragsfrei   && 
         bfrNotValidSize  == 0       && 
         reserveSize      == 202824)  
