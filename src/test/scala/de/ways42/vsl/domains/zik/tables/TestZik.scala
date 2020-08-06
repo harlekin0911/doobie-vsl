@@ -29,6 +29,10 @@ class TestZik extends AnyFunSuite {
   test ( "Test-ZIK-selectAllById") {
 	  assert( Tzik012.selectAllById( "002110500524101", "1", 0).transact(xa).unsafeRunSync.size  == 7)
   }
+  test ( "Test-ZIK-selectAktByVtgnr") {
+	  assert( Tzik012.selectAktByVtgnr( "0021105005241").transact(xa).unsafeRunSync.size  == 1)
+  }
+  
   test ( "Test-ZIK-selectAktByNkto") {
 	  assert( Tzik012.selectAktByNkto( "002110500524101").transact(xa).unsafeRunSync.size  == 1)
   }
