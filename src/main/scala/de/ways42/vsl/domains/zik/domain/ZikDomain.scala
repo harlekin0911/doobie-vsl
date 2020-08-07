@@ -21,7 +21,7 @@ case class ZikDomain( nktonr:String, mz:Map[String,List[Tzik012]]) {
       })
     else throw new RuntimeException("Die Nebenkontonummern stimmen nicht ueberein: nktonr=<" + nktonr + "> z012.nktonr=<" + z.Z_NKTO_NR + ">")
   
-  lazy val vtgnr = nktonr.substring(0, 12)
+  lazy val vtgnr = nktonr.substring(0, 13)
   
 }
 
