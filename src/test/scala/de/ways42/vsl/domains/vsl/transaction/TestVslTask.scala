@@ -8,6 +8,7 @@ import doobie.implicits.toConnectionIOOps
 import de.ways42.vsl.domains.vsl.domain.VslDom._
 import de.ways42.vsl.connection.hikari.HcTransactor
 import de.ways42.vsl.domains.vsl.domain.VslDom
+import de.ways42.vsl.TestResults
 
 
 
@@ -25,24 +26,24 @@ class TestVslTask  extends AnyFunSuite  {
   test( "VS-AktiveVertraegeMitAktivenVersicherungen") {
     val r = lmp.size
 		println ( "Anzahl nicht terminierte: " + r) 
-	  assert(  r ==  239743)
+	  assert(  r ==  TestResults.Vertrag.Aufrecht.alle)
   }
   
   test("VS-Beitragspflichtige-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpfl).size
 		println ( "Anzahl beitragspflichtige: " + r) 
-	  assert(  r == 158981)
+	  assert(  r == TestResults.Vertrag.Aufrecht.bpfl)
   }
     
   test("VS-BeitragspflichtigeNurVertrag-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpflNurVertrag).size
 		println ( "Anzahl beitragspflichtigeNurVertrag: " + r) 
-	  assert(  r == 8169)
+	  assert(  r ==  TestResults.Vertrag.Aufrecht.bpflNurVertrag)
   }
   test("VS-BeitragspflichtigeNurVers-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpflNurVers).size
 		println ( "Anzahl beitragspflichtigeNurVers: " + r) 
-	  assert(  r == 10)
+	  assert(  r == TestResults.Vertrag.Aufrecht.bpflNurVers)
   }
 
 }
@@ -78,12 +79,16 @@ class TestVslTask3  extends AnyFunSuite  {
     val vt  = xas.map( xa => VslTask(xa)).flatMap(_.getAllAktiveMandateRefDom()).runSyncUnsafe()
 
     val s  = vt.size
+    
     val mes = vt.filter( x => x._2.vsldom.isEmpty == true) // mandate ohne vertrag
     val es   = mes.size
+    
     val nm = vt.filter( x => x._2.lr1 == Nil).size // vertraege ohne mandate
-    //assert( s == 529401 && es == 289256 && nm == 240145) // ohne trim
-    //assert( s == 529401 && es == 118689 && nm == 240145) // trim nur beim get
-    assert( s ==  358432 && es == 118689 && nm == 69181)   // trim komplett beim Aufbau MandateRefDom
+
+    assert( 
+        s  == TestResults.VertragUndRolle.Aufrecht.alle && 
+        es == TestResults.VertragUndRolle.Aufrecht.ohneVertrag  && 
+        nm == TestResults.VertragUndRolle.Aufrecht.ohneMandat)   // trim komplett beim Aufbau MandateRefDom
     
     
     println( mes.take(5).mkString(";"))
@@ -106,11 +111,16 @@ class TestVslTask4  extends AnyFunSuite  {
 
     val s  = vt.size
     val mes = vt.filter( x => x._2.vsldom.isEmpty == true) // mandate ohne vertrag
+    
     val es   = mes.size
     val nm = vt.filter( x => x._2.lr1 == Nil).size // vertraege ohne mandate
-    //assert( s == 529401 && es == 289256 && nm == 240145) // ohne trim
-    //assert( s == 529401 && es == 118689 && nm == 240145) // trim nur beim get
-    assert( s == 445090 && es == 2523 && nm == 155834)   // trim komplett beim Aufbau MandateRefDom
+
+    val vr = vt.filter( x => x._2.lr1 != Nil && x._2.vsldom.isDefined).size // vertraege ohne mandate
+    assert( 
+        s  == TestResults.VertragUndRolle.alle && 
+        es == TestResults.VertragUndRolle.ohneVertrag  && 
+        nm == TestResults.VertragUndRolle.ohneMandat  && 
+        vr == TestResults.VertragUndRolle.beides)   // trim komplett beim Aufbau MandateRefDom
      
     println( mes.take(5).mkString(";"))
       
