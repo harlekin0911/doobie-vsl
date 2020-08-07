@@ -6,12 +6,13 @@ import de.ways42.vsl.domains.vsl.tables.Tvsl001
 import de.ways42.vsl.domains.vsl.tables.Tvsl002
 import de.ways42.vsl.domains.mandate.domain.MandateDomain
 import de.ways42.vsl.domains.vsl.domain.MandateRefDom
+import de.ways42.vsl.domains.zik.domain.ZikDomain
 
 /**
  * Vsl-Domain mit seinen Rollen
  */
 
-case class VslMandateDomain( vtgnr:String, omrd:Option[MandateRefDom], omdom:Option[MandateDomain], lz:List[ZikDomain]) {
+case class VslMandateDomain( vtgnr:String, omrd:Option[MandateRefDom], omdom:Option[MandateDomain], mz:Map[String,ZikDomain]) {
   
   def add( mrd:MandateRefDom) = {
     
@@ -21,7 +22,7 @@ case class VslMandateDomain( vtgnr:String, omrd:Option[MandateRefDom], omdom:Opt
     if ( mrd.vtgnr != vtgnr ) 
       throw new RuntimeException( "Vertragsnummer<" + vtgnr + "> und MandateRefDom.vtgnr<" + mrd.vtgnr + "> stimmen nicht ueberein")
     
-    VslMandateDomain( vtgnr, Some(mrd), omdom, lz)
+    VslMandateDomain( vtgnr, Some(mrd), omdom, mz)
   }
   
   def add( md:MandateDomain) = {
@@ -29,8 +30,17 @@ case class VslMandateDomain( vtgnr:String, omrd:Option[MandateRefDom], omdom:Opt
       throw new RuntimeException( "Option[MandateRefDom] ist nicht empty")
     if ( md.extRef != vtgnr ) 
       throw new RuntimeException( "Vertragsnummer<" + vtgnr + "> und MandateDomain.extRef<" +  md.extRef + "> stimmen nicht ueberein")
-    VslMandateDomain( vtgnr, omrd, Some(md), lz)
+    VslMandateDomain( vtgnr, omrd, Some(md), mz)
   }
+  
+  def add( z:ZikDomain) : VslMandateDomain = {
+    VslMandateDomain( vtgnr, omrd, omdom, mz.get( z.nktonr) match {
+      case Some(a) => throw new RuntimeException( "Nebenkonto bereits vorhanden: <" + z.nktonr + ">")
+      case _       => mz.updated(z.nktonr,z)
+    })
+  }
+    
+  
   
   /**
    * Gueltiger Vertrag
@@ -91,7 +101,7 @@ object VslMandateDomain {
       throw  throw new RuntimeException("Vtgnr<" + vtgnr + "> und MandateRefDom.vtgnr<" + v.get.vtgnr + "> stimmen nicht ueberein")
     if ( mm.isDefined && mm.get.extRef != vtgnr)
       throw  throw new RuntimeException("Vtgnr<" + vtgnr + "> und MandateDomain.extRef<" + mm.get.extRef + "> stimmen nicht ueberein")
-    new VslMandateDomain( vtgnr, v, mm, Nil)
+    new VslMandateDomain( vtgnr, v, mm, Map.empty)
   }
   
   /**
@@ -101,21 +111,32 @@ object VslMandateDomain {
   
   def apply( md:MandateDomain) : VslMandateDomain = VslMandateDomain( md.extRef, None, Some(md))
 
-  def apply( mrd:MandateRefDom, md:MandateDomain) : VslMandateDomain = 
+  def apply( zd:ZikDomain) : VslMandateDomain = VslMandateDomain( zd.vtgnr, None, None, Map((zd.nktonr,zd)))
+
+  def apply( mrd:MandateRefDom, md:MandateDomain, mzd:Map[String,ZikDomain]) : VslMandateDomain = {
     if ( mrd.vtgnr  != md.extRef ) 
+    
+    if ( ! mzd.filter( _._2.vtgnr != mrd.vtgnr).isEmpty)
       throw new RuntimeException(
-          "Vertragsnummern stimmen nicht ueberein: MandateRefDom.vtgnr=<" + mrd.vtgnr + "> MandateDomain.extRef=<" + md.extRef + ">")
-    else VslMandateDomain( md.extRef, Some(mrd), Some(md))
+          "Zik-Stammdaten stimmen nicht ueberein: MandateRefDom.vtgnr=<" + mrd.vtgnr + "> MandateDomain.extRef=<" + md.extRef + ">")
+    
+    VslMandateDomain( md.extRef, Some(mrd), Some(md), mzd)
+  }
   /**
    * Construction top down, Mappe [VtgNr,MandateRefDom] aufbauen
    */
-  def apply(  mmrd:Map[String,MandateRefDom], mmd:Map[String,MandateDomain]) : Map[String,VslMandateDomain] = {
+  def apply(  mmrd:Map[String,MandateRefDom], mmd:Map[String,MandateDomain], mzd:Map[String,ZikDomain]) : Map[String,VslMandateDomain] = {
 	  
     val c = mmrd.map( x => (x._1, VslMandateDomain( x._1, Some(x._2), None)))
     	  
-    mmd.foldLeft( c)( (m,v) =>  m.get(v._2.extRef)  match { 
+    val b = mmd.foldLeft( c)( (m,v) =>  m.get(v._2.extRef)  match { 
 			  case Some(vm)  => m.updated(v._2.extRef, vm.add(v._2))
 			  case _         => m.updated(v._2.extRef, VslMandateDomain( v._2))
+			})
+			
+		mzd.foldLeft(b)((m,z) =>  m.get( z._2.vtgnr)  match { 
+			  case Some(vm)  => m.updated( z._2.vtgnr, vm.add(z._2))
+			  case _         => m.updated( z._2.vtgnr, VslMandateDomain( z._2))
 			})
   } 
 }
