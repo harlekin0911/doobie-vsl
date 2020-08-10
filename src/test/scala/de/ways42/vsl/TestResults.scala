@@ -38,4 +38,13 @@ object TestResults {
     }
   }
   
+  object VslMandate {
+     object AlleOhneMandate {
+       val alle = 155514 
+     }
+     object Aktive {
+       val ohneMandate = 154332
+     }
+  }
+  
 }

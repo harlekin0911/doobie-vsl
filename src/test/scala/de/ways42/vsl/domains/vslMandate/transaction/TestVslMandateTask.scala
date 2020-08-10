@@ -25,7 +25,7 @@ class TestVslMandateTask  extends AnyFunSuite  {
     val s = lmp.filter( x => x._2.omdom.isEmpty)
     println( s.head)
     val ss = s.size
-    assert( ss == 68839)
+    assert( ss == TestResults.VslMandate.Aktive.ohneMandate)
   }
   test ( "VslMandateDom-omrd-is-empty") {
     val s = lmp.filter( x => x._2.omrd.isEmpty)
@@ -227,7 +227,7 @@ class TestVslMandateTask5  extends AnyFunSuite  {
     
 
     assert(  
-        vtSize           == 154275    && 
+        vtSize           == TestResults.VslMandate.AlleOhneMandate.alle    && 
         aufrechtSize     == 68658     &&
         bfrSize          == 55992   && 
         bfrAufrechtSize  == 55992   && 
