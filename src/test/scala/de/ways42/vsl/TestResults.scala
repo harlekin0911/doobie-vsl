@@ -39,13 +39,16 @@ object TestResults {
   }
   
   object VslMandate {
+    
+    val alle = 458471
+    
      object AlleOhneMandate {
        val alle = 155514 
      }
      object Aktive {
        val alle         = 457288 // vorher 371795
        val ohneMandate  = 154332 // vorher 68839   
-       val ohneVertrag  = 13363   
+       val ohneVertrag  = 98856  // vorher 13363   
        val aufrecht     = 239743 
        val bfr          = 72583   
        val bpfl         = 158980

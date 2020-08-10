@@ -23,42 +23,42 @@ class TestVslMandateTask  extends AnyFunSuite  {
   
   test ( "VslMandateDom-omdom-is-empty") {
     val s = lmp.filter( x => x._2.omdom.isEmpty)
-    println( s.head)
+    //println( s.head)
     val ss = s.size
     assert( ss == TestResults.VslMandate.Aktive.ohneMandate)
   }
   test ( "VslMandateDom-omrd-is-empty") {
     val s = lmp.filter( x => x._2.omrd.isEmpty)
-    println( s.head)
+    //println( s.head)
     val ss = s.size
     assert( ss == 13363)    
   }
   test ( "VslMandateDom-non-empty") {
     val s = lmp.filter( x => x._2.omdom.isDefined && x._2.omrd.isDefined && x._2.omdom.get.anzahlMandate() != x._2.omrd.get.anzahlMandate())
-    println( s.head)
+    //println( s.head)
     val ss = s.size
     assert( ss == 11369)
   }
   test( "VslMandateDom-AktiveVertraegeMitAktivenVersicherungen") {
     val r = lmp.size
-		println ( "Anzahl nicht terminierte: " + r) 
+		//println ( "Anzahl nicht terminierte: " + r) 
 	  assert(  r == TestResults.VslMandate.Aktive.alle)
   }
   
   test("VslMandateDom-Beitragspflichtige-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpfl).size
-		println ( "Anzahl beitragspflichtige: " + r) 
+		//println ( "Anzahl beitragspflichtige: " + r) 
 	  assert(  r == TestResults.VslMandate.Aktive.bpfl)
   }
     
   test("VslMandateDom-BeitragspflichtigeNurVertrag-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpflNurVertrag).size
-		println ( "Anzahl beitragspflichtigeNurVertrag: " + r) 
+		//println ( "Anzahl beitragspflichtigeNurVertrag: " + r) 
 	  assert(  r == TestResults.VslMandate.Aktive.bpflNurVertrag)
   }
   test("VslMandateDom-BeitragspflichtigeNurVers-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpflNurVers).size
-		println ( "Anzahl beitragspflichtigeNurVers: " + r) 
+		//println ( "Anzahl beitragspflichtigeNurVers: " + r) 
 	  assert(  r == TestResults.VslMandate.Aktive.bpflNurVers)
   }
 
@@ -82,7 +82,7 @@ class TestVslMandateTask2  extends AnyFunSuite  {
   
   test( "VslMandateDom-Single-1234567890123") {
     val v = t("1234567890120").runSyncUnsafe()
-    println( v)
+    //println( v)
     assert( v.omrd.isEmpty == true)
   }
   test( "VslMandateDom-Single-0050024689411") {
@@ -127,7 +127,7 @@ class TestVslMandateTask3  extends AnyFunSuite  {
     val reserveSize = reserve.size
     
     assert(  
-        vtSize           == TestResults.Vertrag.alle         && 
+        vtSize           == TestResults.VslMandate.alle         && 
         es               == 154275  && 
         nm               == 12142   && 
         aufrechtSize     == TestResults.Vertrag.Aufrecht.alle     &&
@@ -137,7 +137,7 @@ class TestVslMandateTask3  extends AnyFunSuite  {
         reserveSize      == 202824)  
     
     
-    println( mes.take(5).mkString(";"))
+    //println( mes.take(5).mkString(";"))
     
     ds.close()
     ss.shutdown()
