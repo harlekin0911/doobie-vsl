@@ -127,14 +127,14 @@ class TestVslMandateTask3  extends AnyFunSuite  {
     val reserveSize = reserve.size
     
     assert(  
-        vtSize           == TestResults.VslMandate.alle         && 
-        es               == 155514 && //vorher 154275  && 
-        nm               == 12142   && 
-        aufrechtSize     == TestResults.Vertrag.Aufrecht.alle     &&
-        bfrSize          == TestResults.Vertrag.Aufrecht.bfr   && 
-        bfrAufrechtSize  == TestResults.Vertrag.Aufrecht.bfr    && 
+        vtSize           == TestResults.VslMandate.Alle.anzahl      && 
+        es               == TestResults.VslMandate.Alle.ohneMandat  && 
+        nm               == TestResults.VslMandate.Alle.ohneVertrag && 
+        aufrechtSize     == TestResults.Vertrag.Aufrecht.alle       &&
+        bfrSize          == TestResults.Vertrag.Aufrecht.bfr        && 
+        bfrAufrechtSize  == TestResults.Vertrag.Aufrecht.bfr        && 
         bfrNotValidSize  == 0       && 
-        reserveSize      == 202824)  
+        reserveSize      == TestResults.VslMandate.Alle.reserve)  
     
     
     //println( mes.take(5).mkString(";"))
