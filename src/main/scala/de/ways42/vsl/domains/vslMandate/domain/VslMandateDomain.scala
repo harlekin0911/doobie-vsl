@@ -12,11 +12,11 @@ import de.ways42.vsl.domains.zik.domain.ZikDomain
  * Vsl-Domain mit seinen Rollen
  */
 
-case class VslMandateDomain( vtgnr:String, omrd:Option[VslRefDom], omdom:Option[MandateDomain], mz:Map[String,ZikDomain]) {
+case class VslMandateDomain( vtgnr:String, oVslr:Option[VslRefDom], omdom:Option[MandateDomain], mz:Map[String,ZikDomain]) {
   
   def add( mrd:VslRefDom) = {
     
-    if ( ! omrd.isEmpty)
+    if ( ! oVslr.isEmpty)
       throw new RuntimeException( "Option[MandateRefDom] ist nicht empty")
   
     if ( mrd.vtgnr != vtgnr ) 
@@ -30,11 +30,11 @@ case class VslMandateDomain( vtgnr:String, omrd:Option[VslRefDom], omdom:Option[
       throw new RuntimeException( "Option[MandateRefDom] ist nicht empty")
     if ( md.extRef != vtgnr ) 
       throw new RuntimeException( "Vertragsnummer<" + vtgnr + "> und MandateDomain.extRef<" +  md.extRef + "> stimmen nicht ueberein")
-    VslMandateDomain( vtgnr, omrd, Some(md), mz)
+    VslMandateDomain( vtgnr, oVslr, Some(md), mz)
   }
   
   def add( z:ZikDomain) : VslMandateDomain = {
-    VslMandateDomain( vtgnr, omrd, omdom, mz.get( z.nktonr) match {
+    VslMandateDomain( vtgnr, oVslr, omdom, mz.get( z.nktonr) match {
       case Some(a) => throw new RuntimeException( "Nebenkonto bereits vorhanden: <" + z.nktonr + ">")
       case _       => mz.updated(z.nktonr,z)
     })
@@ -45,33 +45,33 @@ case class VslMandateDomain( vtgnr:String, omrd:Option[VslRefDom], omdom:Option[
   /**
    * Gueltiger Vertrag
    */
-  def isAufrecht =  omrd.map( _.isAufrecht).getOrElse(false) 
+  def isAufrecht =  oVslr.map( _.isAufrecht).getOrElse(false) 
   
  /**
   * Ist beitagsfrei
   */
-  def istBfr : Boolean = omrd.map( _.istBfr).getOrElse(false)
+  def istBfr : Boolean = oVslr.map( _.istBfr).getOrElse(false)
  
  /**
   * Ist beitagspflichtig
   */
-  def istBpfl : Boolean = omrd.map( _.istBpfl).getOrElse(false)
+  def istBpfl : Boolean = oVslr.map( _.istBpfl).getOrElse(false)
  
  /**
   * Ist reserve
   */
-  def isReserve : Boolean = omrd.map( _.isReserve).getOrElse(false)
+  def isReserve : Boolean = oVslr.map( _.isReserve).getOrElse(false)
   /**
   * Ist beitagspflichtig, falsch in der DB
   * Nur der Vertrag, keine Versicherung ist beitragspflichti
   */
-  def istBpflNurVertrag : Boolean = omrd.map( _.istBpflNurVertrag).getOrElse(false)
+  def istBpflNurVertrag : Boolean = oVslr.map( _.istBpflNurVertrag).getOrElse(false)
 
   /**
   * Ist beitagspflichtig, falsch in der DB
   * Der Vertrag ist beitragsfrei, aber es gbt beitragspflichtige Versicherungen
   */
-  def istBpflNurVers : Boolean = omrd.map( _.istBpflNurVers).getOrElse(false)
+  def istBpflNurVers : Boolean = oVslr.map( _.istBpflNurVers).getOrElse(false)
   
   /**
    * Validate Mandates
@@ -80,11 +80,11 @@ case class VslMandateDomain( vtgnr:String, omrd:Option[VslRefDom], omdom:Option[
   
   def validateMandate() : Boolean = {
     
-    if ( omrd.isEmpty   && omdom.isEmpty)   return true;
-    if ( omrd.isDefined && omdom.isEmpty)   return false;
-    if ( omrd.isEmpty   && omdom.isDefined) return false;
+    if ( oVslr.isEmpty   && omdom.isEmpty)   return true;
+    if ( oVslr.isDefined && omdom.isEmpty)   return false;
+    if ( oVslr.isEmpty   && omdom.isDefined) return false;
     
-    val rollen = omrd.get.lr1
+    val rollen = oVslr.get.lr1
     val mmandate = omdom.get.mmed
         
     val rollenOhneMandate = rollen.filter(   x => mmandate.find( y => y._2.mandateExtRef.map( _ == x.mandateExtRef).getOrElse(false)).isEmpty)

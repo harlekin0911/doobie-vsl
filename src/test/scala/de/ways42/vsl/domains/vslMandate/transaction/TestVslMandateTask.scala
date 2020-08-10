@@ -28,13 +28,13 @@ class TestVslMandateTask  extends AnyFunSuite  {
     assert( ss == TestResults.VslMandate.Aktive.ohneMandate)
   }
   test ( "VslMandateDom-omrd-is-empty") {
-    val s = lmp.filter( x => x._2.omrd.isEmpty)
+    val s = lmp.filter( x => x._2.oVslr.isEmpty)
     //println( s.head)
     val ss = s.size
     assert( ss == TestResults.VslMandate.Aktive.ohneVertrag )// vorher 13363)    
   }
   test ( "VslMandateDom-non-empty") {
-    val s = lmp.filter( x => x._2.omdom.isDefined && x._2.omrd.isDefined && x._2.omdom.get.anzahlMandate() != x._2.omrd.get.anzahlMandate())
+    val s = lmp.filter( x => x._2.omdom.isDefined && x._2.oVslr.isDefined && x._2.omdom.get.anzahlMandate() != x._2.oVslr.get.anzahlMandate())
     //println( s.head)
     val ss = s.size
     assert( ss == TestResults.VslMandate.Aktive.vertragMandatUngleicheAnzahl)
@@ -77,13 +77,13 @@ class TestVslMandateTask2  extends AnyFunSuite  {
 	
   test( "VslMandateDom-Single-0003065903411") {
     val v = t("0003065903411").runSyncUnsafe()
-	  assert( v.omrd.isEmpty == false && v.omdom.isEmpty == false )
+	  assert( v.oVslr.isEmpty == false && v.omdom.isEmpty == false )
 	}
   
   test( "VslMandateDom-Single-1234567890123") {
     val v = t("1234567890120").runSyncUnsafe()
     //println( v)
-    assert( v.omrd.isEmpty == true)
+    assert( v.oVslr.isEmpty == true)
   }
   test( "VslMandateDom-Single-0050024689411") {
     val v = t("0050024689411").runSyncUnsafe()
@@ -108,7 +108,7 @@ class TestVslMandateTask3  extends AnyFunSuite  {
     val es   = mes.size
     
     // ohne mandate
-    val mnm = vt.filter( x => x._2.omrd.isEmpty == true)  
+    val mnm = vt.filter( x => x._2.oVslr.isEmpty == true)  
     val nm = mnm.size
 
     val aufrecht = vt.filter( x => x._2.isAufrecht)
@@ -160,7 +160,7 @@ class TestVslMandateTask4  extends AnyFunSuite  {
     val es   = mes.size
     
     // ohne mandate
-    val mnm = vt.filter( x => x._2.omrd.isEmpty == true)  
+    val mnm = vt.filter( x => x._2.oVslr.isEmpty == true)  
     val nm = mnm.size
     
     val aufrecht = vt.filter( x => x._2.isAufrecht)
