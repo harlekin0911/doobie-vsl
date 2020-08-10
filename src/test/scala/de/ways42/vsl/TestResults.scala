@@ -4,14 +4,24 @@ object TestResults {
   
   object Vertrag {
   
-    //val alle   = 457232
+    val alle   = 442567
+    
+    object Alle {
+      
+      val bfr     = 72583
+      val bpfl    = 158980
+      val reserve = 202825
+      
+      val bpflNurVertrag = 8169
+      val bpflNurVers = 10
+    }
   
     object Aufrecht {
       
-      val alle = 239742
-      val bfr  = 72583
-  
-      val bpfl = 158981
+      val alle    = 239742
+      val bfr     = 72583
+      val bpfl    = 158980
+      val reserve = 0
       
       val bpflNurVertrag = 8169
       val bpflNurVers = 10
@@ -29,11 +39,11 @@ object TestResults {
     val alle        = 445090
     val ohneVertrag = 2523
     val ohneMandat  = 155834
-    val beides      = 158357
+    val beides      = 286733 // 158357
     
     object Aufrecht {
       val alle        = 358432
-      val ohneVertrag = 118689
+      val ohneVertrag = 118690
       val ohneMandat  = 69181
     }
   }

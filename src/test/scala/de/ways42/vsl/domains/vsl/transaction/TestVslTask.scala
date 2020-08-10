@@ -10,6 +10,52 @@ import de.ways42.vsl.connection.hikari.HcTransactor
 import de.ways42.vsl.domains.vsl.domain.VslDom
 import de.ways42.vsl.TestResults
 
+class TestVslTaskAlleVslDom  extends AnyFunSuite  { 
+  
+  //CompanionImpl.Implicits.global
+  import monix.execution.Scheduler.Implicits.global
+  
+  val xa = Connect.usingOwnMonad( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
+  
+  lazy val lmp = VslTask( xa).getAllVslDom().runSyncUnsafe()
+  
+  test( "VS-AlleVertraegeMitVersicherungen") {
+    val r = lmp.size
+		//println ( "Anzahl nicht terminierte: " + r) 
+	  assert(  r ==  TestResults.Vertrag.alle)
+  }
+  
+  test("VS-Beitragsfrei-Vericherungen") {
+    val r = lmp.filter( x => x._2.istBfr).size
+		//println ( "Anzahl beitragsfreie: " + r) 
+	  assert(  r == TestResults.Vertrag.Alle.bfr)
+  }
+  test("VS-Beitragspflichtige-Vericherungen") {
+    val r = lmp.filter( x => x._2.istBpfl).size
+		//println ( "Anzahl beitragspflichtige: " + r) 
+	  assert(  r == TestResults.Vertrag.Alle.bpfl)
+  }
+    
+  test("VS-BeitragspflichtigeNurVertrag-Vericherungen") {
+    val r = lmp.filter( x => x._2.istBpflNurVertrag).size
+		//println ( "Anzahl beitragspflichtigeNurVertrag: " + r) 
+	  assert(  r ==  TestResults.Vertrag.Alle.bpflNurVertrag)
+  }
+  test("VS-BeitragspflichtigeNurVers-Vericherungen") {
+    val r = lmp.filter( x => x._2.istBpflNurVers).size
+		//println ( "Anzahl beitragspflichtigeNurVers: " + r) 
+	  assert(  r == TestResults.Vertrag.Alle.bpflNurVers)
+  }
+
+  test("VS-Reserve") {
+    val r = lmp.filter( x => x._2.isReserve).size
+		//println ( "Anzahl auf Reserve: " + r) 
+	  assert(  r == TestResults.Vertrag.Alle.reserve)
+  }
+  test("VS-TestResults.Vertrag.Alle") {
+	  assert(  TestResults.Vertrag.alle == TestResults.Vertrag.Alle.bpfl + TestResults.Vertrag.Alle.bfr + TestResults.Vertrag.Alle.reserve)
+  }
+}
 
 
 class TestVslTask  extends AnyFunSuite  { 
@@ -25,27 +71,40 @@ class TestVslTask  extends AnyFunSuite  {
   
   test( "VS-AktiveVertraegeMitAktivenVersicherungen") {
     val r = lmp.size
-		println ( "Anzahl nicht terminierte: " + r) 
+		//println ( "Anzahl nicht terminierte: " + r) 
 	  assert(  r ==  TestResults.Vertrag.Aufrecht.alle)
   }
   
+  test("VS-Beitragsfrei-Vericherungen") {
+    val r = lmp.filter( x => x._2.istBfr).size
+		//println ( "Anzahl beitragsfreie: " + r) 
+	  assert(  r == TestResults.Vertrag.Aufrecht.bfr)
+  }
   test("VS-Beitragspflichtige-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpfl).size
-		println ( "Anzahl beitragspflichtige: " + r) 
+		//println ( "Anzahl beitragspflichtige: " + r) 
 	  assert(  r == TestResults.Vertrag.Aufrecht.bpfl)
   }
     
   test("VS-BeitragspflichtigeNurVertrag-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpflNurVertrag).size
-		println ( "Anzahl beitragspflichtigeNurVertrag: " + r) 
+		//println ( "Anzahl beitragspflichtigeNurVertrag: " + r) 
 	  assert(  r ==  TestResults.Vertrag.Aufrecht.bpflNurVertrag)
   }
   test("VS-BeitragspflichtigeNurVers-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpflNurVers).size
-		println ( "Anzahl beitragspflichtigeNurVers: " + r) 
+		//println ( "Anzahl beitragspflichtigeNurVers: " + r) 
 	  assert(  r == TestResults.Vertrag.Aufrecht.bpflNurVers)
   }
 
+  test("VS-Reserve") {
+    val r = lmp.filter( x => x._2.isReserve).size
+		//println ( "Anzahl auf Reserve: " + r) 
+	  assert(  r == TestResults.Vertrag.Aufrecht.reserve)
+  }
+  test("VS-TestResults.Vertrag.Aufrecht") {
+	  assert(  TestResults.Vertrag.Aufrecht.alle == TestResults.Vertrag.Aufrecht.bpfl + TestResults.Vertrag.Aufrecht.bfr + TestResults.Vertrag.Aufrecht.reserve)
+  }
 }
 class TestVslTask2  extends AnyFunSuite  { 
   
@@ -91,7 +150,7 @@ class TestVslTask3  extends AnyFunSuite  {
         nm == TestResults.VertragUndRolle.Aufrecht.ohneMandat)   // trim komplett beim Aufbau MandateRefDom
     
     
-    println( mes.take(5).mkString(";"))
+    //println( mes.take(5).mkString(";"))
     
     ds.close()
     ss.shutdown()
@@ -121,8 +180,12 @@ class TestVslTask4  extends AnyFunSuite  {
         es == TestResults.VertragUndRolle.ohneVertrag  && 
         nm == TestResults.VertragUndRolle.ohneMandat  && 
         vr == TestResults.VertragUndRolle.beides)   // trim komplett beim Aufbau MandateRefDom
-     
-    println( mes.take(5).mkString(";"))
+ 
+    assert( TestResults.VertragUndRolle.alle  == 
+      TestResults.VertragUndRolle.ohneVertrag + 
+      TestResults.VertragUndRolle.ohneMandat + 
+      TestResults.VertragUndRolle.beides)
+    //println( mes.take(5).mkString(";"))
       
     ds.close()
     ss.shutdown()

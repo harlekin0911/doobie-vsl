@@ -28,6 +28,12 @@ object VslService {
 	/**
 	 * Alle aktuellen aufrechten Vertraege mit ihren aktuellen Versicherungen parallel laden 
 	 */
+  def getAllAktVertraegeWithVersicherungen() : (ConnectionIO[List[Tvsl001]], ConnectionIO[List[Tvsl002]]) = (
+	    Tvsl001.selectAktAll(),
+	    Tvsl002.selectAktAll())
+	/**
+	 * Alle aktuellen aufrechten Vertraege mit ihren aktuellen Versicherungen parallel laden 
+	 */
   def getAllActiveVertraegeWithVersicherungen() : (ConnectionIO[List[Tvsl001]], ConnectionIO[List[Tvsl002]]) = (
 	    Tvsl001.selectAktAllAktive(),
 	    Tvsl002.selectAktAllAktive())

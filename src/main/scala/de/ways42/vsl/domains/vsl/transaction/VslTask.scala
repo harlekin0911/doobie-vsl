@@ -28,6 +28,14 @@ class VslTask[A]( val xa : Transactor.Aux[Task, A]) {
   }
   	
 	/**
+	 * Alle aufrechten Vertraege mit ihren aktiven Versicherungen 
+	 * parallel laden und eine Mappe bilden 
+	 */
+	def getAllVslDom() : Task[Map[String, VslDom]] = {
+    val (la,lb) = VslService.getAllAktVertraegeWithVersicherungen
+    Task.parZip2(la.transact(xa),lb.transact(xa)).map( x => VslDom( x._1, x._2)	)
+	}
+	/**
 	 * Alle aktiven, aufrechten Vertraege mit ihren aktiven Versicherungen 
 	 * parallel laden und eine Mappe bilden 
 	 */
