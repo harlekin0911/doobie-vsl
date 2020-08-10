@@ -227,12 +227,12 @@ class TestVslMandateTask5  extends AnyFunSuite  {
     
 
     assert(  
-        vtSize           == TestResults.VslMandate.AlleOhneMandate.alle    && 
-        aufrechtSize     == 68658     &&
-        bfrSize          == 55992   && 
-        bfrAufrechtSize  == 55992   && 
-        bfrNotValidSize  == 0       && 
-        reserveSize      == 85617)  
+        vtSize           == TestResults.VslMandate.Alle.ohneMandat    && 
+        aufrechtSize     == TestResults.VslMandate.Alle.OhneMandate.aufrecht     &&
+        bfrSize          == TestResults.VslMandate.Alle.OhneMandate.bfr   && 
+        bfrAufrechtSize  == TestResults.VslMandate.Alle.OhneMandate.bfrAufrecht   && 
+        bfrNotValidSize  == TestResults.VslMandate.Alle.OhneMandate.bfrNotValid       && 
+        reserveSize      == TestResults.VslMandate.Alle.OhneMandate.reserve)  
         
   }
 } 
