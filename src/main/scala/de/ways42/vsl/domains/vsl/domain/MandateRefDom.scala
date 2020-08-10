@@ -6,17 +6,17 @@ import de.ways42.vsl.domains.vsl.tables.Tvsl001
 import de.ways42.vsl.domains.vsl.tables.Tvsl002
 
 /**
- * Vsl-Domain mit seinen Rollen
+ * VslRefDom: Vsl-Domain mit seinen Rollen
  * 
  * In der Rolle lr1 ist die Vertragsnummer (isttop_nrx) nicht gestrippt
  * Jedoch in der vtgnr
  */
 
-case class MandateRefDom( vtgnr:String, vsldom:Option[VslDom], lr1:List[Trol001]) {
+case class VslRefDom( vtgnr:String, vsldom:Option[VslDom], lr1:List[Trol001]) {
   
   def add( r1:Trol001) = 
     if ( r1.ISTTOP_NRX.trim() == vtgnr ) 
-      MandateRefDom( vtgnr, vsldom, r1::lr1)
+      VslRefDom( vtgnr, vsldom, r1::lr1)
     else throw new RuntimeException( "Vertragsnummer<" + vtgnr + "> und rolle.isttop_nrx<" + r1.ISTTOP_NRX.trim() + "> stimmen nicht ueberein")
 
   /**
@@ -59,36 +59,36 @@ case class MandateRefDom( vtgnr:String, vsldom:Option[VslDom], lr1:List[Trol001]
   
 }
 
-object MandateRefDom {
+object VslRefDom {
   
   /**
    * In der Rolle sind Leerzeichen bei isttop_nrx
    */
-  def apply( r1:Trol001) : MandateRefDom = MandateRefDom( r1.ISTTOP_NRX.trim(), None, List(r1))
+  def apply( r1:Trol001) : VslRefDom = VslRefDom( r1.ISTTOP_NRX.trim(), None, List(r1))
   
-  def apply( vsld:VslDom) : MandateRefDom = MandateRefDom( vsld.tvsl001.LV_VTG_NR, Some(vsld), Nil)
+  def apply( vsld:VslDom) : VslRefDom = VslRefDom( vsld.tvsl001.LV_VTG_NR, Some(vsld), Nil)
 
   /**
    * Construction top down, Mappe [VtgNr,MandateRefDom] aufbauen
    */
-  def apply(  lv:List[Tvsl001], lvers:List[Tvsl002], lrol:List[Trol001]) : Map[String,MandateRefDom] = {
+  def apply(  lv:List[Tvsl001], lvers:List[Tvsl002], lrol:List[Trol001]) : Map[String,VslRefDom] = {
 	  
-    val mvsld = VslDom( lv, lvers).map( x => (x._1, MandateRefDom( x._2)))
+    val mvsld = VslDom( lv, lvers).map( x => (x._1, VslRefDom( x._2)))
     	  
 	  // Versicherungen in die Mappe fuellen
-	  def aggregateWithRolle( mm : Map[String, MandateRefDom], lrol:List[Trol001])  : Map[String, MandateRefDom] = 
+	  def aggregateWithRolle( mm : Map[String, VslRefDom], lrol:List[Trol001])  : Map[String, VslRefDom] = 
 	    lrol.foldRight(mm)( (r,m) =>  m.get(r.ISTTOP_NRX.trim())  match { 
 			  case Some(v)   => m.updated(r.ISTTOP_NRX.trim(), v.add(r))
-			  case _         => m.updated(r.ISTTOP_NRX.trim(), MandateRefDom( r))
+			  case _         => m.updated(r.ISTTOP_NRX.trim(), VslRefDom( r))
 			})
       
 		aggregateWithRolle( mvsld, lrol)
   } 
   
     /**
-   * Construction eines einzelnen MandateRefDom
+   * Construction eines einzelnen VslRefDom
    */
-  def apply(  lv:Tvsl001, lvers:List[Tvsl002], lrol:List[Trol001]) : MandateRefDom = 
-    lrol.foldLeft(MandateRefDom(VslDom( lv, lvers)))( (v,r) =>  v.add(r))
+  def apply(  lv:Tvsl001, lvers:List[Tvsl002], lrol:List[Trol001]) : VslRefDom = 
+    lrol.foldLeft(VslRefDom(VslDom( lv, lvers)))( (v,r) =>  v.add(r))
     	  
 }

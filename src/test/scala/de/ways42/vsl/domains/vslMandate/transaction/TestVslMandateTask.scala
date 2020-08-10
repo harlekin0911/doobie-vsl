@@ -37,7 +37,7 @@ class TestVslMandateTask  extends AnyFunSuite  {
     val s = lmp.filter( x => x._2.omdom.isDefined && x._2.omrd.isDefined && x._2.omdom.get.anzahlMandate() != x._2.omrd.get.anzahlMandate())
     //println( s.head)
     val ss = s.size
-    assert( ss == 11369)
+    assert( ss == TestResults.VslMandate.Aktive.vertragMandatUngleicheAnzahl)
   }
   test( "VslMandateDom-AktiveVertraegeMitAktivenVersicherungen") {
     val r = lmp.size

@@ -5,16 +5,16 @@ import de.ways42.vsl.domains.vsl.tables.Trol001
 import de.ways42.vsl.domains.vsl.tables.Tvsl001
 import de.ways42.vsl.domains.vsl.tables.Tvsl002
 import de.ways42.vsl.domains.mandate.domain.MandateDomain
-import de.ways42.vsl.domains.vsl.domain.MandateRefDom
+import de.ways42.vsl.domains.vsl.domain.VslRefDom
 import de.ways42.vsl.domains.zik.domain.ZikDomain
 
 /**
  * Vsl-Domain mit seinen Rollen
  */
 
-case class VslMandateDomain( vtgnr:String, omrd:Option[MandateRefDom], omdom:Option[MandateDomain], mz:Map[String,ZikDomain]) {
+case class VslMandateDomain( vtgnr:String, omrd:Option[VslRefDom], omdom:Option[MandateDomain], mz:Map[String,ZikDomain]) {
   
-  def add( mrd:MandateRefDom) = {
+  def add( mrd:VslRefDom) = {
     
     if ( ! omrd.isEmpty)
       throw new RuntimeException( "Option[MandateRefDom] ist nicht empty")
@@ -96,7 +96,7 @@ case class VslMandateDomain( vtgnr:String, omrd:Option[MandateRefDom], omdom:Opt
 
 object VslMandateDomain {
   
-  def apply( vtgnr:String, v:Option[MandateRefDom],mm:Option[MandateDomain]) = {
+  def apply( vtgnr:String, v:Option[VslRefDom],mm:Option[MandateDomain]) = {
     if ( v.isDefined && v.get.vtgnr != vtgnr)
       throw  throw new RuntimeException("Vtgnr<" + vtgnr + "> und MandateRefDom.vtgnr<" + v.get.vtgnr + "> stimmen nicht ueberein")
     if ( mm.isDefined && mm.get.extRef != vtgnr)
@@ -107,13 +107,13 @@ object VslMandateDomain {
   /**
    * In der Rolle sind Leerzeichen bei isttop_nrx
    */
-  def apply( mrd:MandateRefDom) : VslMandateDomain = VslMandateDomain(mrd.vtgnr, Some(mrd), None)
+  def apply( mrd:VslRefDom) : VslMandateDomain = VslMandateDomain(mrd.vtgnr, Some(mrd), None)
   
   def apply( md:MandateDomain) : VslMandateDomain = VslMandateDomain( md.extRef, None, Some(md))
 
   def apply( zd:ZikDomain) : VslMandateDomain = VslMandateDomain( zd.vtgnr, None, None, Map((zd.nktonr,zd)))
 
-  def apply( mrd:MandateRefDom, md:MandateDomain, mzd:Map[String,ZikDomain]) : VslMandateDomain = {
+  def apply( mrd:VslRefDom, md:MandateDomain, mzd:Map[String,ZikDomain]) : VslMandateDomain = {
     if ( mrd.vtgnr  != md.extRef ) 
     
     if ( ! mzd.filter( _._2.vtgnr != mrd.vtgnr).isEmpty)
@@ -125,7 +125,7 @@ object VslMandateDomain {
   /**
    * Construction top down, Mappe [VtgNr,MandateRefDom] aufbauen
    */
-  def apply(  mmrd:Map[String,MandateRefDom], mmd:Map[String,MandateDomain], mzd:Map[String,ZikDomain]) : Map[String,VslMandateDomain] = {
+  def apply(  mmrd:Map[String,VslRefDom], mmd:Map[String,MandateDomain], mzd:Map[String,ZikDomain]) : Map[String,VslMandateDomain] = {
 	  
     val c = mmrd.map( x => (x._1, VslMandateDomain( x._1, Some(x._2), None)))
     	  

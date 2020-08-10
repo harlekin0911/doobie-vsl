@@ -4,7 +4,7 @@ object TestResults {
   
   object Vertrag {
   
-    val alle   = 457232
+    //val alle   = 457232
   
     object Aufrecht {
       
@@ -68,6 +68,7 @@ object TestResults {
       val reserve      = 0 
       val bpflNurVertrag = 8169
       val bpflNurVers    = 10
+      val vertragMandatUngleicheAnzahl = 11369
 
      }
   }

@@ -1,19 +1,11 @@
 package de.ways42.vsl.domains.vslMandate.transaction
 
-import de.ways42.vsl.domains.vsl.service.VslService
-import de.ways42.vsl.domains.vsl.tables.Tvsl001
-import de.ways42.vsl.domains.vsl.tables.Tvsl002
-import doobie.implicits.toConnectionIOOps
+import de.ways42.vsl.domains.mandate.transaction.MandateTask
+import de.ways42.vsl.domains.vsl.transaction.VslTask
+import de.ways42.vsl.domains.vslMandate.domain.VslMandateDomain
+import de.ways42.vsl.domains.zik.transaction.ZikTask
 import doobie.util.transactor.Transactor
 import monix.eval.Task
-import de.ways42.vsl.domains.vsl.domain.VslDom
-import de.ways42.vsl.domains.vsl.domain.MandateRefDom
-import de.ways42.vsl.domains.vslMandate.domain.VslMandateDomain
-import de.ways42.vsl.domains.mandate.transaction.MandateTask
-import de.ways42.vsl.domains.vslMandate.domain.VslMandateDomain
-import de.ways42.vsl.domains.vslMandate.domain.VslMandateDomain
-import de.ways42.vsl.domains.vsl.transaction.VslTask
-import de.ways42.vsl.domains.zik.transaction.ZikTask
 
 
 object VslMandateTask {

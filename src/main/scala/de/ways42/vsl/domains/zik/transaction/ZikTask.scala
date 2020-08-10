@@ -1,15 +1,10 @@
 package de.ways42.vsl.domains.zik.transaction
 
-import de.ways42.vsl.domains.vsl.service.VslService
-import de.ways42.vsl.domains.vsl.tables.Tvsl001
-import de.ways42.vsl.domains.vsl.tables.Tvsl002
+import de.ways42.vsl.domains.zik.domain.ZikDomain
+import de.ways42.vsl.domains.zik.service.ZikService
 import doobie.implicits.toConnectionIOOps
 import doobie.util.transactor.Transactor
 import monix.eval.Task
-import de.ways42.vsl.domains.vsl.domain.VslDom
-import de.ways42.vsl.domains.vsl.domain.MandateRefDom
-import de.ways42.vsl.domains.zik.service.ZikService
-import de.ways42.vsl.domains.zik.domain.ZikDomain
 
 
 object ZikTask {
