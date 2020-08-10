@@ -43,7 +43,18 @@ object TestResults {
        val alle = 155514 
      }
      object Aktive {
-       val ohneMandate = 154332
+       val alle         = 457288 // vorher 371795
+       val ohneMandate  = 154332 // vorher 68839   
+       val ohneVertrag  = 13363   
+       val aufrecht     = 239743 
+       val bfr          = 72583   
+       val bpfl         = 158980
+       val bfrAufrecht  = 72583    
+       val bfrNotValid  = 0        
+       val reserve      = 0 
+      val bpflNurVertrag = 8169
+      val bpflNurVers    = 10
+
      }
   }
   

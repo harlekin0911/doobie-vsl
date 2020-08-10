@@ -42,24 +42,24 @@ class TestVslMandateTask  extends AnyFunSuite  {
   test( "VslMandateDom-AktiveVertraegeMitAktivenVersicherungen") {
     val r = lmp.size
 		println ( "Anzahl nicht terminierte: " + r) 
-	  assert(  r == 371795)
+	  assert(  r == TestResults.VslMandate.Aktive.alle)
   }
   
   test("VslMandateDom-Beitragspflichtige-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpfl).size
 		println ( "Anzahl beitragspflichtige: " + r) 
-	  assert(  r == 158981)
+	  assert(  r == TestResults.VslMandate.Aktive.bpfl)
   }
     
   test("VslMandateDom-BeitragspflichtigeNurVertrag-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpflNurVertrag).size
 		println ( "Anzahl beitragspflichtigeNurVertrag: " + r) 
-	  assert(  r == 8169)
+	  assert(  r == TestResults.VslMandate.Aktive.bpflNurVertrag)
   }
   test("VslMandateDom-BeitragspflichtigeNurVers-Vericherungen") {
     val r = lmp.filter( x => x._2.istBpflNurVers).size
 		println ( "Anzahl beitragspflichtigeNurVers: " + r) 
-	  assert(  r == 10)
+	  assert(  r == TestResults.VslMandate.Aktive.bpflNurVers)
   }
 
 }
@@ -179,14 +179,14 @@ class TestVslMandateTask4  extends AnyFunSuite  {
     val reserveSize = reserve.size
     
     assert(  
-        vtSize           == 371795  && 
-        es               ==  68839  && 
-        nm               == 13363   &&
-        aufrechtSize     ==  239743 &&
-        bfrSize          == 72583   && 
-        bfrAufrechtSize  == 72583   && 
-        bfrNotValidSize  == 0       && 
-        reserveSize      == 0)  
+        vtSize           == TestResults.VslMandate.Aktive.alle  && 
+        es               ==  TestResults.VslMandate.Aktive.ohneMandate  && 
+        nm               == TestResults.VslMandate.Aktive.ohneVertrag   &&
+        aufrechtSize     ==  TestResults.VslMandate.Aktive.aufrecht &&
+        bfrSize          == TestResults.VslMandate.Aktive.bfr   && 
+        bfrAufrechtSize  == TestResults.VslMandate.Aktive.bfrAufrecht  && 
+        bfrNotValidSize  == TestResults.VslMandate.Aktive.bfrNotValid       && 
+        reserveSize      == TestResults.VslMandate.Aktive.reserve)  
     
        
     ds.close()
