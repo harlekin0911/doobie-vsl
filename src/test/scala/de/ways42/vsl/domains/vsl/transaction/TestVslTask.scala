@@ -56,6 +56,11 @@ class TestVslTaskAlleVslDom  extends AnyFunSuite  {
 	  assert(  r == TestResults.Vertrag.Alle.reserve)
   }
   
+  test("VslTask-AlleVslDom-Reserve-AnVers-NichtVertrag") {
+    val r = lmp.filter( x => x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD < 60).isEmpty && x._2.tvsl001.LV_VERTR_STAT_CD < 60).size
+	  assert(  r == TestResults.Vertrag.Alle.reserve)
+  }
+  
   // Vertrag und Vers 
   test("VslTask-AlleVslDom-Bfr") {
     val r = lmp.filter( x => x._2.istBfr).size
