@@ -25,11 +25,11 @@ class TestVslTaskAlleVslDom  extends AnyFunSuite  {
   }
   test("VslTask-AlleVslDom-Bpfl-AmVertrag") {
     val r = lmp.filter( x => x._2.tvsl001.LV_VERTR_STAT_CD == 0).size
-	  assert(  r == TestResults.Vertrag.Alle.bfr)
+	  assert(  r == TestResults.Vertrag.Alle.bpfl)
   }
   test("VslTask-AlleVslDom-Bfr-AmVertrag") {
     val r = lmp.filter( x => 0 < x._2.tvsl001.LV_VERTR_STAT_CD  &&  x._2.tvsl001.LV_VERTR_STAT_CD < 60).size
-	  assert(  r == TestResults.Vertrag.Alle.bpfl)
+	  assert(  r == TestResults.Vertrag.Alle.bfr)
   }
   test("VslTask-AlleVslDom-Reserve-AmVertrag") {
     val r = lmp.filter( x => x._2.tvsl001.LV_VERTR_STAT_CD >= 60).size
