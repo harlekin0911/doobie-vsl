@@ -28,7 +28,7 @@ class TestVslTaskAlleVslDom  extends AnyFunSuite  {
 	  assert(  r == TestResults.Vertrag.Alle.bfr)
   }
   test("VslTask-AlleVslDom-Bfr-AmVertrag") {
-    val r = lmp.filter( x => x._2.tvsl001.LV_VERTR_STAT_CD < 0 &&  x._2.tvsl001.LV_VERTR_STAT_CD < 60).size
+    val r = lmp.filter( x => 0 < x._2.tvsl001.LV_VERTR_STAT_CD  &&  x._2.tvsl001.LV_VERTR_STAT_CD < 60).size
 	  assert(  r == TestResults.Vertrag.Alle.bpfl)
   }
   test("VslTask-AlleVslDom-Reserve-AmVertrag") {
