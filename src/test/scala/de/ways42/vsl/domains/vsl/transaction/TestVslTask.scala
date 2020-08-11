@@ -23,6 +23,9 @@ class TestVslTaskAlleVslDom  extends AnyFunSuite  {
     val r = lmp.size
 	  assert(  r ==  TestResults.Vertrag.alle)
   }
+  
+  // Nur Vertrag
+  
   test("VslTask-AlleVslDom-Bpfl-AmVertrag") {
     val r = lmp.filter( x => x._2.tvsl001.LV_VERTR_STAT_CD == 0).size
 	  assert(  r == TestResults.Vertrag.Alle.bpfl)
@@ -36,6 +39,24 @@ class TestVslTaskAlleVslDom  extends AnyFunSuite  {
 	  assert(  r == TestResults.Vertrag.Alle.reserve)
   }
   
+  // Nur Vers
+
+  test("VslTask-AlleVslDom-Bpfl-AnVers") {
+    val r = lmp.filter( x => x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD == 0).isDefined)
+	  assert(  r == TestResults.Vertrag.Alle.bpfl)
+  }
+  test("VslTask-AlleVslDom-Bfr-AnVers") {
+    val r = lmp.filter( x =>
+      x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD == 0).isEmpty &&
+      x._2.mtvsl002.find(_._2.LV_VERS_STAT_CD < 60).isDefined)
+	  assert(  r == TestResults.Vertrag.Alle.bfr)
+  }
+  test("VslTask-AlleVslDom-Reserve-AnVers") {
+    val r = lmp.filter( x => x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD < 60).isEmpty)
+	  assert(  r == TestResults.Vertrag.Alle.reserve)
+  }
+  
+  // Vertrag und Vers 
   test("VslTask-AlleVslDom-Bfr") {
     val r = lmp.filter( x => x._2.istBfr).size
 	  assert(  r == TestResults.Vertrag.Alle.bfr)
