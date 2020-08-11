@@ -42,17 +42,17 @@ class TestVslTaskAlleVslDom  extends AnyFunSuite  {
   // Nur Vers
 
   test("VslTask-AlleVslDom-Bpfl-AnVers") {
-    val r = lmp.filter( x => x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD == 0).isDefined)
+    val r = lmp.filter( x => x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD == 0).isDefined).size
 	  assert(  r == TestResults.Vertrag.Alle.bpfl)
   }
   test("VslTask-AlleVslDom-Bfr-AnVers") {
     val r = lmp.filter( x =>
       x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD == 0).isEmpty &&
-      x._2.mtvsl002.find(_._2.LV_VERS_STAT_CD < 60).isDefined)
+      x._2.mtvsl002.find(_._2.LV_VERS_STAT_CD < 60).isDefined).size
 	  assert(  r == TestResults.Vertrag.Alle.bfr)
   }
   test("VslTask-AlleVslDom-Reserve-AnVers") {
-    val r = lmp.filter( x => x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD < 60).isEmpty)
+    val r = lmp.filter( x => x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD < 60).isEmpty).size
 	  assert(  r == TestResults.Vertrag.Alle.reserve)
   }
   
