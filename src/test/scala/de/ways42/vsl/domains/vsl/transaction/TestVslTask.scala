@@ -19,37 +19,43 @@ class TestVslTaskAlleVslDom  extends AnyFunSuite  {
   
   lazy val lmp = VslTask( xa).getAllVslDom().runSyncUnsafe()
   
-  test( "VS-AlleVertraegeMitVersicherungen") {
+  test( "VslTask-Alle") {
     val r = lmp.size
-		//println ( "Anzahl nicht terminierte: " + r) 
 	  assert(  r ==  TestResults.Vertrag.alle)
   }
-  
-  test("VS-Beitragsfrei-Vericherungen") {
-    val r = lmp.filter( x => x._2.istBfr).size
-		//println ( "Anzahl beitragsfreie: " + r) 
+  test("VslTask-AlleVslDom-Bfr-AmVertrag") {
+    val r = lmp.filter( x => x._2.tvsl001.LV_VERTR_STAT_CD == 0).size
 	  assert(  r == TestResults.Vertrag.Alle.bfr)
   }
-  test("VS-Beitragspflichtige-Vericherungen") {
+  test("VslTask-AlleVslDom-Bfr-AmVertrag") {
+    val r = lmp.filter( x => x._2.tvsl001.LV_VERTR_STAT_CD < 0 &&  x._2.tvsl001.LV_VERTR_STAT_CD < 60).size
+	  assert(  r == TestResults.Vertrag.Alle.bpfl)
+  }
+  test("VslTask-AlleVslDom-Bfr-AmVertrag") {
+    val r = lmp.filter( x => x._2.tvsl001.LV_VERTR_STAT_CD >= 0).size
+	  assert(  r == TestResults.Vertrag.Alle.reserve)
+  }
+  
+  test("VslTask-AlleVslDom-Bfr") {
+    val r = lmp.filter( x => x._2.istBfr).size
+	  assert(  r == TestResults.Vertrag.Alle.bfr)
+  }
+  test("VslTask-AlleVslDom-Bpfl") {
     val r = lmp.filter( x => x._2.istBpfl).size
-		//println ( "Anzahl beitragspflichtige: " + r) 
 	  assert(  r == TestResults.Vertrag.Alle.bpfl)
   }
     
-  test("VS-BeitragspflichtigeNurVertrag-Vericherungen") {
+  test("VslTask-AlleVslDom-Bpfl-NurVertrag") {
     val r = lmp.filter( x => x._2.istBpflNurVertrag).size
-		//println ( "Anzahl beitragspflichtigeNurVertrag: " + r) 
 	  assert(  r ==  TestResults.Vertrag.Alle.bpflNurVertrag)
   }
-  test("VS-BeitragspflichtigeNurVers-Vericherungen") {
+  test("VslTask-AlleVslDom-Bpfl-NurVers") {
     val r = lmp.filter( x => x._2.istBpflNurVers).size
-		//println ( "Anzahl beitragspflichtigeNurVers: " + r) 
 	  assert(  r == TestResults.Vertrag.Alle.bpflNurVers)
   }
 
-  test("VS-Reserve") {
+  test("VslTask-AlleVslDom-Reserve") {
     val r = lmp.filter( x => x._2.isReserve).size
-		//println ( "Anzahl auf Reserve: " + r) 
 	  assert(  r == TestResults.Vertrag.Alle.reserve)
   }
   test("VS-TestResults.Vertrag.Alle") {
