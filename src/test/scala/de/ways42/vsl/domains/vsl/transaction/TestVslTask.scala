@@ -28,82 +28,141 @@ class TestVslTaskAlleVslDom  extends AnyFunSuite  {
   
   test("VslTask-AlleVslDom-Bpfl-nur-Vertrag") {
     val r = lmp.filter( x => x._2.tvsl001.LV_VERTR_STAT_CD == 0).size
-	  assert(  r == 167149) //TestResults.Vertrag.Alle.bpfl)
+	  assert(  r == ( TestResults.Vertrag.Alle.bpflNurVertrag + TestResults.Vertrag.Alle.bpfl)) // == 158980)
   }
 
   test("VslTask-AlleVslDom-Bpfl-nur-Vers") {
     val r = lmp.filter( x => x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD == 0).isDefined).size
-	  assert(  r == 305315)//TestResults.Vertrag.Alle.bpfl )
+	  assert(  r == ( 146335 + TestResults.Vertrag.Alle.bpfl ))
   }
 
   test("VslTask-AlleVslDom-Bpfl") {
     val r = lmp.filter( x => x._2.istBpfl).size
 	  assert(  r == TestResults.Vertrag.Alle.bpfl)
   }
+  test("VslTask-AlleVslDom-Bpfl-1") {
+    val r = lmp.filter( x => x._2.tvsl001.istBpfl).size
+	  assert(  r == TestResults.Vertrag.Alle.bpflVertrag)
+  }
+  test("VslTask-AlleVslDom-Bpfl-2") {
+    val r = lmp.filter( x => x._2.tvsl001.LV_VERTR_STAT_CD == 0).size
+	  assert(  r == TestResults.Vertrag.Alle.bpflVertrag)
+  }
     
-  test("VslTask-AlleVslDom-Bpfl-NurVertrag") {
+  test("VslTask-AlleVslDom-Bpfl-nur-an-Vertrag") {
     val r = lmp.filter( x => x._2.istBpflNurVertrag).size
 	  assert(  r ==  TestResults.Vertrag.Alle.bpflNurVertrag)
   }
-  test("VslTask-AlleVslDom-Bpfl-NurVers") {
+  test("VslTask-AlleVslDom-Bpfl-nur-an-Vers") {
     val r = lmp.filter( x => x._2.istBpflNurVers).size
 	  assert(  r == TestResults.Vertrag.Alle.bpflNurVers)
   }
 
   // Bfr --------------------------------------------------------------------------
   
-  test("VslTask-AlleVslDom-Bfr-AmVertrag") {
-    val r = lmp.filter( x => 
-      0 < x._2.tvsl001.LV_VERTR_STAT_CD  &&  
-          x._2.tvsl001.LV_VERTR_STAT_CD < 60).size
-	  assert(  r == TestResults.Vertrag.Alle.bfr + 10)
+  test("VslTask-AlleVslDom-Bfr-Vertrag") {
+    val r = lmp.filter( x => x._2.tvsl001.istBfr ).size
+	  assert(  r == TestResults.Vertrag.Alle.bfrVertrag )
   }
-  test("VslTask-AlleVslDom-Reserve-an-Vertrag") {
-    val r = lmp.filter( x => x._2.tvsl001.LV_VERTR_STAT_CD >= 60).size
-	  assert(  r == TestResults.Vertrag.Alle.reserve)
+  test("VslTask-AlleVslDom-Bfr-Vertrag-2") {
+    val r = lmp.filter( x => 0 < x._2.tvsl001.LV_VERTR_STAT_CD  && x._2.tvsl001.LV_VERTR_STAT_CD < 60 ).size
+	  assert(  r == TestResults.Vertrag.Alle.bfrVertrag )
+  }
+  test("VslTask-AlleVslDom-Bfr-Vertrag-nicht-alle-Versicherungen") {
+    val r = lmp.filter( x => x._2.tvsl001.istBfr && x._2.mtvsl002.find( ! _._2.istBfr).isDefined).size
+	  assert(  r == TestResults.Vertrag.Alle.bfrNurVertrag)
   }
   
   test("VslTask-AlleVslDom-Bfr-an-Vers") {
     val r = lmp.filter( x =>
       x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD == 0).isEmpty &&
-      x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD < 60).isDefined).size
-	  assert(  r == 133023  ) //TestResults.Vertrag.Alle.bfr)
+      x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD >= 60).isEmpty).size
+	  assert(  r == TestResults.Vertrag.Alle.bfrAlleVersicherungen  ) 
   }
+  test("VslTask-AlleVslDom-Bfr-alle-Versicherungen") {
+    val r = lmp.filter( x => x._2.mtvsl002.find( ! _._2.istBfr).isEmpty).size
+	  assert(  r == TestResults.Vertrag.Alle.bfrAlleVersicherungen)
+  }
+
   test("VslTask-AlleVslDom-Bfr") {
     val r = lmp.filter( x => x._2.istBfr).size
 	  assert(  r == TestResults.Vertrag.Alle.bfr)
   }
+  
+  test("VslTask-AlleVslDom-Bfr-nicht-Vertrag-alle-Versicherungen") {
+    val r = lmp.filter( x => ! x._2.tvsl001.istBfr && x._2.mtvsl002.find( ! _._2.istBfr).isEmpty).size
+	  assert(  r == TestResults.Vertrag.Alle.bfrNurAlleVersicherungen)
+  }
+  
+  test ("TestResults.Vertrag.Alle.bfr") {
+    import TestResults.Vertrag.Alle._
+    assert(  bfr  == bfrVertrag +  bfrNurAlleVersicherungen )
+  }
 
   // Reserve ------------------------------------------------------------------------------
-
-  test("VslTask-AlleVslDom-Reserve-An-Vers") {
-    val r = lmp.filter( x => 
-      x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD < 60).isEmpty ).size // && 
-      //x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD > 60).isEmpty
-	  assert(  r == 4229 ) //TestResults.Vertrag.Alle.reserve)
-  }
-  
-  test("VslTask-AlleVslDom-Reserve-An-Vers-Nicht-an-Vertrag") {
-    val r = lmp.filter( x => 
-      x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD < 60).isEmpty && 
-      x._2.tvsl001.LV_VERTR_STAT_CD < 60).size
-	  assert(  r == 0)//TestResults.Vertrag.Alle.reserve)
-  }
-  
-  test("VslTask-AlleVslDom-Reserve-an-Vertrag-nicht-an-Vers") {
-    val r = lmp.filter( x => 
-      x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD < 60).isDefined && 
-      x._2.tvsl001.LV_VERTR_STAT_CD >= 60).size
-	  assert(  r + 4229 == TestResults.Vertrag.Alle.reserve)
-  }
-  
+  // Reserve  == Vertrag in Reserve, es muss keine Versicherung in Reserve sein == Vertrag in Reserve
 
   test("VslTask-AlleVslDom-Reserve") {
     val r = lmp.filter( x => x._2.isReserve).size
 	  assert(  r == TestResults.Vertrag.Alle.reserve)
   }
+
+  test("VslTask-AlleVslDom-Reserve-an-Vertrag") {
+    val r = lmp.filter( x => x._2.tvsl001.LV_VERTR_STAT_CD >= 60).size
+	  assert(  r == TestResults.Vertrag.Alle.reserve)
+  }
+
+  test("VslTask-AlleVslDom-Reserve-an-Vertrag-Reserve-an-Vers") {
+    val r = lmp.filter( x => 
+      x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD >= 60).isDefined && 
+      x._2.tvsl001.LV_VERTR_STAT_CD >= 60).size
+	  assert(  r == TestResults.Vertrag.Alle.reserveVertragUndVers )
+  }
+  test("VslTask-AlleVslDom-Reserve-An-Vers") {
+    val r = lmp.filter( x => x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD < 60).isEmpty ).size 
+	  assert(  r == TestResults.Vertrag.Alle.alleVersInReserve ) 
+  }
+  
+  test("VslTask-AlleVslDom-Reserve-An-Vertrag-Nicht-an-Vers") {
+    val r = lmp.filter( x => 
+      x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD >= 60).isEmpty && 
+      x._2.tvsl001.LV_VERTR_STAT_CD >= 60).size
+	  assert(  r == TestResults.Vertrag.Alle.reserve - TestResults.Vertrag.Alle.reserveVertragUndVers)
+  }
+  test("VslTask-AlleVslDom-Reserve-An-Vers-Nicht-an-Vertrag") {
+    val r = lmp.filter( x => 
+      x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD >= 60).isDefined && 
+      x._2.tvsl001.LV_VERTR_STAT_CD < 60).size
+	  assert(  r == TestResults.Vertrag.Alle.reserveNurVers)//TestResults.Vertrag.Alle.reserve)
+  }
+  test("VslTask-AlleVslDom-Reserve-Alle-Vers-Nicht-an-Vertrag") {
+    val r = lmp.filter( x => 
+      x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD < 60).isEmpty && 
+      x._2.tvsl001.LV_VERTR_STAT_CD < 60).size
+	  assert(  r == 0)
+  }
+  
+  test("VslTask-AlleVslDom-Reserve-an-Vertrag-Reserve-alle-Vers") {
+    val r = lmp.filter( x => 
+      x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD < 60).isEmpty && 
+      x._2.tvsl001.LV_VERTR_STAT_CD >= 60).size
+	  assert(  r == TestResults.Vertrag.Alle.alleVersInReserve)
+  }
+
+  test("VslTask-AlleVslDom-Reserve-an-Vertrag-nicht-an-Vers") {
+    val r = lmp.filter( x => 
+      x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD < 60).isDefined && 
+      x._2.tvsl001.LV_VERTR_STAT_CD >= 60).size
+	  assert(  r == TestResults.Vertrag.Alle.reserve - TestResults.Vertrag.Alle.alleVersInReserve)
+  }
+    
   test("VS-TestResults.Vertrag.Alle") {
-	  assert(  TestResults.Vertrag.alle == TestResults.Vertrag.Alle.bpfl + TestResults.Vertrag.Alle.bfr + TestResults.Vertrag.Alle.reserve)
+	  assert(  TestResults.Vertrag.alle == 
+	    TestResults.Vertrag.Alle.bpfl +
+	    //TestResults.Vertrag.Alle.bpflNurVertrag + 
+	    //TestResults.Vertrag.Alle.bpflNurVers + 
+	    TestResults.Vertrag.Alle.bfr + 
+	    TestResults.Vertrag.Alle.reserve)
   }
 }
 

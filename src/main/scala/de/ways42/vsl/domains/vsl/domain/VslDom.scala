@@ -18,8 +18,9 @@ case class VslDom( tvsl001:Tvsl001, mtvsl002: Map[Short,Tvsl002]) {
  
   /**
    * Ist beitagsfrei
+   * Entweder beitragfrei am Vertrag oder alle Versicherungen sind beitragsfrei
    */
-  def istBfr : Boolean = tvsl001.istBfr && mtvsl002.find( _._2.istBpfl).isEmpty
+  def istBfr : Boolean = tvsl001.istBfr || mtvsl002.find( ! _._2.istBfr).isEmpty
   /**
    * Ist beitagspflichtig
    */

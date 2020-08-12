@@ -8,12 +8,22 @@ object TestResults {
     
     object Alle {
       
-      val bfr     = 72583
-      val bpfl    = 158980
-      val reserve = 202825
-      
+      val bfr                      = 122236 
+      val bfrAlleVersicherungen    = 103915
+      val bfrVertrag               = 72593
+      val bfrNurVertrag            = 18321
+      val bfrNurAlleVersicherungen = 49643
+
+      val bpfl           = 158980
+      val bpflVertrag    = 167149
       val bpflNurVertrag = 8169
-      val bpflNurVers = 10
+      val bpflNurVers    = 10
+      
+      val reserve               = 202825
+      val alleVersInReserve     = 4229
+      val reserveVertragUndVers = 24963
+      val reserveNurVers        = 31668
+      
     }
   
     object Aufrecht {
