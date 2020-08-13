@@ -38,12 +38,7 @@ object TestResults {
       val bpflNurVers = 10
     }
   
-     val nichtTerminierteAbgelaufene = 59909
-  
-     val nichtTerminierteAbgelaufeneMitPayment =  46638
   }
-  val  outOfDate     = 114786
-  val  outOfDateTerm = 61330
   
   object VertragUndRolle {
     
@@ -58,7 +53,19 @@ object TestResults {
       val ohneMandat  = 69181
     }
   }
-  
+   
+  object Mandate {
+         
+    object Aktive {    
+      val nichtTerminierteAbgelaufene           = 59909
+      val nichtTerminierteAbgelaufeneMitPayment = 46638
+    }
+      
+    val  outOfDate     = 114786
+    val  outOfDateTerm = 61330
+
+  }
+ 
   object VslMandate {
     
     object Alle {
