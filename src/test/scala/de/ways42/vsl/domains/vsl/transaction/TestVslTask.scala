@@ -109,7 +109,7 @@ class TestVslTaskAlleVslDom  extends AnyFunSuite  {
   
   test ("TestResults.Vertrag.Alle.bfr") {
     import TestResults.Vertrag.Alle._
-    assert(  bfr  == bfrVertrag +  bfrNurAlleVersicherungen )
+    assert(  bfr  == bfrVertrag +  bpflNurVertrag )
   }
 
   // Reserve ------------------------------------------------------------------------------

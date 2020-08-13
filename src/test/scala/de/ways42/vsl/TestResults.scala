@@ -8,7 +8,7 @@ object TestResults {
     
     object Alle {
       
-      val bfr                      = 122236 
+      val bfr                      = 80762  // 122236 
       val bfrAlleVersicherungen    = 103915 // alle Versicherungen sind bfr
       val bfrVertrag               = 72593  // am vertrag ist 0 < vertr_stat < 60
       val bfrNurVertrag            = 18321  // 
@@ -30,7 +30,7 @@ object TestResults {
     object Aufrecht {
       
       val alle    = 239742
-      val bfr     = 72583
+      val bfr     = 80762 //72583
       val bpfl    = 158980
       val reserve = 0
       
