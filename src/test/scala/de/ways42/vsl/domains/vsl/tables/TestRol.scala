@@ -17,6 +17,7 @@ import java.sql.Date
 
 import org.scalatest.funsuite.AnyFunSuite //TestSuite
 import de.ways42.vsl.connection.Connect
+import de.ways42.vsl.TestResults
 
 class TestRol extends AnyFunSuite {
 
@@ -52,11 +53,11 @@ class TestRol extends AnyFunSuite {
   }  
   test ( "Vsl-Rolle-selectAktAll") {
     val s = Trol001.selectAktAll( 89).transact(xa).unsafeRunSync.size
-			assert( s == 296061 )
+			assert( s == TestResults.Rolle.all )
   }  
   test ( "Vsl-Rolle-selectAktAllAktive") {
     val s = Trol001.selectAktAllAktive( 89).transact(xa).unsafeRunSync.size
-			assert( s == 296045 )
+			assert( s == TestResults.Rolle.aktive )
   }  
   
 }

@@ -39,6 +39,10 @@ object TestResults {
     }
   
   }
+  object Rolle {
+    val all    = 296061
+    val aktive = 296045
+  }
   
   object VertragUndRolle {
     
