@@ -9,15 +9,16 @@ object TestResults {
     object Alle {
       
       val bfr                      = 122236 
-      val bfrAlleVersicherungen    = 103915
-      val bfrVertrag               = 72593
-      val bfrNurVertrag            = 18321
-      val bfrNurAlleVersicherungen = 49643
+      val bfrAlleVersicherungen    = 103915 // alle Versicherungen sind bfr
+      val bfrVertrag               = 72593  // am vertrag ist 0 < vertr_stat < 60
+      val bfrNurVertrag            = 18321  // 
+      val bfrNurAlleVersicherungen = 49643  // am Vertrag nicht bfr aber alle Versicherungen sind bfr
 
-      val bpfl           = 158980
-      val bpflVertrag    = 167149
-      val bpflNurVertrag = 8169
-      val bpflNurVers    = 10
+      val bpfl           = 158980  // am Vertrag bpfl und es gibt eine bpfl Versicherung
+      val bpflVertrag    = 167149  // am Vertrag ist vertr_stat == 0
+      val bpflNurVertrag = 8169    // am Vertrag ist vertr_stat == 0 und keine Versicherung ist bpfl
+      val bpflNurVers    = 10      // am Vertrag nicht bpfl, es gibt aber eine bpfl Versicherung
+      val bpflVers       = 305315  // es gibt eine bpfl Versicherung
       
       val reserve               = 202825
       val alleVersInReserve     = 4229

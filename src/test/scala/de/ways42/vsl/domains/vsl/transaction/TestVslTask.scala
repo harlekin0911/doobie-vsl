@@ -31,9 +31,9 @@ class TestVslTaskAlleVslDom  extends AnyFunSuite  {
 	  assert(  r == ( TestResults.Vertrag.Alle.bpflNurVertrag + TestResults.Vertrag.Alle.bpfl)) // == 158980)
   }
 
-  test("VslTask-AlleVslDom-Bpfl-nur-Vers") {
+  test("VslTask-AlleVslDom-Bpfl-Vers") {
     val r = lmp.filter( x => x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD == 0).isDefined).size
-	  assert(  r == ( 146335 + TestResults.Vertrag.Alle.bpfl ))
+	  assert(  r == ( TestResults.Vertrag.Alle.bpflVers ))
   }
 
   test("VslTask-AlleVslDom-Bpfl") {
@@ -51,6 +51,10 @@ class TestVslTaskAlleVslDom  extends AnyFunSuite  {
     
   test("VslTask-AlleVslDom-Bpfl-nur-an-Vertrag") {
     val r = lmp.filter( x => x._2.istBpflNurVertrag).size
+	  assert(  r ==  TestResults.Vertrag.Alle.bpflNurVertrag)
+  }
+  test("VslTask-AlleVslDom-Bpfl-nur-an-Vertrag-2") {
+    val r = lmp.filter( x => x._2.tvsl001.LV_VERTR_STAT_CD == 0 && x._2.mtvsl002.find( _._2.LV_VERS_STAT_CD == 0).isEmpty).size
 	  assert(  r ==  TestResults.Vertrag.Alle.bpflNurVertrag)
   }
   test("VslTask-AlleVslDom-Bpfl-nur-an-Vers") {
@@ -72,6 +76,14 @@ class TestVslTaskAlleVslDom  extends AnyFunSuite  {
     val r = lmp.filter( x => x._2.tvsl001.istBfr && x._2.mtvsl002.find( ! _._2.istBfr).isDefined).size
 	  assert(  r == TestResults.Vertrag.Alle.bfrNurVertrag)
   }
+  test("VslTask-AlleVslDom-Bfr-Vertrag-nicht-alle-Versicherungen-3") {
+    val r = lmp.filter( x => x._2.tvsl001.istBfr && x._2.mtvsl002.find( x => x._2.istBpfl || x._2.isReserve).isDefined).size
+	  assert(  r == TestResults.Vertrag.Alle.bfrNurVertrag)
+  }
+  test("VslTask-AlleVslDom-Bfr-Vertrag-nicht-alle-Versicherungen-2") {
+    val r = lmp.filter( x => x._2.tvsl001.istBfr && x._2.mtvsl002.find(  _._2.istBpfl).isDefined).size
+	  assert(  r == TestResults.Vertrag.Alle.bpflNurVers)
+  }
   
   test("VslTask-AlleVslDom-Bfr-an-Vers") {
     val r = lmp.filter( x =>
@@ -86,6 +98,7 @@ class TestVslTaskAlleVslDom  extends AnyFunSuite  {
 
   test("VslTask-AlleVslDom-Bfr") {
     val r = lmp.filter( x => x._2.istBfr).size
+    
 	  assert(  r == TestResults.Vertrag.Alle.bfr)
   }
   
@@ -162,6 +175,15 @@ class TestVslTaskAlleVslDom  extends AnyFunSuite  {
 	    //TestResults.Vertrag.Alle.bpflNurVertrag + 
 	    //TestResults.Vertrag.Alle.bpflNurVers + 
 	    TestResults.Vertrag.Alle.bfr + 
+	    TestResults.Vertrag.Alle.reserve)
+  }
+  test("VS-TestResults.Vertrag.Alle-2") {
+	  assert(  TestResults.Vertrag.alle == 
+	    //TestResults.Vertrag.Alle.bpfl +
+	    TestResults.Vertrag.Alle.bpfl + 
+	    TestResults.Vertrag.Alle.bpflNurVertrag +
+	    //TestResults.Vertrag.Alle.bpflNurVers + 
+	    TestResults.Vertrag.Alle.bfrVertrag + 
 	    TestResults.Vertrag.Alle.reserve)
   }
 }
