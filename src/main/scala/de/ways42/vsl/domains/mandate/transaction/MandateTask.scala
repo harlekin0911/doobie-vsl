@@ -86,9 +86,7 @@ class MandateTask[A]( val xa : Transactor.Aux[Task, A]) {
   def getAllMandateDomainAktBottomUp()  : Task[Map[String,MandateDomain]] = { 
     val (a,b,c) = MandateService.getAktAllMandateDomainTables
     Task.parZip3( a.transact(xa), b.transact(xa), c.transact(xa)).map( x =>
-        MandateDomain(
-            BusinessObjectRefDom.aggregateListBusinessObjectRefDom( 
-                x._1, MandateDom.aggregateMandateWithPayment( x._2, MandateDom.aggregatePayments(x._3)))))
+        MandateDomain( BusinessObjectRefDom( x._1, MandateDom( x._2, x._3))))
   }
   
 

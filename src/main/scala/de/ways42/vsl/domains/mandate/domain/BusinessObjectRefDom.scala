@@ -133,7 +133,7 @@ object BusinessObjectRefDom {
    * 
    * Referenzen zu nicht vorhandenen Mandaten werden ignoriert
    */
-  def aggregateListBusinessObjectRefDom( lbor:List[BusinessObjectRef], mmd:Map[Long,MandateDom]) : Map[Long,BusinessObjectRefDom] = 
+  def apply( lbor:List[BusinessObjectRef], mmd:Map[Long,MandateDom]) : Map[Long,BusinessObjectRefDom] = 
     lbor.foldLeft( Map.empty[Long,BusinessObjectRefDom])( 
         (acc,bor) => mmd.get(bor.MANDATE_ID) match {
         case Some(d) => acc.updated(bor.BUSINESS_OBJ_REFERENCE_ID, apply(bor,d))

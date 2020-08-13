@@ -4,48 +4,50 @@ package de.ways42.vsl.domain.mandate.tables
 
 
 
+import java.sql.Date
+import java.sql.Timestamp
+
 import org.scalatest.funsuite.AnyFunSuite
 
 import cats._
 import cats.effect._
 //TestSuite
 import de.ways42.vsl.connection.Connect
+import de.ways42.vsl.domains.mandate.tables.Mandate
 import doobie._
 import doobie.implicits._
-import java.sql.Timestamp
-import java.sql.Date
-import de.ways42.vsl.domains.mandate.tables.Mandate
+import de.ways42.vsl.TestResults
 
 
 class TestMandate extends AnyFunSuite {
 
 	val xa : Transactor.Aux[IO, Unit] = Connect( "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together")
 
+	import TestResults.Mandate._
 	
   test ( "Mandate-selectAktById") {
 			assert( Mandate.selectAktById(313038).transact(xa).unsafeRunSync.get.MANDATE_ID == 313038)
 	}
+	
   test ( "Mandate-selectAllById") {
 			assert( Mandate.selectAllById(313038).transact(xa).unsafeRunSync.size == 2)
   }
   
   test ( "Mandate-selectAktAll") {
-	  val c = Mandate.selectAktAll().transact(xa).unsafeRunSync
-	  val s = c.size
-	  println( "Anzahl akt all " + s)
-		assert( s > 250000)
+	  val s = Mandate.selectAktAll().transact(xa).unsafeRunSync.size
+		assert( s  == TestResults.Mandate.alle)
   }
-	test ( "selectAktAllNotTerminated") {
-	  val c =  Mandate.selectAktAllAktive().transact(xa).unsafeRunSync
-	  val s = c.size
-	  println( "Anzahl akt all not terminate d" + s)
-		assert(  246828 < s && s < 246831)
+  
+	test ( "Mandate-selectAktAllNotTerminated") {
+	  val s =  Mandate.selectAktAllAktive().transact(xa).unsafeRunSync.size
+		assert(   s == TestResults.Mandate.Aktive.alle)
   }
-	test ( "selectAktAllTerminated") {
-	  val c =  Mandate.selectAktAllTerminated().transact(xa).unsafeRunSync
-	  val s = c.size
-	  println( "Anzahl akt all terminated " + s)
-		assert( 66070 < s && s < 66074)
+	test ( "Mandate-selectAktAllTerminated") {
+	  val s =  Mandate.selectAktAllTerminated().transact(xa).unsafeRunSync.size
+		assert(  s == TestResults.Mandate.terminated)
+  }
+	test ( "Mandate-TestResults") {
+		assert(  alle == terminated + Aktive.alle)
   }
 	
 }

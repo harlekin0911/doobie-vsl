@@ -59,6 +59,9 @@ object TestResults {
   }
    
   object Mandate {
+    
+    val alle        = 312903
+    val terminated  =  66073
          
     object Aktive {  
       val alle                   = 246830
@@ -67,6 +70,7 @@ object TestResults {
       val abgelaufene            =  59909
       val abgelaufeneMitPayment  =  46638
       val abgelaufeneOhnePayment =  13271
+      
       
     }
       

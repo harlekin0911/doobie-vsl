@@ -12,6 +12,13 @@ import de.ways42.vsl.domains.mandate.tables.Mandate
 
 
 case class MandateDom( m:Mandate, lp:List[Payment]) {
+  
+  def add( p:Payment) : MandateDom = 
+    if ( m.MANDATE_ID == p.MANDATE_ID) 
+      MandateDom( m, p::lp) 
+    else 
+      throw new RuntimeException( "MandateId stimmen nicht ueberein: m=<" + m.MANDATE_ID + "> p=<" + p.MANDATE_ID + ">")
+  
     /**
    * Mandate mit letztem Payment aelter als 3 Jahre ?
    */
@@ -50,18 +57,28 @@ object MandateDom {
       Invalid( "Objekte mit falscher MandatsId, " + ep)
   }
   
+//	/**
+//	 * Mappe zur MandatsId und dem MandateDom aufbauen, also das Mandat mit all seinen Payments
+//	 */
+//	def aggregateMandateWithPayment( lm:List[Mandate], mp:Map[Long, List[Payment]]) : Map[Long, MandateDom] = 
+//	  lm.foldRight( 
+//	      Map.empty[Long,MandateDom])(
+//	          (m,z) => z.updated(m.MANDATE_ID, MandateDom(m, List.empty)))
+//	  
+//	/**
+//	 * Paments in die Mappe fuellen
+//	 */
+//	def aggregatePayments( pl : List[Payment])  : Map[Long, List[Payment]] = pl.groupBy( _.MANDATE_ID)
+	
 	/**
-	 * Mappe zur MandatsId und dem MandateDom aufbauen, also das Mandat mit all seinen Payments
+	 * 
 	 */
-	def aggregateMandateWithPayment( lm:List[Mandate], mp:Map[Long, List[Payment]]) : Map[Long, MandateDom] = 
-	  lm.foldRight( 
-	      Map.empty[Long,MandateDom])(
-	          (m,z) => z.updated(m.MANDATE_ID, MandateDom(m, List.empty)))
-	  
-	/**
-	 * Paments in die Mappe fuellen
-	 */
-	def aggregatePayments( pl : List[Payment])  : Map[Long, List[Payment]] = pl.groupBy( _.MANDATE_ID)
+	def apply( lm:List[Mandate], pl:List[Payment]) :  Map[Long, MandateDom] = {
+	  val a = lm.foldRight(Map.empty[Long,MandateDom])((m,z) => z.updated(m.MANDATE_ID, MandateDom(m, List.empty)))
+	  pl.foldLeft(a)((m,p) => m.get(p.MANDATE_ID) match {
+	    case Some(s) => m.updated(p.MANDATE_ID, s.add(p))
+	    case _       => m})
+	}
 }
 
 case class MandateAktDom( m:Mandate, op:Option[Payment]) {
