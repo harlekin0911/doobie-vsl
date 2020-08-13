@@ -60,9 +60,14 @@ object TestResults {
    
   object Mandate {
          
-    object Aktive {    
-      val nichtTerminierteAbgelaufene           = 59909
-      val nichtTerminierteAbgelaufeneMitPayment = 46638
+    object Aktive {  
+      val alle                   = 246830
+      val ohnePayment            =  13271
+      val mitPayment             = 233559
+      val abgelaufene            =  59909
+      val abgelaufeneMitPayment  =  46638
+      val abgelaufeneOhnePayment =  13271
+      
     }
       
     val  outOfDate     = 114786
