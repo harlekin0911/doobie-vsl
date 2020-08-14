@@ -74,9 +74,18 @@ object TestResults {
       
     }
       
-    val  outOfDate     = 114786
-    val  outOfDateTerm = 61330
+    val  outOfDate     = 114838 
+    val  outOfDateTerm =  61330
+    val  outOfDateAkt  =  53058
 
+  }
+  
+  object MandateDomain {
+    val alle = 302957
+    
+    val anzahlMandate     = 312903
+    val anzahlMandateAkt  = 0
+    val anzahlMandateTerm =  66073
   }
  
   object VslMandate {

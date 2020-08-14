@@ -123,13 +123,22 @@ class TestMandateTask3  extends AnyFunSuite  {
     val emptyBord = mmd.filter( emd => emd._2.mmed.filter( _._2.md.isEmpty).size > 0)
     //emptyBord.map( x => println("Vertrag: " + x._1 + ", BusinessObjectRef: " + x._2.mmed.mkString(",")))
     val ebs = emptyBord.size
-    val outOfDate     = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate).size > 0).size
-    val outOfDateTerm = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate && y._2.isTerminated).size > 0).size
+    val outOfDate      = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate).size > 0).size
+    val outOfDateTerm  = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate &&   y._2.isTerminated).size > 0).size
+    val outOfDateAkt   = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate && ! y._2.isTerminated).size > 0).size
+    val anzMandate     = mmd.foldLeft(0)( (acc,m) => acc + m._2.anzahlMandate)
+    val anzMandateAkt  = mmd.foldLeft(0)( (acc,m) => acc + m._2.anzahlMandateAktive)
+    val anzMandateTerm = mmd.foldLeft(0)( (acc,m) => acc + m._2.anzahlMandateTerminated)
+    
     assert( 
-        s == 302957 &&
+        s == TestResults.MandateDomain.alle &&
         ebs == 4 && 
-        outOfDate     == TestResults.Mandate.outOfDate     &&
-        outOfDateTerm == TestResults.Mandate.outOfDateTerm)
+        outOfDate      == TestResults.Mandate.outOfDate     &&
+        outOfDateTerm  == TestResults.Mandate.outOfDateTerm && 
+        outOfDateAkt   == TestResults.Mandate.outOfDateAkt &&
+        anzMandate     == TestResults.MandateDomain.anzahlMandate &&
+        anzMandateAkt  == TestResults.MandateDomain.anzahlMandateAkt &&
+        anzMandateTerm == TestResults.MandateDomain.anzahlMandateTerm )
   }
 }
 

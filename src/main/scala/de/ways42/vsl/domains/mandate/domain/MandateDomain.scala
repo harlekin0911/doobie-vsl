@@ -42,7 +42,10 @@ case class MandateDomain( extRef:String, mmed:Map[Long,BusinessObjectRefDom]) {
    * Anzahl der Mandate
    */
     
-  def anzahlMandate() = mmed.size
+  def anzahlMandate = mmed.size
+  
+  def anzahlMandateAktive     = mmed.filter( ! _._2.isTerminated).size
+  def anzahlMandateTerminated = mmed.filter(   _._2.isTerminated).size
 
 }
 
