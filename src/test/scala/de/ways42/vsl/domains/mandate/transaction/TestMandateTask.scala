@@ -116,29 +116,46 @@ class TestMandateTask3  extends AnyFunSuite  {
   import monix.execution.Scheduler.Implicits.global
   
   val xap = HcTaskResource("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://172.17.4.39:50001/vslt01", "VSMADM", "together", 32)
+  val mmd = xap.use( xa => MandateTask( xa).getAktAllMandateDomain()).runSyncUnsafe()
 
-  test( "MS-AllAktMandateDomain-top-down") {
-    val mmd = xap.use( xa => MandateTask( xa).getAktAllMandateDomain()).runSyncUnsafe()
+  test( "MS-AktAllMandateDomain-top-down") {
     val s = mmd.size
+    assert( s == TestResults.MandateDomain.alle)
+  }
+  
+  test( "MS-AktAllMandateDomain-Bord-ohne-Mandate") {
     val emptyBord = mmd.filter( emd => emd._2.mmed.filter( _._2.md.isEmpty).size > 0)
-    //emptyBord.map( x => println("Vertrag: " + x._1 + ", BusinessObjectRef: " + x._2.mmed.mkString(",")))
     val ebs = emptyBord.size
+    assert( ebs == 4)
+  }
+  
+  test( "MS-AktAllMandateDomain-outOfDate") {
     val outOfDate      = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate).size > 0).size
+    assert(outOfDate      == TestResults.Mandate.outOfDate)
+  }
+  
+  test( "MS-AktAllMandateDomain-outOfDateTerm") {
     val outOfDateTerm  = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate &&   y._2.isTerminated).size > 0).size
+    assert(outOfDateTerm  == TestResults.Mandate.outOfDateTerm)
+  }
+  test( "MS-AktAllMandateDomain-outOfDateAkt") {
     val outOfDateAkt   = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate && ! y._2.isTerminated).size > 0).size
+    assert(outOfDateAkt   == TestResults.Mandate.outOfDateAkt)
+  }
+  
+  test( "MS-AktAllMandateDomain-anzahlMandate") {
     val anzMandate     = mmd.foldLeft(0)( (acc,m) => acc + m._2.anzahlMandate)
+    assert(anzMandate     == TestResults.MandateDomain.anzahlMandate)
+  }
+  
+  test( "MS-AktAllMandateDomain-anzahlMandateAktive") {
     val anzMandateAkt  = mmd.foldLeft(0)( (acc,m) => acc + m._2.anzahlMandateAktive)
+    assert( anzMandateAkt  == TestResults.MandateDomain.anzahlMandateAkt)
+  }
+  
+  test( "MS-AktAllMandateDomain-anzahlMandateTerminated") {
     val anzMandateTerm = mmd.foldLeft(0)( (acc,m) => acc + m._2.anzahlMandateTerminated)
-    
-    assert( 
-        s == TestResults.MandateDomain.alle &&
-        ebs == 4 && 
-        outOfDate      == TestResults.Mandate.outOfDate     &&
-        outOfDateTerm  == TestResults.Mandate.outOfDateTerm && 
-        outOfDateAkt   == TestResults.Mandate.outOfDateAkt &&
-        anzMandate     == TestResults.MandateDomain.anzahlMandate &&
-        anzMandateAkt  == TestResults.MandateDomain.anzahlMandateAkt &&
-        anzMandateTerm == TestResults.MandateDomain.anzahlMandateTerm )
+    assert(anzMandateTerm == TestResults.MandateDomain.anzahlMandateTerm)
   }
 }
 

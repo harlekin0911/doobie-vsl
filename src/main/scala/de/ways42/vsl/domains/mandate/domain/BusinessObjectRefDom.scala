@@ -35,14 +35,26 @@ case class BusinessObjectRefDom( b:BusinessObjectRef, md:Option[MandateDom]) {
   }
   
   /**
+   * Gültige nicht abgelaufene Mandate
+   * unabhaengig von der terminiereung
+   */
+  
+  def isValid : Boolean =  md.map( _.isValid()).getOrElse(false)
+  
+  /**
    * Abgelaufenes Mandat oder kein Mandat vorhanden
    */
-  def isOutOfDate: Boolean = md.map( _.istAbgelaufen()).getOrElse(true)
+  def isOutOfDate: Boolean = md.map( _.istAbgelaufen()).getOrElse(false)
   
   /**
    * Terminierte Mandate
    */
-  def isTerminated : Boolean = md.map( _.isTerminated).getOrElse(true)
+  def isTerminated : Boolean = md.map( _.isTerminated).getOrElse(false)
+  
+  /**
+   * Aktive Mandate ( nicht terminierte), können abgelaufen sein
+   */
+  def isActive : Boolean = md.map( _.isActive).getOrElse(false)
   
   def mandateExtRef : Option[String] = md.flatMap( _.mandateExtRef )
   def mandateId     : Option[Long]   = md.map(    _.mandateId )
