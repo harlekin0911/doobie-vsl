@@ -135,12 +135,21 @@ class TestMandateTask3  extends AnyFunSuite  {
   }
   
   test( "MS-AktAllMandateDomain-outOfDateTerm") {
-    val outOfDateTerm  = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate &&   y._2.isTerminated).size > 0).size
+    val outOfDateTerm  = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate && y._2.isTerminated).size > 0).size
     assert(outOfDateTerm  == TestResults.Mandate.outOfDateTerm)
   }
   test( "MS-AktAllMandateDomain-outOfDateAkt") {
-    val outOfDateAkt   = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate && ! y._2.isTerminated).size > 0).size
+    val outOfDateAkt   = mmd.filter(x => x._2.mmed.filter(y => y._2.isOutOfDate && y._2.isActive).size > 0).size
     assert(outOfDateAkt   == TestResults.Mandate.outOfDateAkt)
+  }
+  
+  test( "MS-AktAllMandateDomain-Valid-Term") {
+    val validTerm  = mmd.filter(x => x._2.mmed.filter(y => y._2.isValid && y._2.isTerminated).size > 0).size
+    assert( validTerm  == TestResults.Mandate.outOfDateTerm)
+  }
+  test( "MS-AktAllMandateDomain-Valid-Akt") {
+    val validAkt   = mmd.filter(x => x._2.mmed.filter(y => y._2.isValid && y._2.isActive).size > 0).size
+    assert( validAkt   == TestResults.Mandate.outOfDateAkt)
   }
   
   test( "MS-AktAllMandateDomain-anzahlMandate") {
