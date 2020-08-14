@@ -143,6 +143,11 @@ class TestMandateTask3  extends AnyFunSuite  {
     assert(outOfDateAkt   == TestResults.Mandate.outOfDateAkt)
   }
   
+  test( "MS-AktAllMandateDomain-Valid") {
+    val valid      = mmd.filter(x => x._2.mmed.filter(y => y._2.isValid).size > 0).size
+    assert( valid      == TestResults.Mandate.valid)
+  }
+
   test( "MS-AktAllMandateDomain-Valid-Term") {
     val validTerm  = mmd.filter(x => x._2.mmed.filter(y => y._2.isValid && y._2.isTerminated).size > 0).size
     assert( validTerm  == TestResults.Mandate.outOfDateTerm)

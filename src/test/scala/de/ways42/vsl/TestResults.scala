@@ -74,9 +74,13 @@ object TestResults {
       
     }
       
-    val  outOfDate     = 114838 
-    val  outOfDateTerm =  61330
+    val  outOfDate     = 114835 
+    val  outOfDateTerm =  61327
     val  outOfDateAkt  =  54357
+    
+    val  valid     =  0
+    val  validTerm =  2761
+    val  validAkt  =  192250
 
   }
   
@@ -85,7 +89,7 @@ object TestResults {
     
     val anzahlMandate     = 312906 //312903
     val anzahlMandateAkt  = 246830
-    val anzahlMandateTerm =  66076 //66073
+    val anzahlMandateTerm =  66072 //66073
   }
  
   object VslMandate {
