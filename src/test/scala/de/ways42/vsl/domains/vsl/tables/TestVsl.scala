@@ -73,8 +73,44 @@ class TestTvsl002 extends AnyFunSuite {
 	test( "VSL-tvsl002-vtg-akt") {
 			assert ( Tvsl002.selectAktZuVertrag("0003065903411").transact(xa).unsafeRunSync.length == 2)
   }
-	test( "VSL-tvsl003-akt-empty") {
+	test( "VSL-tvsl002-akt-empty") {
 			assert ( Tvsl002.selectAktZuVertrag("1234567890123").transact(xa).unsafeRunSync.length == 0)
+  }
+}	
+class TestTvsl003 extends AnyFunSuite {
+
+	val xa : Transactor.Aux[IO, Unit] = Connect( 
+	    "com.ibm.db2.jcc.DB2Driver", 
+	    "jdbc:db2://172.17.4.39:50001/vslt01", 
+	    "VSMADM", 
+	    "together")
+
+	test( "VSL-tvsl003-vtg-alle") {
+			assert ( Tvsl003.selectVtgnr( "0003065903411").transact(xa).unsafeRunSync.length == 6)
+  }
+	test( "VSL-tvsl003-vtg-akt") {
+			assert ( Tvsl003.selectAktZuVertrag("0003065903411").transact(xa).unsafeRunSync.length == 2)
+  }
+	test( "VSL-tvsl003-akt-empty") {
+			assert ( Tvsl003.selectAktZuVertrag("1234567890123").transact(xa).unsafeRunSync.length == 0)
   }
 }
 
+class TestTvsl004 extends AnyFunSuite {
+
+	val xa : Transactor.Aux[IO, Unit] = Connect( 
+	    "com.ibm.db2.jcc.DB2Driver", 
+	    "jdbc:db2://172.17.4.39:50001/vslt01", 
+	    "VSMADM", 
+	    "together")
+
+	test( "VSL-tvsl004-vtg-alle") {
+			assert ( Tvsl004.selectVtgnr( "0018086800521").transact(xa).unsafeRunSync.length == 50)
+  }
+	test( "VSL-tvsl004-vtg-akt") {
+			assert ( Tvsl004.selectAktZuVertrag("0018086800521").transact(xa).unsafeRunSync.length == 12)
+  }
+	test( "VSL-tvsl004-akt-empty") {
+			assert ( Tvsl004.selectAktZuVertrag("1234567890123").transact(xa).unsafeRunSync.length == 0)
+  }
+}

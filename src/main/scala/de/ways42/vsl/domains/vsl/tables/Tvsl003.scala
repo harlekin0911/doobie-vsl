@@ -43,7 +43,7 @@ case class Tvsl003 (
   LV_REZINSIND_PRZ : Double
   )
   
-  object Tvsl003 {
+object Tvsl003 {
 
   val attributes = Array[String] (
       "GV_DTM",
