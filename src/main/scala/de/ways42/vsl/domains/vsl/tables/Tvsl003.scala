@@ -1,5 +1,14 @@
 package de.ways42.vsl.domains.vsl.tables
 
+import doobie._
+import doobie.implicits._
+import doobie.util.ExecutionContexts
+import cats._
+import cats.data._
+import cats.effect._
+import cats.implicits._
+import fs2.Stream
+
 case class Tvsl003 (
   GV_DTM           : Long,
   GE_DTM           : Long,
@@ -71,4 +80,51 @@ case class Tvsl003 (
       )
       
       lazy val attrStr = attributes.mkString(",")
+      
+        /**
+   * Alle Teil-Versicherungen mit Historie zu einem Vertrag
+   */
+   
+  def selectVtgnr( vtgnr : String) : ConnectionIO[List[Tvsl003]] = {
+    ( Fragment.const( "select " + attrStr + " from VSMADM.TVSL003") ++
+      fr"where  LV_VTG_NR = $vtgnr order by lv_vers_nr asc, lv_teilv_nr asc, va_dtm desc, df_zt desc"
+    ).query[Tvsl003].to[List]
+  }
+  
+  /**
+   * Alle aktuellen Teil-Versicherungen zu einem Vertrag
+   */
+  
+  def selectAktZuVertrag( vtgnr:String) :  ConnectionIO[List[Tvsl003]] = {
+    ( Fragment.const( "select " + attrStr + " from VSMADM.TVSL003 ") ++ Fragments.whereAnd( 
+      fr"LV_VTG_NR = $vtgnr ",
+      fr"SYSTAT_CD = 1 and GV_DTM < 25000101 and GE_DTM >= 25000101 ") ++
+      Fragment.const( " order by lv_vers_nr asc, lv_teilv_nr asc")
+    ).query[Tvsl003].to[List]
+  }
+  /**
+   * Alle aufrechten Teil-Versicherungen laden
+   */
+  def selectAktAll() :  ConnectionIO[List[Tvsl003]] = {
+    ( Fragment.const( "select " + attrStr + " from VSMADM.TVSL003") ++ 
+      fr"where SYSTAT_CD = 1 and GV_DTM < 25000101 and GE_DTM >= 25000101 order by lv_vers_nr asc, lv_teilv_nr asc" 
+    ).query[Tvsl003].to[List]
+  }
+  /**
+   * Alle aufrechten, aktiven Versicherungen laden
+   */
+  def selectAktAllAktive() :  ConnectionIO[List[Tvsl003]] = {
+    ( Fragment.const( "select " + attrStr + " from VSMADM.TVSL003") ++ 
+      fr"where SYSTAT_CD = 1 and lv_tv_stat_cd < 60 and GV_DTM < 25000101 and GE_DTM >= 25000101 order by lv_vers_nr asc, lv_teilv_nr asc" 
+    ).query[Tvsl003].to[List]
+  }
+  /**
+   * Alle aufrechten, beitragspflichtigen Versicherungen laden
+   */
+  def selectAktBpflAll() :  ConnectionIO[List[Tvsl003]] = {
+    ( Fragment.const( "select " + attrStr + " from VSMADM.TVSL003") ++ 
+      fr"where SYSTAT_CD = 1 and lv_tv_stat_cd = 60 and GV_DTM < 25000101 and GE_DTM >= 25000101 order by lv_vers_nr asc, lv_teilv_nr asc" 
+    ).query[Tvsl003].to[List]
+  }
+
 }
